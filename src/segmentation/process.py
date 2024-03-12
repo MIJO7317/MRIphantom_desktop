@@ -1,18 +1,22 @@
 from __future__ import print_function
-import numpy as np
 import os
-import skimage.io as io
-import skimage.transform as trans
-from PIL import Image
-import pickle
 import math
-import skimage as ski
-from skimage import img_as_ubyte
 import json
+import pickle
+
+import numpy as np
+from PIL import Image
+import skimage as ski
+from skimage import io
+import skimage.transform as trans
+from skimage import img_as_ubyte
 import cv2
 
 
 def perform_thresholding(test_path, save_path, target_size=(512, 512), is_mri=False, as_gray=True, ):
+    """
+    Perform thresholding
+    """
     for f in sorted(os.listdir(test_path)):
         img = io.imread(os.path.join(test_path, f), as_gray=as_gray)
         img = trans.resize(img, target_size)
@@ -39,6 +43,9 @@ def perform_thresholding(test_path, save_path, target_size=(512, 512), is_mri=Fa
 
 
 def isolate_markers(image_path, save_path):
+    """
+    Isolate markers
+    """
     # Ensure the output directory exists
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -48,7 +55,7 @@ def isolate_markers(image_path, save_path):
                  file.endswith('.png')]
 
     marker_coords = []
-    for index_slice, image_filename in enumerate((file_list)):
+    for image_filename in file_list:
         file_path = os.path.join(image_path, image_filename)
         pre = cv2.imread(file_path)
         image = cv2.cvtColor(pre, cv2.COLOR_BGR2GRAY)
@@ -93,6 +100,9 @@ def isolate_markers(image_path, save_path):
 
 
 def count_difference(ct_path, mri_path, save_path):
+    """
+    Counts differences
+    """
     # Ensure the output directory exists
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -164,6 +174,9 @@ def count_difference(ct_path, mri_path, save_path):
 
 
 def get_coords_ct(ct_path):
+    """
+    Get coordinates of CT markers
+    """
     with open(os.path.join(ct_path, 'data.pickle'), 'rb') as f:
         coords_ct = np.array(pickle.load(f))
 
@@ -176,6 +189,9 @@ def get_coords_ct(ct_path):
 
 
 def get_coords_mri(mri_path):
+    """
+    Get coordinates of MRI markers
+    """
     with open(os.path.join(mri_path, 'data.pickle'), 'rb') as f:
         coords_mri = np.array(pickle.load(f))
 

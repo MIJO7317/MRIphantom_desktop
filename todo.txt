@@ -1,3 +1,4 @@
+0. create 'settings' or 'options' in the main window (+ file that stores them)
 1. automatically select a range of slices where markers are present
 2. 'interpolation' for marker detection
 3. make 'interpolation' option in the entrance window

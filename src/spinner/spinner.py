@@ -1,17 +1,22 @@
-from PySide6.QtWidgets import QMainWindow, QApplication, QGraphicsDropShadowEffect
-from PySide6.QtGui import QColor
-from PySide6 import QtCore
 import os
 import sys
 import inspect
+
+from PySide6.QtWidgets import QMainWindow, QGraphicsDropShadowEffect
+from PySide6.QtGui import QColor
+from PySide6 import QtCore
+from UI.ui_spinner import Ui_Spinner
+
 cmd_main = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(
     inspect.currentframe()))[0], "../../../")))
 if cmd_main not in sys.path:
     sys.path.insert(0, cmd_main)
-from UI.ui_spinner import Ui_Spinner
 
 
 class Spinner(QMainWindow):
+    """
+    The spinner
+    """
     def __init__(self):
         super().__init__()
         self.ui = Ui_Spinner()
@@ -37,6 +42,9 @@ class Spinner(QMainWindow):
         self.timer.start(20)
 
     def progress(self):
+        """
+
+        """
         if self.value >= 100:
             self.value = 1
 
@@ -50,6 +58,9 @@ class Spinner(QMainWindow):
             self.ui.loadingLabel.setText("Обработка...")
 
     def progress_bar_value(self, value):
+        """
+        The progress bar
+        """
 
         style_sheet = """
         QFrame {
@@ -64,6 +75,8 @@ class Spinner(QMainWindow):
         first_stop = str(progress - 0.001)
         second_stop = str(progress)
 
-        new_style_sheet = style_sheet.replace("{first_stop}", first_stop).replace("{second_stop}", second_stop)
+        new_style_sheet = style_sheet.replace(
+            "{first_stop}", first_stop).replace(
+            "{second_stop}", second_stop)
 
         self.ui.circularProgress.setStyleSheet(new_style_sheet)

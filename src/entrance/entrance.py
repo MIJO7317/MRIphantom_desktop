@@ -8,6 +8,7 @@ from gui.scatter3d import Scatter3D
 from gui.scatter2d import Scatter2D
 from gui.histogram import Histogram
 from gui.plots import Plots
+from gui.table import Table
 
 from datetime import datetime
 from UI.main_window import Ui_MainWindow
@@ -24,7 +25,8 @@ cmd_main = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.g
 if cmd_main not in sys.path:
     sys.path.insert(0, cmd_main)
 
-workdir = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../")))
+workdir = os.path.realpath(os.path.abspath(os.path.join(
+    os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../")))
 
 class Worker(QRunnable):
     def __init__(self, fn):
@@ -113,10 +115,11 @@ class EntranceWindow(QMainWindow):
     def openFixedImageDirectoryDialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
-        directory = QFileDialog.getOpenFileName(self, "Выбрать изображение КТ (Fixed)", "", options=options)
+        directory = QFileDialog.getOpenFileName(self, "Выбрать изображение КТ (Fixed)", "",
+                                                options=options)
         if directory:
-            self.ui.fixedimgEdit.setText(directory[0])  # Display the directory path in the QLineEdit
-            self.fixed_image_path = directory[0]  # Save the directory path to self.fixedimagepath
+            self.ui.fixedimgEdit.setText(directory[0])
+            self.fixed_image_path = directory[0]
 
     def openMovingImageDirectoryDialog(self):
         options = QFileDialog.Options()
