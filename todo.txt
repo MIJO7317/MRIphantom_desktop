@@ -1,0 +1,5 @@
+1. automatically select a range of slices where markers are present
+2. 'interpolation' for marker detection
+3. make 'interpolation' option in the entrance window
+4. fix floating pillar (missing/nonexisting markers)
+5. add geometrical model of the phantom (another option in the entrance menu)

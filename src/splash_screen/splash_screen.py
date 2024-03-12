@@ -15,7 +15,6 @@ if cmd_main not in sys.path:
 workdir = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(
     inspect.currentframe()))[0], "../../../")))
 
-
 class SplashScreen(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)

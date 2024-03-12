@@ -14,3 +14,4 @@ CT_unet.hdf5
 MRI_unet.hdf5
 activate.sh
 .DS_Store
+.idea
