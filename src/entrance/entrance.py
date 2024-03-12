@@ -11,7 +11,7 @@ from gui.histogram import Histogram
 from gui.plots import Plots
 
 from datetime import datetime
-from UI.version_7_classic import Ui_MainWindow
+from UI.main_window import Ui_MainWindow
 from src.spinner.spinner import Spinner
 
 from src.preprocess.unpack import unpack_nii_stack

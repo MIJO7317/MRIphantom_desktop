@@ -1,0 +1,16 @@
+studies/
+venv/
+Users/
+sandbox/
+pdfs/
+__pycache__
+difference_stats.csv
+nii2png.py
+table.csv
+input_CT.nii.gz
+input_MRI_resliced.nii.gz
+interface_sandbox/
+CT_unet.hdf5
+MRI_unet.hdf5
+activate.sh
+.DS_Store

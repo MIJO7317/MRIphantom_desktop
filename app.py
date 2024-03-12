@@ -5,6 +5,7 @@ from PySide6 import QtGui
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
 from src.splash_screen.splash_screen import SplashScreen
+from src.entrance.entrance import EntranceWindow
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
 if cmd_folder not in sys.path:
@@ -17,10 +18,16 @@ try:
 except ImportError:
     pass
 
+# export DEBUG=2 in terminal to enter debug mode
+debug = int(os.environ['DEBUG'])
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setAttribute(Qt.AA_EnableHighDpiScaling)
     app.setWindowIcon(QtGui.QIcon("./assets/icons/MRIphantom_icon.ico"))
-    preload = SplashScreen()
-    preload.show()
+    if debug == 2:
+        entrance = EntranceWindow()
+        entrance.show()
+    else:
+        preload = SplashScreen()
+        preload.show()
     sys.exit(app.exec())
