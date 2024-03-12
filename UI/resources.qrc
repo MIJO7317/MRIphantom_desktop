@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="svg">
+    <file>check.svg</file>
+    <file>cross-circle.svg</file>
+    <file>purple_circle_logo.svg</file>
+    <file>circle_logo.svg</file>
+    <file>logo.svg</file>
+  </qresource>
+</RCC>
