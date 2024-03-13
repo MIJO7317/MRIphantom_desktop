@@ -17,11 +17,9 @@ from src.visualization.table import Table
 
 from UI.main_window import Ui_MainWindow
 from src.spinner.spinner import Spinner
-from src.preprocess.unpack import unpack_nii_stack
-from src.segmentation.process import (perform_thresholding,
-                                      isolate_markers, get_coords_mri, get_coords_ct,
+from src.segmentation.process import (slice_img_generator, perform_thresholding,
+                                      isolate_markers, get_coords,
                                       count_difference)
-
 
 workdir = os.path.realpath(os.path.abspath(os.path.join(
     os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../")))
@@ -132,37 +130,24 @@ class EntranceWindow(QMainWindow):
 
     @Slot()
     def analyze(self):
-        unpack_nii_stack(self.fixed_image_path, os.path.join(self.write_path, 'CT_png'))
-        unpack_nii_stack(self.moving_image_path, os.path.join(self.write_path, 'MRI_warped_png'))
-        self.ui.nameVideoLabel.setText(f'Файлы .nii распакованы')
+        print(self.is_interpolated)
+        # create generators for original images
+        ct_slice_gen = slice_img_generator(self.fixed_image_path, interpolation=self.is_interpolated)
+        mri_slice_gen = slice_img_generator(self.moving_image_path, interpolation=self.is_interpolated)
 
         # threshold segmentation
-        ct_png_path = os.path.join(self.write_path, 'CT_png')
-        ct_segmented_path = os.path.join(self.write_path, 'CT_png_results')
-        perform_thresholding(ct_png_path, ct_segmented_path, is_mri=False, interpolation=self.is_interpolated)
-        self.ui.nameVideoLabel.setText(f'Завершена сегментация КТ')
+        ct_thresh_gen = perform_thresholding(ct_slice_gen, is_mri=False, interpolation=self.is_interpolated)
+        mri_thresh_gen = perform_thresholding(mri_slice_gen, is_mri=True, interpolation=self.is_interpolated)
 
-        mri_warped_path = os.path.join(self.write_path, 'MRI_warped_png')
-        mri_warped_segmented_path = os.path.join(self.write_path, 'MRI_png_results')
-        perform_thresholding(mri_warped_path, mri_warped_segmented_path, is_mri=True, interpolation=self.is_interpolated)
-        self.ui.nameVideoLabel.setText(f'Завершена сегментация МРТ')
+        isolate_markers(ct_thresh_gen, os.path.join(self.write_path, 'markers_CT.pickle'), interpolation=self.is_interpolated)
+        isolate_markers(mri_thresh_gen, os.path.join(self.write_path, 'markers_MRI.pickle'), interpolation=self.is_interpolated)
 
-        # find_differences(os.path.join(self.write_path, 'CT_png_results'), os.path.join(self.write_path, 'MRI_png_results'), os.path.join(self.write_path, 'difference_img'))
-        isolate_markers(os.path.join(self.write_path, 'CT_png_results'), os.path.join(self.write_path, 'markers_CT'), interpolation=self.is_interpolated)
-        self.ui.nameVideoLabel.setText(f'Завершена детекция маркеров на КТ')
-
-        isolate_markers(os.path.join(self.write_path, 'MRI_png_results'), os.path.join(self.write_path, 'markers_MRI'), interpolation=self.is_interpolated)
-        self.ui.nameVideoLabel.setText(f'Завершена детекция маркеров на МРТ')
-
-        self.ui.nameVideoLabel.setText(f'Выполняю расчет отклонений...')
-        params, self.differences, self.slice_differences = count_difference(os.path.join(self.write_path, 'markers_CT'),
-                                                                            os.path.join(self.write_path,
-                                                                                         'markers_MRI'),
+        params, self.differences, self.slice_differences = count_difference(os.path.join(self.write_path, 'markers_CT.pickle'),
+                                                                            os.path.join(self.write_path, 'markers_MRI.pickle'),
                                                                             self.write_path)
-        self.ui.nameVideoLabel.setText(f'Расчет отклонений завершен. Вывод результатов')
 
-        self.coords_ct = get_coords_ct(os.path.join(self.write_path, 'markers_CT'))
-        self.coords_mri = get_coords_mri(os.path.join(self.write_path, 'markers_MRI'))
+        self.coords_ct = get_coords(os.path.join(self.write_path, 'markers_CT.pickle'))
+        self.coords_mri = get_coords(os.path.join(self.write_path, 'markers_MRI.pickle'))
 
     @Slot()
     def finishAnalyze(self):
