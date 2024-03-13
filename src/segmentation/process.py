@@ -8,49 +8,46 @@ import numpy as np
 from PIL import Image
 import skimage as ski
 from skimage import io
-import skimage.transform as trans
 from skimage import img_as_ubyte
 import cv2
 
 
-def perform_thresholding(test_path, save_path, target_size=(512, 512), is_mri=False, as_gray=True, ):
+interpol_mult = 2 ** 3
+def perform_thresholding(test_path, save_path, target_size=(512, 512), is_mri=False, interpolation=False, as_gray=True, ):
     """
     Perform thresholding
     """
+    if interpolation:
+        target_size = (512*interpol_mult, 512*interpol_mult)
     for f in sorted(os.listdir(test_path)):
+        print('processing file: ', f)
         img = io.imread(os.path.join(test_path, f), as_gray=as_gray)
-        img = trans.resize(img, target_size)
-
-        # Ensure the output directory exists
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-
         if is_mri:
             img = ski.util.invert(img)
-
         img = img_as_ubyte(img)
-
         mask = np.zeros_like(img)
-        mask = cv2.circle(mask, (258, 255), 144, (255, 255, 255), -1)
+        mask = cv2.circle(mask, (258, 255), 144*interpol_mult, (255, 255, 255), -1)
         image = cv2.bitwise_and(img, mask)
-
         ret, thresh1 = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
-
         # image = cv2.circle(img*255, (258, 258), 146, (255, 0, 0), 1)
-
-        im = Image.fromarray((thresh1).astype(np.uint8))
+        im = Image.fromarray(thresh1.astype(np.uint8))
         im.save(os.path.join(save_path, f))
 
-
-def isolate_markers(image_path, save_path):
+def isolate_markers(image_path, save_path, interpolation=False):
     """
     Isolate markers
     """
-    # Ensure the output directory exists
+    if interpolation:
+        # TODO discover what values are suitable for interpol_mult (find rule)
+        min_area = 5
+        max_area = 5000
+    else:
+        min_area = 5
+        max_area = 50
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-
-        # select only .png files
     file_list = [file for file in sorted(os.listdir(image_path), key=lambda x: int(x.split('.')[0])) if
                  file.endswith('.png')]
 
@@ -65,35 +62,30 @@ def isolate_markers(image_path, save_path):
         cnts = cnts[0] if len(cnts) == 2 else cnts[1]
         for c in cnts:
             area = cv2.contourArea(c)
-            if area < 5:
+            if area < min_area:
                 cv2.drawContours(image, [c], 0, 0.5, -1)
 
         # Morph open using elliptical shaped kernel
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1, 1))
         opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel, iterations=3)
 
-        blank_image = np.zeros((512, 512, 3), np.uint8)
-
+        result_image = np.zeros((pre.shape[0], pre.shape[1], 3), np.uint8)
         slice_coords = []
 
         cnts = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = cnts[0] if len(cnts) == 2 else cnts[1]
         for c in cnts:
             area = cv2.contourArea(c)
-            if area > 5 and area < 50:
+            if area > min_area and area < max_area:
                 ((x, y), r) = cv2.minEnclosingCircle(c)
-                cv2.circle(blank_image, (int(x), int(y)), 0, (255, 255, 255), 1)
-                slice_coords.append((int(x), int(y)))
+                cv2.circle(result_image, (int(x), int(y)), 0, (255, 255, 255), 1)
+                slice_coords.append((np.round(int(x)/interpol_mult, 3), np.round(int(y)/interpol_mult, 3)))
         while len(slice_coords) < 88:
             slice_coords.append((100, 100))
-
         while len(slice_coords) > 88:
             slice_coords.pop()
-
         marker_coords.append(slice_coords)
-
-        # save image as png
-        cv2.imwrite(os.path.join(save_path, image_filename), blank_image)
+        cv2.imwrite(os.path.join(save_path, image_filename), result_image)
 
     with open(os.path.join(save_path, 'data.pickle'), 'wb') as f:
         pickle.dump(marker_coords, f, pickle.HIGHEST_PROTOCOL)
@@ -124,7 +116,7 @@ def count_difference(ct_path, mri_path, save_path):
         for point_ct in coords_ct[slice_num]:
             for point_mri in coords_mri[slice_num]:
                 distance = math.sqrt((point_ct[0] - point_mri[0]) ** 2 + (point_ct[1] - point_mri[1]) ** 2)
-                if distance < 5:
+                if distance < 5*interpol_mult:
                     slice_distances[f'{slice_num}']['distances'].append(distance)
                     distances.append(distance)
 

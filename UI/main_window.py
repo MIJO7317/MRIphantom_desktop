@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'version_7_classic.ui'
+## Form generated from reading UI file 'main_window.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.6.1
 ##
@@ -15,16 +15,17 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QLabel, QLayout, QLineEdit, QMainWindow,
-    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QHBoxLayout, QLabel, QLayout, QLineEdit,
+    QMainWindow, QPushButton, QSizePolicy, QVBoxLayout,
+    QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(400, 543)
+        MainWindow.resize(400, 435)
         MainWindow.setStyleSheet(u"font-family: Montserrat;\n"
 "font-weight : 400;\n"
 "border-color: transparent\n"
@@ -157,6 +158,7 @@ class Ui_MainWindow(object):
         self.name_frame = QFrame(self.data_frame)
         self.name_frame.setObjectName(u"name_frame")
         self.name_frame.setEnabled(True)
+        self.name_frame.setMaximumSize(QSize(16777215, 370))
         self.name_frame.setFrameShape(QFrame.NoFrame)
         self.name_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.name_frame)
@@ -230,6 +232,16 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.phantomTypeCombo)
 
+        self.interpolateButton = QCheckBox(self.name_frame)
+        self.interpolateButton.setObjectName(u"interpolateButton")
+
+        self.verticalLayout_2.addWidget(self.interpolateButton)
+
+        self.geometryButton = QCheckBox(self.name_frame)
+        self.geometryButton.setObjectName(u"geometryButton")
+
+        self.verticalLayout_2.addWidget(self.geometryButton)
+
         self.analyzeButton = QPushButton(self.name_frame)
         self.analyzeButton.setObjectName(u"analyzeButton")
         self.analyzeButton.setMinimumSize(QSize(0, 34))
@@ -251,57 +263,15 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.analyzeButton)
 
-        self.frequencyLabel = QLabel(self.name_frame)
-        self.frequencyLabel.setObjectName(u"frequencyLabel")
-        self.frequencyLabel.setMaximumSize(QSize(16777215, 20))
-        self.frequencyLabel.setStyleSheet(u"")
-
-        self.verticalLayout_2.addWidget(self.frequencyLabel)
-
-
-        self.verticalLayout.addWidget(self.name_frame)
-
-        self.open_video_frame = QFrame(self.data_frame)
-        self.open_video_frame.setObjectName(u"open_video_frame")
-        self.open_video_frame.setFrameShape(QFrame.NoFrame)
-        self.open_video_frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_5 = QVBoxLayout(self.open_video_frame)
-#ifndef Q_OS_MAC
-        self.verticalLayout_5.setSpacing(-1)
-#endif
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
-        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.nameVideoLabel = QLabel(self.open_video_frame)
+        self.nameVideoLabel = QLabel(self.name_frame)
         self.nameVideoLabel.setObjectName(u"nameVideoLabel")
         self.nameVideoLabel.setMaximumSize(QSize(16777215, 20))
         self.nameVideoLabel.setStyleSheet(u"")
 
-        self.verticalLayout_5.addWidget(self.nameVideoLabel)
-
-        self.openStudyButton = QPushButton(self.open_video_frame)
-        self.openStudyButton.setObjectName(u"openStudyButton")
-        self.openStudyButton.setMinimumSize(QSize(0, 35))
-        self.openStudyButton.setStyleSheet(u"")
-
-        self.verticalLayout_5.addWidget(self.openStudyButton)
-
-        self.openPdfButton = QPushButton(self.open_video_frame)
-        self.openPdfButton.setObjectName(u"openPdfButton")
-        self.openPdfButton.setMinimumSize(QSize(0, 35))
-        self.openPdfButton.setStyleSheet(u"")
-
-        self.verticalLayout_5.addWidget(self.openPdfButton)
-
-        self.status_bar = QLabel(self.open_video_frame)
-        self.status_bar.setObjectName(u"status_bar")
-        self.status_bar.setMinimumSize(QSize(200, 30))
-        self.status_bar.setMaximumSize(QSize(150, 10))
-        self.status_bar.setStyleSheet(u"")
-
-        self.verticalLayout_5.addWidget(self.status_bar)
+        self.verticalLayout_2.addWidget(self.nameVideoLabel)
 
 
-        self.verticalLayout.addWidget(self.open_video_frame)
+        self.verticalLayout.addWidget(self.name_frame)
 
 
         self.horizontalLayout_2.addWidget(self.data_frame)
@@ -325,11 +295,9 @@ class Ui_MainWindow(object):
         self.fixedimgEdit.setText("")
         self.movingimgEdit.setText("")
         self.phantomTypeCombo.setCurrentText("")
+        self.interpolateButton.setText(QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0442\u0435\u0440\u043f\u043e\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u043c\u0430\u0440\u043a\u0435\u0440\u043e\u0432", None))
+        self.geometryButton.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u0433\u0435\u043e\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u0443\u044e \u043c\u043e\u0434\u0435\u043b\u044c \u0444\u0430\u043d\u0442\u043e\u043c\u0430", None))
         self.analyzeButton.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442", None))
-        self.frequencyLabel.setText("")
         self.nameVideoLabel.setText("")
-        self.openStudyButton.setText(QCoreApplication.translate("MainWindow", u"\u041f\u0440\u043e\u0441\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f", None))
-        self.openPdfButton.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0442\u0447\u0435\u0442\u044b", None))
-        self.status_bar.setText("")
     # retranslateUi
 

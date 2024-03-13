@@ -7,6 +7,8 @@ from dicom_csv.utils import Series
 import os
 import nibabel as nib
 from PIL import Image
+from skimage.transform import rescale
+
 
 def dicom_to_nifti(source_folder: Path, target_folder: Path, name=None):
     """Converts folder of dicoms into a nii.gz file."""
@@ -20,6 +22,7 @@ def dicom_to_nifti(source_folder: Path, target_folder: Path, name=None):
     return check_call(cmd)
 
 def unpack_nii_stack(input_file, output_directory, output_format="PNG"):
+    interpol_mult = 2**3
     # Load the .nii file
     try:
         img = nib.load(input_file)
@@ -37,11 +40,9 @@ def unpack_nii_stack(input_file, output_directory, output_format="PNG"):
     # Iterate through each slice and save as a 2D image
     for i in range(img_data.shape[2]):
         slice_data = img_data[:, :, i]
-        slice_img = Image.fromarray((slice_data)).convert('RGB')
+        slice_img = rescale(slice_data, interpol_mult)
+        slice_img = Image.fromarray(slice_img).convert('RGB')
 
-        # Generate the output filename
         output_filename = f"{i + 1}.{output_format.lower()}"
         output_path = os.path.join(output_directory, output_filename)
-
-        # Save the slice as an image
         slice_img.save(output_path)

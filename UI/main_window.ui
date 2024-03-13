@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>543</height>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -278,6 +278,12 @@ font-size: 26px;</string>
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>370</height>
+             </size>
+            </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
             </property>
@@ -404,6 +410,20 @@ outline: 0px;
               </widget>
              </item>
              <item>
+              <widget class="QCheckBox" name="interpolateButton">
+               <property name="text">
+                <string>Интерполирование маркеров</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="geometryButton">
+               <property name="text">
+                <string>Использовать геометрическую модель фантома</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="analyzeButton">
                <property name="minimumSize">
                 <size>
@@ -434,108 +454,11 @@ font-size: 14px;
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="frequencyLabel">
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>20</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="open_video_frame">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
-             <property name="spacing">
-              <number>-1</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
               <widget class="QLabel" name="nameVideoLabel">
                <property name="maximumSize">
                 <size>
                  <width>16777215</width>
                  <height>20</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="openStudyButton">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="text">
-                <string>Просмотреть изображения</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="openPdfButton">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
-               <property name="text">
-                <string>Отчеты</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="status_bar">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>150</width>
-                 <height>10</height>
                 </size>
                </property>
                <property name="styleSheet">

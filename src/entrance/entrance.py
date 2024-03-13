@@ -1,32 +1,31 @@
+import os
+import sys
+import inspect
+import json
+import nibabel as nib
+from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QFileDialog)
 from PySide6.QtCore import Slot, QEvent, Qt, Signal, QRunnable, QThreadPool, QObject
 from PySide6 import QtCore
-import sys
-import inspect
 
-from gui.scatter3d import Scatter3D
-from gui.scatter2d import Scatter2D
-from gui.histogram import Histogram
-from gui.plots import Plots
-from gui.table import Table
+# TODO join visualizations into separate class
+from src.visualization.scatter3d import Scatter3D
+from src.visualization.scatter2d import Scatter2D
+from src.visualization.histogram import Histogram
+from src.visualization.plots import Plots
+from src.visualization.table import Table
 
-from datetime import datetime
 from UI.main_window import Ui_MainWindow
 from src.spinner.spinner import Spinner
-
 from src.preprocess.unpack import unpack_nii_stack
-import nibabel as nib
+from src.segmentation.process import (perform_thresholding,
+                                      isolate_markers, get_coords_mri, get_coords_ct,
+                                      count_difference)
 
-from src.segmentation.process import *
-
-cmd_main = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile(
-    inspect.currentframe()))[0], "../../../")))
-
-if cmd_main not in sys.path:
-    sys.path.insert(0, cmd_main)
 
 workdir = os.path.realpath(os.path.abspath(os.path.join(
     os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../")))
+
 
 class Worker(QRunnable):
     def __init__(self, fn):
@@ -78,6 +77,8 @@ class EntranceWindow(QMainWindow):
         self.output_dirname = None
         self.output_path = None
         self.format = None
+        self.is_interpolated = False
+        self.is_geometric = False
 
         self.initUi()
 
@@ -94,6 +95,8 @@ class EntranceWindow(QMainWindow):
         self.ui.movingimgEdit.setPlaceholderText("Укажите путь папки с МРТ (Moving)")
         self.ui.fixedimgEdit.mousePressEvent = lambda event: self.openFixedImageDirectoryDialog()
         self.ui.movingimgEdit.mousePressEvent = lambda event: self.openMovingImageDirectoryDialog()
+        self.ui.interpolateButton.stateChanged.connect(self.interpolationButtonStateChanged)
+        self.ui.geometryButton.stateChanged.connect(self.geometryButtonStateChanged)
 
         self.fixed_image_path = None
         self.moving_image_path = None
@@ -106,8 +109,6 @@ class EntranceWindow(QMainWindow):
         self.ui.analyzeButton.toggled.connect(self.analyzeImages)
         self.analyze_thread_pool = QThreadPool()
         self.registration_thread_pool = QThreadPool()
-
-        self.ui.openStudyButton.clicked.connect(self.openStudy)
 
         self.spinner = Spinner()
         self.thread_pool = QThreadPool()
@@ -135,19 +136,22 @@ class EntranceWindow(QMainWindow):
         unpack_nii_stack(self.moving_image_path, os.path.join(self.write_path, 'MRI_warped_png'))
         self.ui.nameVideoLabel.setText(f'Файлы .nii распакованы')
 
-        # сделать сегментацию по трешхолду -> обрезка всего лишнего вне круга
-        perform_thresholding(os.path.join(self.write_path, 'CT_png'), os.path.join(self.write_path, 'CT_png_results'))
+        # threshold segmentation
+        ct_png_path = os.path.join(self.write_path, 'CT_png')
+        ct_segmented_path = os.path.join(self.write_path, 'CT_png_results')
+        perform_thresholding(ct_png_path, ct_segmented_path, is_mri=False, interpolation=self.is_interpolated)
         self.ui.nameVideoLabel.setText(f'Завершена сегментация КТ')
 
-        perform_thresholding(os.path.join(self.write_path, 'MRI_warped_png'),
-                             os.path.join(self.write_path, 'MRI_png_results'), is_mri=True)
+        mri_warped_path = os.path.join(self.write_path, 'MRI_warped_png')
+        mri_warped_segmented_path = os.path.join(self.write_path, 'MRI_png_results')
+        perform_thresholding(mri_warped_path, mri_warped_segmented_path, is_mri=True, interpolation=self.is_interpolated)
         self.ui.nameVideoLabel.setText(f'Завершена сегментация МРТ')
 
         # find_differences(os.path.join(self.write_path, 'CT_png_results'), os.path.join(self.write_path, 'MRI_png_results'), os.path.join(self.write_path, 'difference_img'))
-        isolate_markers(os.path.join(self.write_path, 'CT_png_results'), os.path.join(self.write_path, 'markers_CT'))
+        isolate_markers(os.path.join(self.write_path, 'CT_png_results'), os.path.join(self.write_path, 'markers_CT'), interpolation=self.is_interpolated)
         self.ui.nameVideoLabel.setText(f'Завершена детекция маркеров на КТ')
 
-        isolate_markers(os.path.join(self.write_path, 'MRI_png_results'), os.path.join(self.write_path, 'markers_MRI'))
+        isolate_markers(os.path.join(self.write_path, 'MRI_png_results'), os.path.join(self.write_path, 'markers_MRI'), interpolation=self.is_interpolated)
         self.ui.nameVideoLabel.setText(f'Завершена детекция маркеров на МРТ')
 
         self.ui.nameVideoLabel.setText(f'Выполняю расчет отклонений...')
@@ -217,7 +221,7 @@ class EntranceWindow(QMainWindow):
         file_name_format = "{:s}-{:%d-%m-%Y}{:s}"
         date = datetime.now()
         return prefix, file_name_format.format(prefix_ct, date, extension), file_name_format.format(prefix_mri, date,
-                                                                                                   extension)
+                                                                                                    extension)
 
     @Slot()
     def openStudy(self):
@@ -262,6 +266,22 @@ class EntranceWindow(QMainWindow):
             self.focusPreviousChild()
 
         return super().event(event)
+
+    # TODO simplify
+    def interpolationButtonStateChanged(self):
+        if self.is_interpolated:
+            self.is_interpolated = False
+        else:
+            self.is_interpolated = True
+        print("Interpolation button state changed: ", self.is_interpolated)
+
+    # TODO simplify
+    def geometryButtonStateChanged(self):
+        if self.is_geometric:
+            self.is_geometric = False
+        else:
+            self.is_geometric = True
+        print("Geometry button state changed: ", self.is_geometric)
 
 
 if __name__ == "__main__":
