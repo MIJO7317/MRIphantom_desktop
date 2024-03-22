@@ -2,8 +2,6 @@ from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PySide6 import QtCore
 from UI.notification import Ui_Notification
 from PySide6.QtGui import QPixmap
-from PySide6.QtGui import QPainter, QFontMetrics
-from PySide6.QtCore import Qt, QSize
 
 
 class Notification(QWidget):
