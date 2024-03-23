@@ -6,6 +6,13 @@ before_script:
   - virtualenv venv
   - source venv/bin/activate
 
+run:
+  script:
+    - pip install -r requirements.txt
+  artifacts:
+    paths:
+      - build/*
+
 pages:
   stage: deploy
   script:
