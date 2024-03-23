@@ -85,9 +85,9 @@ _____________________
 
 The software consists of one main window from which you can start analyzing MRI images, and output section allowing you to navigate between various visualization in a simple manner.
 All you need to start using the program is CT and MRI images of Elekta MRI phantom.
-At the moment, our solution supports preregistered images in .nii.gz (or .nii) extensions.
-We are soon to implement DICOM support.
+Currently, our solution is compatible with pre-registered images saved in .nii.gz (or .nii) formats.
+We are working on implementing DICOM support soon.
 
-Simply press 'Calculate' to perform analysis.
+To conduct the analysis, simply click on the 'Calculate' button.
 
 Refer to the documentation or README files for instructions on using the software.
