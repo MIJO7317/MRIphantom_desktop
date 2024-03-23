@@ -3,13 +3,6 @@ Module: process
 
 This module provides functions for processing images
 and analyzing marker data.
-
-Functions:
-- slice_img_generator(input_file, interpolation=False)
-- perform_thresholding(img_gen, is_mri=False, interpolation=False)
-- isolate_markers(threshold_gen, save_path, interpolation=False)
-- count_difference(ct_path, mri_path, save_path)
-- get_coords(markers_path)
 """
 
 import os
@@ -21,7 +14,7 @@ import numpy as np
 import nibabel as nib
 import cv2
 
-INTERPOLATION_COEF = 2 ** 3
+INTERPOLATION_COEF = 2**3
 
 
 def slice_img_generator(input_file, interpolation=False):
@@ -53,7 +46,7 @@ def slice_img_generator(input_file, interpolation=False):
     for i in range(img_data.shape[2]):
         slice_data = img_data[:, :, i].copy()
         slice_data = slice_data + np.abs(np.min(slice_data))
-        slice_data *= 255.0 / (np.max(slice_data)+1e-5)
+        slice_data *= 255.0 / (np.max(slice_data) + 1e-5)
         yield cv2.resize(slice_data, None, fx=interpol_coeff, fy=interpol_coeff)
 
 
@@ -89,8 +82,13 @@ def perform_thresholding(img_gen, is_mri=False, interpolation=False):
             min_thresh_val = 170  # perfect on test data
         mask = np.zeros_like(img)
         img_shape = img.shape
-        mask = cv2.circle(mask, (img_shape[0]//2, img_shape[1]//2),
-                          phantom_radius * interpol_coeff, (255, 255, 255), -1)
+        mask = cv2.circle(
+            mask,
+            (img_shape[0] // 2, img_shape[1] // 2),
+            phantom_radius * interpol_coeff,
+            (255, 255, 255),
+            -1,
+        )
         image = cv2.bitwise_and(img, mask)
         _, thresh1 = cv2.threshold(image, min_thresh_val, 255, cv2.THRESH_BINARY)
         yield thresh1.astype(np.uint8)
@@ -150,7 +148,11 @@ def isolate_markers(threshold_gen, save_path, interpolation=False):
                 ((x, y), _) = cv2.minEnclosingCircle(c)
                 cv2.circle(result_image, (int(x), int(y)), 0, (255, 255, 255), 1)
                 slice_coords.append(
-                    (np.round(int(x) / interpol_coeff, 3), np.round(int(y) / interpol_coeff, 3)))
+                    (
+                        np.round(int(x) / interpol_coeff, 3),
+                        np.round(int(y) / interpol_coeff, 3),
+                    )
+                )
 
         # FIXME remove 88 limit
         while len(slice_coords) < 88:
@@ -160,7 +162,7 @@ def isolate_markers(threshold_gen, save_path, interpolation=False):
         marker_coords.append(slice_coords)
 
     # FIXME i dont want to save it into pickle dump
-    with open(os.path.join(save_path), 'wb') as f:
+    with open(os.path.join(save_path), "wb") as f:
         pickle.dump(marker_coords, f, pickle.HIGHEST_PROTOCOL)
 
 
@@ -188,47 +190,55 @@ def count_difference(ct_path, mri_path, save_path):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    with open(ct_path, 'rb') as f:
+    with open(ct_path, "rb") as f:
         coords_ct = pickle.load(f)
-    with open(mri_path, 'rb') as f:
+    with open(mri_path, "rb") as f:
         coords_mri = pickle.load(f)
 
     distances = []
     slice_distances = {}
 
     for slice_num, _ in enumerate(coords_ct):
-        slice_distances[f'{slice_num}'] = {}
-        slice_distances[f'{slice_num}']['distances'] = []
+        slice_distances[f"{slice_num}"] = {}
+        slice_distances[f"{slice_num}"]["distances"] = []
         for point_ct in coords_ct[slice_num]:
             for point_mri in coords_mri[slice_num]:
-                distance = math.sqrt((point_ct[0] - point_mri[0]) ** 2
-                                     + (point_ct[1] - point_mri[1]) ** 2)
+                distance = math.sqrt(
+                    (point_ct[0] - point_mri[0]) ** 2
+                    + (point_ct[1] - point_mri[1]) ** 2
+                )
                 if distance < 5 * INTERPOLATION_COEF:
-                    slice_distances[f'{slice_num}']['distances'].append(distance)
+                    slice_distances[f"{slice_num}"]["distances"].append(distance)
                     distances.append(distance)
 
     for key in slice_distances:
-        distances_array = np.array(slice_distances[key]['distances'])
+        distances_array = np.array(slice_distances[key]["distances"])
         if len(distances_array) > 0:
-            slice_distances[key]['Mean difference, mm'] = float(np.mean(distances_array))
+            slice_distances[key]["Mean difference, mm"] = float(
+                np.mean(distances_array)
+            )
             non_zero = distances_array[np.nonzero(distances_array)]
             if len(non_zero) > 0:
-                slice_distances[key]['Min difference, mm'] =\
-                    float(np.min(distances_array[np.nonzero(distances_array)]))
+                slice_distances[key]["Min difference, mm"] = float(
+                    np.min(distances_array[np.nonzero(distances_array)])
+                )
             else:
-                slice_distances[key]['Min difference, mm'] = float(0)
-            slice_distances[key]['Max difference, mm'] = float(np.max(distances_array))
-            slice_distances[key]['Std, mm'] = float(np.std(distances_array))
-            slice_distances[key]['Number of differences > 0.5 mm'] =\
-                int((distances_array > 0.5).sum())
-            slice_distances[key]['Number of differences > 1 mm'] = int((distances_array > 1).sum())
+                slice_distances[key]["Min difference, mm"] = float(0)
+            slice_distances[key]["Max difference, mm"] = float(np.max(distances_array))
+            slice_distances[key]["Std, mm"] = float(np.std(distances_array))
+            slice_distances[key]["Number of differences > 0.5 mm"] = int(
+                (distances_array > 0.5).sum()
+            )
+            slice_distances[key]["Number of differences > 1 mm"] = int(
+                (distances_array > 1).sum()
+            )
         else:
-            slice_distances[key]['Mean difference, mm'] = float(0)
-            slice_distances[key]['Min difference, mm'] = float(0)
-            slice_distances[key]['Max difference, mm'] = float(0)
-            slice_distances[key]['Std, mm'] = float(0)
-            slice_distances[key]['Number of differences > 0.5 mm'] = int(0)
-            slice_distances[key]['Number of differences > 1 mm'] = int(0)
+            slice_distances[key]["Mean difference, mm"] = float(0)
+            slice_distances[key]["Min difference, mm"] = float(0)
+            slice_distances[key]["Max difference, mm"] = float(0)
+            slice_distances[key]["Std, mm"] = float(0)
+            slice_distances[key]["Number of differences > 0.5 mm"] = int(0)
+            slice_distances[key]["Number of differences > 1 mm"] = int(0)
 
     distances = np.array(distances)
     mean_distance = np.mean(distances)
@@ -242,16 +252,18 @@ def count_difference(ct_path, mri_path, save_path):
     num_05 = (distances > 0.5).sum()
     num_1 = (distances > 1).sum()
 
-    params = {'Mean difference, mm': np.round(float(mean_distance), 2),
-              'Min difference, mm': np.round(float(min_distance), 2),
-              'Max difference, mm': np.round(float(max_distance), 2),
-              'Std, mm': np.round(float(std_distance), 2),
-              'Number of differences > 0.5 mm': int(num_05),
-              'Number of differences > 1 mm': int(num_1)}
+    params = {
+        "Mean difference, mm": np.round(float(mean_distance), 2),
+        "Min difference, mm": np.round(float(min_distance), 2),
+        "Max difference, mm": np.round(float(max_distance), 2),
+        "Std, mm": np.round(float(std_distance), 2),
+        "Number of differences > 0.5 mm": int(num_05),
+        "Number of differences > 1 mm": int(num_1),
+    }
 
-    with open(os.path.join(save_path, 'difference_stats.json'), 'w') as fp:
+    with open(os.path.join(save_path, "difference_stats.json"), "w") as fp:
         json.dump(params, fp)
-    with open(os.path.join(save_path, 'slice_difference_stats.json'), 'w') as fp:
+    with open(os.path.join(save_path, "slice_difference_stats.json"), "w") as fp:
         json.dump(slice_distances, fp)
     return params, distances, slice_distances
 
@@ -274,14 +286,18 @@ def get_coords(markers_path):
     A list of lists, where each inner list represents the coordinates
     of a marker in the format [x, y, z].
     """
-    with open(markers_path, 'rb') as f:
+    with open(markers_path, "rb") as f:
         coords_array = np.array(pickle.load(f))
 
     shape_coords = coords_array.shape
     list_of_points = []
     for z_slice in range(shape_coords[0]):
         for num_of_point in range(shape_coords[1]):
-            list_of_points.append([coords_array[z_slice, num_of_point, 0],
-                                   coords_array[z_slice, num_of_point, 1],
-                                   z_slice])
+            list_of_points.append(
+                [
+                    coords_array[z_slice, num_of_point, 0],
+                    coords_array[z_slice, num_of_point, 1],
+                    z_slice,
+                ]
+            )
     return list_of_points

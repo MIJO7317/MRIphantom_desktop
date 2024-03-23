@@ -13,7 +13,7 @@
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="registration.html" />
+    <link rel="next" title="Image Registration" href="registration.html" />
     <link rel="prev" title="Data Loading and Saving" href="data_io.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -34,11 +34,30 @@
             
   <section id="image-preprocessing">
 <h1>Image Preprocessing<a class="headerlink" href="#image-preprocessing" title="Link to this heading">¶</a></h1>
+<p>Two main methods of image preprocessing are available.</p>
+<p>You can either work with images in their original resolution for quick results,
+or choose preprocessing with interpolation to improve the quality of marker detection even further.
+We select the scale factor by which we upscale initial images.
+This enables the marker detection algorithm to operate at a higher quality, resulting in improved precision and finer outcomes.</p>
+<p>Pipeline of image processing can be divided into several steps:</p>
+<ol class="arabic simple">
+<li><p>Begin by unpacking input scans slice by slice.</p></li>
+<li><p>Select the upscale factor (=1 in case of original resolution and =2**3 for interpolation).</p></li>
+<li><p>Upscale images according to the selected factor (or leave as is).</p></li>
+<li><p>Apply masking to isolate the central portion of the phantom, containing the plastic rods.</p></li>
+<li><p>Employ thresholding segmentation to eliminate all except the rods.</p></li>
+<li><p>Execute marker detection.</p></li>
+<li><p>Export the marker coordinates as .pickle files.</p></li>
+<li><p>Conduct analysis using the saved data.</p></li>
+</ol>
+<p>You can also look at the examples below.</p>
 <section id="original-resolution">
 <h2>Original resolution<a class="headerlink" href="#original-resolution" title="Link to this heading">¶</a></h2>
+<p><strong>TODO pictures</strong></p>
 </section>
 <section id="interpolation-better-quality-detection">
 <h2>Interpolation (better quality detection)<a class="headerlink" href="#interpolation-better-quality-detection" title="Link to this heading">¶</a></h2>
+<p><strong>TODO pictures</strong></p>
 </section>
 </section>
 
@@ -68,6 +87,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#interpolation-better-quality-detection">Interpolation (better quality detection)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Image Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="segmentation.html">Image Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_settings.html">Application Settings</a></li>
@@ -79,7 +99,7 @@
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="data_io.html" title="previous chapter">Data Loading and Saving</a></li>
-      <li>Next: <a href="registration.html" title="next chapter">&lt;no title&gt;</a></li>
+      <li>Next: <a href="registration.html" title="next chapter">Image Registration</a></li>
   </ul></li>
 </ul>
 </div>

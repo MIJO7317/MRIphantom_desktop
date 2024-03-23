@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Modules" href="modules.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="registration.html" />
+    <link rel="prev" title="Image Registration" href="registration.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,8 +34,21 @@
             
   <section id="image-segmentation">
 <h1>Image Segmentation<a class="headerlink" href="#image-segmentation" title="Link to this heading">¶</a></h1>
+<p>Image segmentation is a crucial step in image processing pipeline.</p>
+<p>Currently, only a single method of image segmentation is in the software, but it’s the simplest and quickest option available.
+It doesn’t require a dedicated GPU since it’s not a neural network-based approach.</p>
 <section id="thresholding">
 <h2>Thresholding<a class="headerlink" href="#thresholding" title="Link to this heading">¶</a></h2>
+<p>Threshold segmentation is a technique used to separate plastic rods from the background based on pixel intensity values.</p>
+<p>A threshold value is chosen (different for both modalities), and pixels in the image whose intensity values are above or below this threshold are classified as belonging to the region of interest or background, respectively.
+This method is straightforward and effective for images with clear intensity differences between objects and background regions (our case).</p>
+<p>Rods on CT scans have values [170, 255].
+Rods on MRI scans have values [215, 255].</p>
+<p><strong>TODO insert pictures (examples)</strong></p>
+</section>
+<section id="neural-network">
+<h2>Neural Network<a class="headerlink" href="#neural-network" title="Link to this heading">¶</a></h2>
+<p><strong>TODO</strong></p>
 </section>
 </section>
 
@@ -61,8 +74,10 @@
 <li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_io.html">Data Loading and Saving</a></li>
 <li class="toctree-l1"><a class="reference internal" href="image_preprocessing.html">Image Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Image Registration</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Image Segmentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#thresholding">Thresholding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neural-network">Neural Network</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
@@ -74,7 +89,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="registration.html" title="previous chapter">&lt;no title&gt;</a></li>
+      <li>Previous: <a href="registration.html" title="previous chapter">Image Registration</a></li>
       <li>Next: <a href="modules.html" title="next chapter">Modules</a></li>
   </ul></li>
 </ul>

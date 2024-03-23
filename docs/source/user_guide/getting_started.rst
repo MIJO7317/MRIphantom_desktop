@@ -17,7 +17,7 @@ macOS: macOS Big Sur (11) or later (compatible with both Apple Silicon and Intel
 
 Linux: any recent LTS distribution, for example, Ubuntu 18.04 and later.
 
-Hardware configuration (min)
+Hardware configuration
 ________________________
 
 Memory: At least 4GB of RAM.
@@ -80,7 +80,14 @@ MRIphantom is currently in its early stages of development, offering a straightf
 While it may not be as complex, navigating through its functionalities can still be confusing.
 Here's how you can get started with MRIphantom QA Solution:
 
-Learning the Basics
+Basics
 _____________________
 
-Refer to the documentation of README file for instructions on using the software.
+The software consists of one main window from which you can start analyzing MRI images, and output section allowing you to navigate between various visualization in a simple manner.
+All you need to start using the program is CT and MRI images of Elekta MRI phantom.
+Currently, our solution is compatible with pre-registered images saved in .nii.gz (or .nii) formats.
+We are working on implementing DICOM support soon.
+
+To conduct the analysis, simply click on the 'Calculate' button.
+
+Refer to the documentation or README files for instructions on using the software.

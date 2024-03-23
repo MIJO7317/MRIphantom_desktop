@@ -45,8 +45,8 @@ to start using the application.</p>
 <p>macOS: macOS Big Sur (11) or later (compatible with both Apple Silicon and Intel-based computers).</p>
 <p>Linux: any recent LTS distribution, for example, Ubuntu 18.04 and later.</p>
 </section>
-<section id="hardware-configuration-min">
-<h3>Hardware configuration (min)<a class="headerlink" href="#hardware-configuration-min" title="Link to this heading">¶</a></h3>
+<section id="hardware-configuration">
+<h3>Hardware configuration<a class="headerlink" href="#hardware-configuration" title="Link to this heading">¶</a></h3>
 <p>Memory: At least 4GB of RAM.</p>
 <p>Display: A minimum resolution of 1024 x 768 (FullHD is recommended).</p>
 <p>Graphics: Dedicated GPU memory is not required, but recommended for faster rendering.</p>
@@ -88,9 +88,14 @@ the following command:</p>
 <p>MRIphantom is currently in its early stages of development, offering a straightforward yet promising set of features.
 While it may not be as complex, navigating through its functionalities can still be confusing.
 Here’s how you can get started with MRIphantom QA Solution:</p>
-<section id="learning-the-basics">
-<h3>Learning the Basics<a class="headerlink" href="#learning-the-basics" title="Link to this heading">¶</a></h3>
-<p>Refer to the documentation of README file for instructions on using the software.</p>
+<section id="basics">
+<h3>Basics<a class="headerlink" href="#basics" title="Link to this heading">¶</a></h3>
+<p>The software consists of one main window from which you can start analyzing MRI images, and output section allowing you to navigate between various visualization in a simple manner.
+All you need to start using the program is CT and MRI images of Elekta MRI phantom.
+At the moment, our solution supports preregistered images in .nii.gz (or .nii) extensions.
+We are soon to implement DICOM support.</p>
+<p>Simply press ‘Calculate’ to perform analysis.</p>
+<p>Refer to the documentation or README files for instructions on using the software.</p>
 </section>
 </section>
 </section>
@@ -116,12 +121,12 @@ Here’s how you can get started with MRIphantom QA Solution:</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#system-requirements">System requirements</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#operating-system-versions">Operating system versions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#hardware-configuration-min">Hardware configuration (min)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hardware-configuration">Hardware configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#installation-from-source">Installation from source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-mriphantom-qa-solution">Using MRIphantom QA Solution</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#learning-the-basics">Learning the Basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#basics">Basics</a></li>
 </ul>
 </li>
 </ul>
@@ -129,6 +134,7 @@ Here’s how you can get started with MRIphantom QA Solution:</p>
 <li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_io.html">Data Loading and Saving</a></li>
 <li class="toctree-l1"><a class="reference internal" href="image_preprocessing.html">Image Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Image Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="segmentation.html">Image Segmentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_settings.html">Application Settings</a></li>
