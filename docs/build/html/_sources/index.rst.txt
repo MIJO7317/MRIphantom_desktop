@@ -13,6 +13,15 @@ This software allows you to quickly and easily analyze MRI images for geometric 
 
 .. toctree::
     user_guide/getting_started
+    user_guide/user_interface
+    user_guide/data_io
+    user_guide/image_preprocessing
+    user_guide/registration
+    user_guide/segmentation
+    user_guide/modules
+    user_guide/app_settings
+    dev_guide/developer_guide
+
 
 Indices and tables
 ==================
