@@ -1,4 +1,8 @@
-from PySide6.QtWidgets import QWidget, QGridLayout, QSlider, QVBoxLayout
+"""
+Module: scatter2d
+Module for 2D scatter viewer
+"""
+from PySide6.QtWidgets import QWidget, QSlider, QVBoxLayout
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtCore import Qt
 
@@ -7,9 +11,13 @@ import pandas as pd
 
 
 class Scatter2D(QWidget):
+    """
+    2D scatter view widget
+    """
     def __init__(self, data_ct, data_mri, title="2D просмотр отклонений"):
         super().__init__()
 
+        self.fig = None
         self.data_ct = data_ct
         self.data_mri = data_mri
 
@@ -27,12 +35,13 @@ class Scatter2D(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.browser)
         layout.addWidget(self.slider)
-
         self.resize(850, 850)
-
         self.init_scatter2d()
 
     def init_scatter2d(self, z_value=0):
+        """
+        Initialize 2D scatter viewer
+        """
         df_ct = pd.DataFrame(self.data_ct, columns=["x", "y", "z"])
         df_ct["modality"] = "CT"
 
@@ -54,18 +63,3 @@ class Scatter2D(QWidget):
         z_value = value  # Adjust this according to your data range
 
         self.init_scatter2d(z_value)
-
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-
-    app = QApplication([])
-
-    # Sample data, replace with your actual data
-    data_ct = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-    data_mri = [[10, 11, 12], [13, 14, 15], [16, 17, 18]]
-
-    T = Scatter2D(data_ct, data_mri)
-    T.show()
-
-    app.exec_()

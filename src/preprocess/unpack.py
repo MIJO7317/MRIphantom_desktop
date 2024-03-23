@@ -1,3 +1,7 @@
+"""
+Module: unpack
+Module for unpacking DICOM files
+"""
 from subprocess import check_call
 from pathlib import Path
 

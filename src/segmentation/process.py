@@ -9,7 +9,6 @@ import os
 import math
 import json
 import pickle
-
 import numpy as np
 import nibabel as nib
 import cv2
@@ -112,7 +111,6 @@ def isolate_markers(threshold_gen, save_path, interpolation=False):
     """
 
     if interpolation:
-        # TODO discover what values are suitable for interpol_mult (find rule)
         min_area = 650
         max_area = 1150
         interpol_coeff = INTERPOLATION_COEF
