@@ -1,0 +1,45 @@
+Usage
+=====
+
+Installation from source
+------------
+
+To use MRIphantom, first clone the repository to your local machine:
+
+.. code-block:: console
+
+   $ git clone git@gitlab.com:bzavolovich/MRIphantom_desktop.git
+
+Make sure you have the latest Python version installed.
+
+Create a virtual environment in the project directory by running
+the following command:
+
+.. code-block:: console
+
+    $ python -m venv venv
+
+and activate it (Linux, macOS):
+
+.. code-block:: console
+
+    $ source venv/scripts/activate
+
+or (Windows):
+
+.. code-block:: console
+
+    ./venv/Scripts/Activate.ps1
+
+Install necessary packages using requirements.txt:
+
+.. code-block:: console
+
+    $ pip install -r requirements.txt
+
+Run the application by executing the following command:
+
+.. code-block:: console
+
+    $ python app.py
+

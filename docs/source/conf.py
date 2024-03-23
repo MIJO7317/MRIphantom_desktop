@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'MRIphantom QA Solution'
-copyright = '2024, Author et al.'
-author = 'Author et al.'
+copyright = '2024, bzavolovich et al.'
+author = 'bzavolovich et al.'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

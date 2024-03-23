@@ -1,16 +1,18 @@
-.. MRIphantom QA Solution documentation master file, created by
-   sphinx-quickstart on Sat Mar 23 16:20:16 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to MRIphantom QA Solution's documentation!
 ==================================================
 
+**MRIphantom QA Solution** is a Python software for automatic analysis
+of MRI images used in radiotherapy planning.
+
+This software allows you to quickly and easily analyze MRI images for geometric distortions.
+
+.. note::
+
+   This project is under active development, so be careful when using the program.
+
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
+    user_guide/getting_started
 
 Indices and tables
 ==================
