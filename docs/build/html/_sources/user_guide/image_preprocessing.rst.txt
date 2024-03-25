@@ -4,7 +4,7 @@ Image Preprocessing
 Two main methods of image preprocessing are available.
 
 You can either work with images in their original resolution for quick results,
-or choose preprocessing with interpolation to improve the quality of marker detection even further.
+or choose preprocessing with interpolation to improve the quality of marker detection.
 We select the scale factor by which we upscale initial images.
 This enables the marker detection algorithm to operate at a higher quality, resulting in improved precision and finer outcomes.
 

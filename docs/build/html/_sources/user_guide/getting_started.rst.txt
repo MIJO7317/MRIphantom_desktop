@@ -76,15 +76,13 @@ Run the application by executing the following command:
 Using MRIphantom QA Solution
 -------------------------------
 
-MRIphantom is currently in its early stages of development, offering a straightforward yet promising set of features.
-While it may not be as complex, navigating through its functionalities can still be confusing.
+MRIphantom is currently in its early stages of development.
 Here's how you can get started with MRIphantom QA Solution:
 
 Basics
 _____________________
 
-The software consists of one main window from which you can start analyzing MRI images, and output section allowing you to navigate between various visualization in a simple manner.
-All you need to start using the program is CT and MRI images of Elekta MRI phantom.
+All you need to start is CT and MRI images of Elekta MRI phantom.
 Currently, our solution is compatible with pre-registered images saved in .nii.gz (or .nii) formats.
 We are working on implementing DICOM support soon.
 

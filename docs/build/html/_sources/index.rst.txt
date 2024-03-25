@@ -23,7 +23,6 @@ This software allows you to quickly and easily analyze MRI images for geometric 
     user_guide/image_preprocessing
     user_guide/registration
     user_guide/segmentation
-    user_guide/modules
     user_guide/app_settings
     dev_guide/developer_guide
 

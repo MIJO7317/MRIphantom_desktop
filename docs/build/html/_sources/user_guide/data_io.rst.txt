@@ -9,7 +9,11 @@ Import data
 
 At the moment, the only available format is .nii.gz.
 
+DICOM support is in development.
+
 Export data
 ----------------
 
-You can export reports in .csv format
+You can export reports in .csv format.
+
+.html report is in development.

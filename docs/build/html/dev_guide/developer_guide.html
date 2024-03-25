@@ -40,6 +40,8 @@
 </section>
 <section id="module-MRIphantom_desktop.src.preprocess.unpack">
 <span id="preprocess"></span><h3>preprocess<a class="headerlink" href="#module-MRIphantom_desktop.src.preprocess.unpack" title="Link to this heading">¶</a></h3>
+<p>Module: unpack
+Module for unpacking DICOM files</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti">
 <span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.preprocess.unpack.</span></span><span class="sig-name descname"><span class="pre">dicom_to_nifti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti" title="Link to this definition">¶</a></dt>
@@ -47,49 +49,9 @@
 </dd></dl>
 
 </section>
-<section id="module-MRIphantom_desktop.src.segmentation.data">
-<span id="segmentation"></span><h3>segmentation<a class="headerlink" href="#module-MRIphantom_desktop.src.segmentation.data" title="Link to this heading">¶</a></h3>
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.adjust_data">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">adjust_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_multi_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.adjust_data" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.geneTrainNpy">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">geneTrainNpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_multi_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_as_gray</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_as_gray</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.geneTrainNpy" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.label_visualize">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">label_visualize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_class</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.label_visualize" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.save_result">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">save_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npyfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.save_result" title="Link to this definition">¶</a></dt>
-<dd><p>Save the result</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.test2_dataset_generator">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">test2_dataset_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(512,</span> <span class="pre">512)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_gray</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.test2_dataset_generator" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.test_dataset_generator">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">test_dataset_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(256,</span> <span class="pre">256)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_gray</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.test_dataset_generator" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.data.train_generator">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.data.</span></span><span class="sig-name descname"><span class="pre">train_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aug_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grayscale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grayscale'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_save_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_save_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mask'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_multi_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_to_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(256,</span> <span class="pre">256)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.data.train_generator" title="Link to this definition">¶</a></dt>
-<dd><p>can generate image and mask at the same time
-use the same seed for image_datagen and mask_datagen
-to ensure the transformation for image and mask is the same
-if you want to visualize the results of generator, set save_to_dir = “your path”</p>
-</dd></dl>
-
-<p id="module-MRIphantom_desktop.src.segmentation.process">Module: process</p>
+<section id="module-MRIphantom_desktop.src.segmentation.process">
+<span id="segmentation"></span><h3>segmentation<a class="headerlink" href="#module-MRIphantom_desktop.src.segmentation.process" title="Link to this heading">¶</a></h3>
+<p>Module: process</p>
 <p>This module provides functions for processing images
 and analyzing marker data.</p>
 <dl class="py function">
@@ -176,30 +138,75 @@ including intensity normalization and resizing.</p>
 </section>
 <section id="module-MRIphantom_desktop.src.visualization.histogram">
 <span id="visualization"></span><h3>visualization<a class="headerlink" href="#module-MRIphantom_desktop.src.visualization.histogram" title="Link to this heading">¶</a></h3>
+<p>Module: histogram
+Module for histogram visualization</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.histogram.Histogram">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.histogram.</span></span><span class="sig-name descname"><span class="pre">Histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Гистограмма</span> <span class="pre">отклонений'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.histogram.Histogram" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.histogram.</span></span><span class="sig-name descname"><span class="pre">Histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Гистограмма</span> <span class="pre">отклонений'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.histogram.Histogram" title="Link to this definition">¶</a></dt>
+<dd><p>Histogram widget</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.histogram.Histogram.init_histogram">
+<span class="sig-name descname"><span class="pre">init_histogram</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.histogram.Histogram.init_histogram" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the histogram</p>
+</dd></dl>
 
-<dl class="py class" id="module-MRIphantom_desktop.src.visualization.plots">
+</dd></dl>
+
+<p id="module-MRIphantom_desktop.src.visualization.plots">Module: plots
+Module for plots widget</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.plots.Plots">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.plots.</span></span><span class="sig-name descname"><span class="pre">Plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Графики'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.plots.Plots" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.plots.</span></span><span class="sig-name descname"><span class="pre">Plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Графики'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.plots.Plots" title="Link to this definition">¶</a></dt>
+<dd><p>Plots widget</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.plots.Plots.init_plots">
+<span class="sig-name descname"><span class="pre">init_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.plots.Plots.init_plots" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize plots</p>
+</dd></dl>
 
-<dl class="py class" id="module-MRIphantom_desktop.src.visualization.scatter2d">
+</dd></dl>
+
+<p id="module-MRIphantom_desktop.src.visualization.scatter2d">Module: scatter2d
+Module for 2D scatter viewer</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.scatter2d.Scatter2D">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.scatter2d.</span></span><span class="sig-name descname"><span class="pre">Scatter2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_mri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2D</span> <span class="pre">просмотр</span> <span class="pre">отклонений'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>2D scatter view widget</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d">
+<span class="sig-name descname"><span class="pre">init_scatter2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize 2D scatter viewer</p>
+</dd></dl>
 
-<dl class="py class" id="module-MRIphantom_desktop.src.visualization.scatter3d">
+</dd></dl>
+
+<p id="module-MRIphantom_desktop.src.visualization.scatter3d">Module: scatter3d
+Module for 3D scatter viewer</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.scatter3d.Scatter3D">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.scatter3d.</span></span><span class="sig-name descname"><span class="pre">Scatter3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_mri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3D</span> <span class="pre">просмотр</span> <span class="pre">отклонений'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Class for 3D scatter viewer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.scatter3d.Scatter3D.init_scatter3d">
+<span class="sig-name descname"><span class="pre">init_scatter3d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D.init_scatter3d" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize 3D scatter viewer</p>
+</dd></dl>
 
-<dl class="py class" id="module-MRIphantom_desktop.src.visualization.table">
+</dd></dl>
+
+<p id="module-MRIphantom_desktop.src.visualization.table">Module: table
+Module for table widget</p>
+<dl class="py class">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.table.Table">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.table.</span></span><span class="sig-name descname"><span class="pre">Table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['parameter',</span> <span class="pre">'mean',</span> <span class="pre">'std']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Статистика</span> <span class="pre">отклонений'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.table.Table" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.table.</span></span><span class="sig-name descname"><span class="pre">Table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('parameter',</span> <span class="pre">'mean',</span> <span class="pre">'std')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Статистика'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.table.Table" title="Link to this definition">¶</a></dt>
+<dd><p>Table widget</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.table.Table.init_table">
+<span class="sig-name descname"><span class="pre">init_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.table.Table.init_table" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize table widget</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class" id="module-MRIphantom_desktop.src.visualization.viewer">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.viewer.Viewer">
@@ -210,12 +217,64 @@ including intensity normalization and resizing.</p>
 </section>
 <section id="build-instructions">
 <h2>Build Instructions<a class="headerlink" href="#build-instructions" title="Link to this heading">¶</a></h2>
+<p>To build the MRIphantom application using PyInstaller and an app.spec configuration file, follow these steps:</p>
+<p>Install PyInstaller:
+If you haven’t already installed PyInstaller, you can do so via pip by running the following command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>pyinstaller
+</pre></div>
+</div>
+<p>Use the app.spec Configuration File located in the rood directory of the project:
+The app.spec file is used by PyInstaller to specify how the application should be bundled.</p>
+<p>Run PyInstaller:
+Once you have checked the app.spec file, you can use PyInstaller to build the application by running the following command in your terminal or command prompt:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pyinstaller<span class="w"> </span>app.spec
+</pre></div>
+</div>
+<p>Locate the Executable:
+After PyInstaller completes the build process, you can find the executable file in the dist directory within the project folder.
+The exact location may vary depending on your operating system and the configuration specified in app.spec.</p>
+<p>Test the Application:
+Before using the application, it’s a good idea to test it to ensure that it functions correctly.
+Run the executable file generated by PyInstaller to verify that the application works as expected.</p>
 </section>
 <section id="debugging">
 <h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h2>
+<p>A special Debug Mode is enabled by exporting system variable DEBUG=2:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span><span class="w"> </span><span class="nv">DEBUG</span><span class="o">=</span><span class="m">2</span>
+</pre></div>
+</div>
+<p>Debug Mode disables splash screen and other excessive functionality.</p>
 </section>
 <section id="style-guide">
 <h2>Style Guide<a class="headerlink" href="#style-guide" title="Link to this heading">¶</a></h2>
+<section id="general">
+<h3>General<a class="headerlink" href="#general" title="Link to this heading">¶</a></h3>
+<p>Line length:
+Preferably keep lines shorter than 100 characters.
+Always keep lines shorter than 120 characters.
+Markdown (.md) files are excluded from this restriction, to allow editing the text without worrying about line breaks.</p>
+</section>
+<section id="toolkits-and-libraries">
+<h3>Toolkits and libraries<a class="headerlink" href="#toolkits-and-libraries" title="Link to this heading">¶</a></h3>
+<p>Pylint
+Flake8
+Python style guide</p>
+</section>
+<section id="python">
+<h3>Python<a class="headerlink" href="#python" title="Link to this heading">¶</a></h3>
+<p>Follow the MRIphantom Flake8 configuration.
+Imports:
+- Standard library imports
+- Related third party imports
+- Local library specific imports</p>
+</section>
+<section id="docstrings">
+<h3>Docstrings<a class="headerlink" href="#docstrings" title="Link to this heading">¶</a></h3>
+<p>Include docstrings for each class, method and function.
+Keep the comments up to date.
+Use the # TODO comment to mark code parts that should be revisited.
+Use the # FIXME comment to specify parts of code that should be fixed.</p>
+</section>
 </section>
 </section>
 
@@ -243,7 +302,6 @@ including intensity normalization and resizing.</p>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/image_preprocessing.html">Image Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Image Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/segmentation.html">Image Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/app_settings.html">Application Settings</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-overview">Module Overview</a><ul>
@@ -252,14 +310,7 @@ including intensity normalization and resizing.</p>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti"><code class="docutils literal notranslate"><span class="pre">dicom_to_nifti()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-MRIphantom_desktop.src.segmentation.data">segmentation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.adjust_data"><code class="docutils literal notranslate"><span class="pre">adjust_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.geneTrainNpy"><code class="docutils literal notranslate"><span class="pre">geneTrainNpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.label_visualize"><code class="docutils literal notranslate"><span class="pre">label_visualize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.save_result"><code class="docutils literal notranslate"><span class="pre">save_result()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.test2_dataset_generator"><code class="docutils literal notranslate"><span class="pre">test2_dataset_generator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.test_dataset_generator"><code class="docutils literal notranslate"><span class="pre">test_dataset_generator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.data.train_generator"><code class="docutils literal notranslate"><span class="pre">train_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-MRIphantom_desktop.src.segmentation.process">segmentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.count_difference"><code class="docutils literal notranslate"><span class="pre">count_difference()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.get_coords"><code class="docutils literal notranslate"><span class="pre">get_coords()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.isolate_markers"><code class="docutils literal notranslate"><span class="pre">isolate_markers()</span></code></a></li>
@@ -268,11 +319,26 @@ including intensity normalization and resizing.</p>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-MRIphantom_desktop.src.visualization.histogram">visualization</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.histogram.Histogram"><code class="docutils literal notranslate"><span class="pre">Histogram</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.plots.Plots"><code class="docutils literal notranslate"><span class="pre">Plots</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D"><code class="docutils literal notranslate"><span class="pre">Scatter2D</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D"><code class="docutils literal notranslate"><span class="pre">Scatter3D</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.table.Table"><code class="docutils literal notranslate"><span class="pre">Table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.histogram.Histogram"><code class="docutils literal notranslate"><span class="pre">Histogram</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.histogram.Histogram.init_histogram"><code class="docutils literal notranslate"><span class="pre">Histogram.init_histogram()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.plots.Plots"><code class="docutils literal notranslate"><span class="pre">Plots</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.plots.Plots.init_plots"><code class="docutils literal notranslate"><span class="pre">Plots.init_plots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D"><code class="docutils literal notranslate"><span class="pre">Scatter2D</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d"><code class="docutils literal notranslate"><span class="pre">Scatter2D.init_scatter2d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D"><code class="docutils literal notranslate"><span class="pre">Scatter3D</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D.init_scatter3d"><code class="docutils literal notranslate"><span class="pre">Scatter3D.init_scatter3d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.table.Table"><code class="docutils literal notranslate"><span class="pre">Table</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.table.Table.init_table"><code class="docutils literal notranslate"><span class="pre">Table.init_table()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.visualization.viewer.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
 </ul>
 </li>
@@ -280,7 +346,13 @@ including intensity normalization and resizing.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#build-instructions">Build Instructions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#style-guide">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#style-guide">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#toolkits-and-libraries">Toolkits and libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docstrings">Docstrings</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

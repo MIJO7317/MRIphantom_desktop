@@ -57,14 +57,11 @@ of MRI images used in radiotherapy planning.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/user_interface.html">User Interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_guide/user_interface.html#main-window">Main Window</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#new-study-page">New Study page</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/user_interface.html#main-window">Main Window</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/user_interface.html#visualizations">Visualizations</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#d-viewer">3D viewer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#id1">2D viewer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#histogram">Histogram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#graphs">Graphs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#heatmap">Heatmap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="user_guide/user_interface.html#statistics-table">Statistics Table</a></li>
 </ul>
@@ -87,7 +84,6 @@ of MRI images used in radiotherapy planning.</p>
 <li class="toctree-l2"><a class="reference internal" href="user_guide/segmentation.html#neural-network">Neural Network</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/app_settings.html">Application Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide/developer_guide.html">Developer Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dev_guide/developer_guide.html#module-overview">Module Overview</a><ul>
@@ -96,14 +92,7 @@ of MRI images used in radiotherapy planning.</p>
 <li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti"><code class="docutils literal notranslate"><span class="pre">dicom_to_nifti()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#module-MRIphantom_desktop.src.segmentation.data">segmentation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.adjust_data"><code class="docutils literal notranslate"><span class="pre">adjust_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.geneTrainNpy"><code class="docutils literal notranslate"><span class="pre">geneTrainNpy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.label_visualize"><code class="docutils literal notranslate"><span class="pre">label_visualize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.save_result"><code class="docutils literal notranslate"><span class="pre">save_result()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.test2_dataset_generator"><code class="docutils literal notranslate"><span class="pre">test2_dataset_generator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.test_dataset_generator"><code class="docutils literal notranslate"><span class="pre">test_dataset_generator()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.data.train_generator"><code class="docutils literal notranslate"><span class="pre">train_generator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#module-MRIphantom_desktop.src.segmentation.process">segmentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.process.count_difference"><code class="docutils literal notranslate"><span class="pre">count_difference()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.process.get_coords"><code class="docutils literal notranslate"><span class="pre">get_coords()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.segmentation.process.isolate_markers"><code class="docutils literal notranslate"><span class="pre">isolate_markers()</span></code></a></li>
@@ -112,11 +101,26 @@ of MRI images used in radiotherapy planning.</p>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#module-MRIphantom_desktop.src.visualization.histogram">visualization</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.histogram.Histogram"><code class="docutils literal notranslate"><span class="pre">Histogram</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.plots.Plots"><code class="docutils literal notranslate"><span class="pre">Plots</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D"><code class="docutils literal notranslate"><span class="pre">Scatter2D</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D"><code class="docutils literal notranslate"><span class="pre">Scatter3D</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.table.Table"><code class="docutils literal notranslate"><span class="pre">Table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.histogram.Histogram"><code class="docutils literal notranslate"><span class="pre">Histogram</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.histogram.Histogram.init_histogram"><code class="docutils literal notranslate"><span class="pre">Histogram.init_histogram()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.plots.Plots"><code class="docutils literal notranslate"><span class="pre">Plots</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.plots.Plots.init_plots"><code class="docutils literal notranslate"><span class="pre">Plots.init_plots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D"><code class="docutils literal notranslate"><span class="pre">Scatter2D</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d"><code class="docutils literal notranslate"><span class="pre">Scatter2D.init_scatter2d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D"><code class="docutils literal notranslate"><span class="pre">Scatter3D</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D.init_scatter3d"><code class="docutils literal notranslate"><span class="pre">Scatter3D.init_scatter3d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.table.Table"><code class="docutils literal notranslate"><span class="pre">Table</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.table.Table.init_table"><code class="docutils literal notranslate"><span class="pre">Table.init_table()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="dev_guide/developer_guide.html#MRIphantom_desktop.src.visualization.viewer.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
 </ul>
 </li>
@@ -124,7 +128,13 @@ of MRI images used in radiotherapy planning.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dev_guide/developer_guide.html#build-instructions">Build Instructions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev_guide/developer_guide.html#debugging">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dev_guide/developer_guide.html#style-guide">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_guide/developer_guide.html#style-guide">Style Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#general">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#toolkits-and-libraries">Toolkits and libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#python">Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dev_guide/developer_guide.html#docstrings">Docstrings</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -163,7 +173,6 @@ of MRI images used in radiotherapy planning.</p>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/image_preprocessing.html">Image Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/registration.html">Image Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/segmentation.html">Image Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_guide/modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide/app_settings.html">Application Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev_guide/developer_guide.html">Developer Guide</a></li>
 </ul>
