@@ -68,29 +68,49 @@ def perform_thresholding(img_gen, is_mri=False, interpolation=False):
     """
     if interpolation:
         interpol_coeff = INTERPOLATION_COEF
+        outer_thickness = 25
+        block_size = 31
     else:
         interpol_coeff = 1
+        outer_thickness = 3
+        block_size = 3
 
     # FIXME geometrical model of phantom or autodetect!!!!
     phantom_radius = 144
     for img in img_gen:
         if is_mri:
+            img = img.astype("uint8")
             img = 255 - img
-            min_thresh_val = 215
+            threshold_val = -2  # make it a setting
         else:
-            min_thresh_val = 170  # perfect on test data
-        mask = np.zeros_like(img)
-        img_shape = img.shape
+            img = img.astype("uint8")
+            threshold_val = -2  # make it a setting
+
         mask = cv2.circle(
-            mask,
-            (img_shape[0] // 2, img_shape[1] // 2),
+            np.zeros(shape=img.shape, dtype="uint8"),
+            (img.shape[0] // 2, img.shape[1] // 2),
             phantom_radius * interpol_coeff,
             (255, 255, 255),
             -1,
         )
         image = cv2.bitwise_and(img, mask)
-        _, thresh1 = cv2.threshold(image, min_thresh_val, 255, cv2.THRESH_BINARY)
-        yield thresh1.astype(np.uint8)
+        thresh1 = cv2.adaptiveThreshold(
+            image,
+            255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY,
+            block_size,
+            threshold_val,
+        )
+
+        cnts, _ = cv2.findContours(thresh1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        cnt = max(cnts, key=cv2.contourArea)
+
+        out = np.zeros(thresh1.shape, np.uint8)
+        cv2.drawContours(out, [cnt], -1, 255, outer_thickness)
+        thresh1 = thresh1 - out
+
+        yield thresh1.astype(np.uint16)  # why np.uint16?
 
 
 def isolate_markers(threshold_gen, save_path, interpolation=False):
@@ -111,17 +131,17 @@ def isolate_markers(threshold_gen, save_path, interpolation=False):
     """
 
     if interpolation:
-        min_area = 650
+        min_area = 50
         max_area = 1150
         interpol_coeff = INTERPOLATION_COEF
     else:
-        min_area = 5
-        max_area = 50
+        min_area = 2
+        max_area = 80
         interpol_coeff = 1
 
     marker_coords = []
     for threshold_img in threshold_gen:
-        image = np.array(threshold_img, dtype=np.uint8)
+        image = np.array(threshold_img / 255, dtype=np.uint8)
 
         # Filter out large non-connecting objects
         contours = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -140,6 +160,7 @@ def isolate_markers(threshold_gen, save_path, interpolation=False):
 
         contours = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         contours = contours[0] if len(contours) == 2 else contours[1]
+
         for c in contours:
             area = cv2.contourArea(c)
             if min_area < area < max_area:
