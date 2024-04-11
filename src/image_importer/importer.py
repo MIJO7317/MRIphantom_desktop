@@ -13,10 +13,9 @@ from PySide6.QtWidgets import (
     QApplication,
 )
 
-
-def switch_to_select_screen():
-    widget.setCurrentWidget(widget.importer_select)
-    print("Перешел в Select Screen")
+from UI.import_main_screen import Ui_ImporterMainScreen
+from UI.import_select_screen import Ui_ImporterSelectScreen
+from UI.import_summary_screen import Ui_ImporterSummaryScreen
 
 
 class ImporterMainScreen(QWidget):
@@ -24,98 +23,77 @@ class ImporterMainScreen(QWidget):
     Main Importer widget
     """
 
-    def __init__(self):
+    def __init__(self, window_widget, title="Импорт изображений - MRI QA Solution"):
         super().__init__()
+        self.ui = Ui_ImporterMainScreen()
+        self.ui.setupUi(self)
+        window_widget.setWindowTitle(title)
 
-        # Add table
-        self.layout = QGridLayout(self)
-        self.table = QTableWidget()
-        self.table.setColumnCount(2)
+        # add filetypes to combobox
+        self.ui.dataComboBox.addItem("DICOM")
 
-        # Adjust table to window size
-        h = self.table.horizontalHeader()
-        h.setSectionResizeMode(QHeaderView.Stretch)
-        self.layout.addWidget(self.table)
-
-        # Add export option
-        p = QPushButton("Далее (в Select Screen)")
-        p.clicked.connect(switch_to_select_screen)
-        self.layout.addWidget(p)
-        self.resize(800, 600)
-
-
-def switch_to_summary_screen():
-    widget.setCurrentWidget(widget.importer_summary)
-    print("Перешел в Summary Screen")
+        # connect actions to navigation buttons
+        self.ui.forwardButton.clicked.connect(window_widget.switch_to_select_screen)
+        self.ui.cancelButton.clicked.connect(window_widget.cancel_event)
 
 
 class ImporterSelectScreen(QWidget):
-    def __init__(self, title="Выбрать серию - MRI QA Solution"):
+    def __init__(self, window_widget):
         super().__init__()
 
-        self.setWindowTitle(title)
+        self.ui = Ui_ImporterSelectScreen()
+        self.ui.setupUi(self)
 
-        # Add table
-        self.layout = QGridLayout(self)
-        self.table = QTableWidget()
-        self.table.setColumnCount(2)
-
-        # Adjust table to window size
-        h = self.table.horizontalHeader()
-        h.setSectionResizeMode(QHeaderView.Stretch)
-        self.layout.addWidget(self.table)
-
-        # Add export option
-        p = QPushButton("Далее (в Summary Screen)")
-        p.clicked.connect(switch_to_summary_screen())
-        self.layout.addWidget(p)
-        self.resize(700, 400)
-
-
-def finish_importing():
-    print("success!!!")
+        # connect actions to navigation buttons
+        self.ui.backButton.clicked.connect(window_widget.switch_to_main_screen)
+        self.ui.forwardButton.clicked.connect(window_widget.switch_to_summary_screen)
+        self.ui.cancelButton.clicked.connect(window_widget.cancel_event)
 
 
 class ImporterSummaryScreen(QWidget):
-    def __init__(self, title="Выбрать серию - MRI QA Solution"):
+    def __init__(self, window_widget):
         super().__init__()
+        self.ui = Ui_ImporterSummaryScreen()
+        self.ui.setupUi(self)
 
-        self.setWindowTitle(title)
-
-        # Add table
-        self.layout = QGridLayout(self)
-        self.table = QTableWidget()
-        self.table.setColumnCount(2)
-
-        # Adjust table to window size
-        h = self.table.horizontalHeader()
-        h.setSectionResizeMode(QHeaderView.Stretch)
-        self.layout.addWidget(self.table)
-
-        # Add export option
-        p = QPushButton("Завершить импорт")
-        p.clicked.connect(finish_importing())
-        self.layout.addWidget(p)
-        self.resize(700, 400)
+        # connect actions to navigation buttons
+        self.ui.backButton.clicked.connect(window_widget.switch_to_select_screen)
+        self.ui.importButton.clicked.connect(window_widget.finish_importing)
+        self.ui.cancelButton.clicked.connect(window_widget.cancel_event)
 
 
 class ImporterWindow(QStackedWidget):
-    def __init__(self, title="Имортировать изображение - MRI QA Solution"):
+    def __init__(self):
         super().__init__()
 
-        self.setWindowTitle(title)
-
-        self.importer_main = ImporterMainScreen()
+        self.importer_main = ImporterMainScreen(self)
         self.addWidget(self.importer_main)
 
-        self.importer_select = ImporterSelectScreen()
+        self.importer_select = ImporterSelectScreen(self)
         self.addWidget(self.importer_select)
 
-        self.importer_summary = ImporterSummaryScreen()
+        self.importer_summary = ImporterSummaryScreen(self)
         self.addWidget(self.importer_summary)
 
         self.setCurrentWidget(self.importer_main)
-        self.resize(800, 600)
+
+    def switch_to_main_screen(self):
+        self.setCurrentWidget(self.importer_main)
+        self.setWindowTitle("Импорт изображений - MRI QA Solution")
+
+    def switch_to_select_screen(self):
+        self.setCurrentWidget(widget.importer_select)
+        self.setWindowTitle("Выбрать серию - MRI QA Solution")
+
+    def switch_to_summary_screen(self):
+        self.setCurrentWidget(widget.importer_summary)
+        self.setWindowTitle("Подтвердить импорт - MRI QA Solution")
+
+    def finish_importing(self):
+        self.close()
+
+    def cancel_event(self):
+        self.close()
 
 
 import sys
