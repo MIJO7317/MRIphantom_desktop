@@ -3,8 +3,17 @@ import sys
 import inspect
 import json
 from datetime import datetime
-from PySide6.QtWidgets import (QMainWindow, QApplication, QVBoxLayout, QFileDialog)
-from PySide6.QtCore import Slot, QEvent, Qt, Signal, QRunnable, QThreadPool, QObject
+from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QFileDialog
+from PySide6.QtCore import (
+    Slot,
+    QEvent,
+    Qt,
+    Signal,
+    QRunnable,
+    QThreadPool,
+    QObject,
+    QEventLoop,
+)
 from PySide6 import QtCore
 
 # TODO join visualizations into separate class
@@ -16,12 +25,24 @@ from src.visualization.table import Table
 
 from UI.main_window import Ui_MainWindow
 from src.spinner.spinner import Spinner
-from src.segmentation.process import (slice_img_generator, perform_thresholding,
-                                      isolate_markers, get_coords,
-                                      count_difference)
+from src.segmentation.process import (
+    slice_img_generator,
+    perform_thresholding,
+    isolate_markers,
+    get_coords,
+    count_difference,
+)
+from src.preprocess.registration import rigid_reg
 
-workdir = os.path.realpath(os.path.abspath(os.path.join(
-    os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../")))
+from src.image_importer.importer import ImporterWindow
+
+workdir = os.path.realpath(
+    os.path.abspath(
+        os.path.join(
+            os.path.split(inspect.getfile(inspect.currentframe()))[0], "../../"
+        )
+    )
+)
 
 
 class Worker(QRunnable):
@@ -39,6 +60,7 @@ class Worker(QRunnable):
     - __init__: Initializes the Worker object.
     - run: Runs the function in a separate thread.
     """
+
     def __init__(self, fn):
         super().__init__()
         self.signaller = Signaller()
@@ -66,6 +88,7 @@ class Signaller(QObject):
     - started: Signal emitted when a task is started.
     - finished: Signal emitted when a task is finished.
     """
+
     value_updated = Signal(int)
     interrupt = Signal(bool)
     started = Signal()
@@ -123,9 +146,15 @@ class EntranceWindow(QMainWindow):
 
         self.ui.fixedimgEdit.setPlaceholderText("Выберите папку с КТ (Fixed)")
         self.ui.movingimgEdit.setPlaceholderText("Выберите папку с МРТ (Moving)")
-        self.ui.fixedimgEdit.mousePressEvent = lambda event: self.openFixedImageDirectoryDialog()
-        self.ui.movingimgEdit.mousePressEvent = lambda event: self.openMovingImageDirectoryDialog()
-        self.ui.interpolateButton.stateChanged.connect(self.interpolationButtonStateChanged)
+        self.ui.fixedimgEdit.mousePressEvent = (
+            lambda event: self.openFixedImageDirectoryDialog()
+        )
+        self.ui.movingimgEdit.mousePressEvent = (
+            lambda event: self.openMovingImageDirectoryDialog()
+        )
+        self.ui.interpolateButton.stateChanged.connect(
+            self.interpolationButtonStateChanged
+        )
         self.ui.geometryButton.stateChanged.connect(self.geometryButtonStateChanged)
 
         self.fixed_image_path = None
@@ -158,13 +187,19 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
-        options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-        directory = QFileDialog.getOpenFileName(self, "Выбрать изображение КТ (Fixed)", "",
-                                                options=options)
+        fixedImageImporter = ImporterWindow()
+        fixedImageImporter.setAttribute(Qt.WA_DeleteOnClose)
+        fixedImageImporter.show()
+
+        loop = QEventLoop()
+        fixedImageImporter.destroyed.connect(loop.quit)
+        loop.exec()
+
+        directory = os.path.join(fixedImageImporter.directory_path, "image.nii.gz")
+
         if directory:
-            self.ui.fixedimgEdit.setText(directory[0])
-            self.fixed_image_path = directory[0]
+            self.ui.fixedimgEdit.setText(directory)
+            self.fixed_image_path = directory
 
     def openMovingImageDirectoryDialog(self):
         """
@@ -182,15 +217,19 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
-        options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-        directory = QFileDialog.getOpenFileName(self,
-                                                "Выбрать изображение МРТ (Moving)",
-                                                "",
-                                                options=options)
-        if directory[0]:
-            self.ui.movingimgEdit.setText(directory[0])
-            self.moving_image_path = directory[0]
+        movingImageImporter = ImporterWindow()
+        movingImageImporter.setAttribute(Qt.WA_DeleteOnClose)
+        movingImageImporter.show()
+
+        loop = QEventLoop()
+        movingImageImporter.destroyed.connect(loop.quit)
+        loop.exec()
+
+        directory = os.path.join(movingImageImporter.directory_path, "image.nii.gz")
+
+        if directory:
+            self.ui.movingimgEdit.setText(directory)
+            self.moving_image_path = directory
 
     @Slot()
     def analyze(self):
@@ -210,26 +249,35 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
+        # corregistrate
+        rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
+        self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
+        self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
+
         # create generators for original images
         ct_slice_gen = slice_img_generator(self.fixed_image_path, self.is_interpolated)
-        mri_slice_gen = slice_img_generator(self.moving_image_path, self.is_interpolated)
+        mri_slice_gen = slice_img_generator(
+            self.moving_image_path, self.is_interpolated
+        )
 
         # threshold segmentation
         ct_thresh_gen = perform_thresholding(ct_slice_gen, False, self.is_interpolated)
         mri_thresh_gen = perform_thresholding(mri_slice_gen, True, self.is_interpolated)
 
-        ct_pickle_path = os.path.join(self.write_path, 'markers_CT.pickle')
-        mri_pickle_path = os.path.join(self.write_path, 'markers_MRI.pickle')
+        ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
+        mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
         # detect markers and save as .pickle
         isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
         isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
         # perform marker analysis
-        _, self.differences, self.slice_differences = count_difference(ct_pickle_path,
-                                                                       mri_pickle_path,
-                                                                       self.write_path)
+        _, self.differences, self.slice_differences = count_difference(
+            ct_pickle_path, mri_pickle_path, self.write_path
+        )
 
-        self.coords_ct = get_coords(os.path.join(self.write_path, 'markers_CT.pickle'))
-        self.coords_mri = get_coords(os.path.join(self.write_path, 'markers_MRI.pickle'))
+        self.coords_ct = get_coords(os.path.join(self.write_path, "markers_CT.pickle"))
+        self.coords_mri = get_coords(
+            os.path.join(self.write_path, "markers_MRI.pickle")
+        )
 
     @Slot()
     def finishAnalysis(self):
@@ -243,10 +291,14 @@ class EntranceWindow(QMainWindow):
         None
         """
         self.spinner.close()
-        stats_path = os.path.join(workdir, 'studies', self.study_name, 'difference_stats.json')
-        with open(stats_path, 'r') as fp:
+        stats_path = os.path.join(
+            workdir, "studies", self.study_name, "difference_stats.json"
+        )
+        with open(stats_path, "r") as fp:
             data = json.load(fp)
-        self.params_table = Table(data, headers=['Parameter', 'Value'], title='Total stats')
+        self.params_table = Table(
+            data, headers=["Parameter", "Value"], title="Total stats"
+        )
         self.params_table.show()
         self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)
         self.scatter3d.show()
@@ -260,14 +312,16 @@ class EntranceWindow(QMainWindow):
     @Slot()
     def analyzeImages(self):
         self.study_name = self.ui.titleEdit.text()
-        (self.output_dirname,
-         self.filename_ct,
-         self.filename_mri) = self.createFilename(self.study_name)
-        output_dirname = os.path.join(workdir, 'studies', self.output_dirname)
+        (self.output_dirname, self.filename_ct, self.filename_mri) = (
+            self.createFilename(self.study_name)
+        )
+        output_dirname = os.path.join(workdir, "studies", self.output_dirname)
         self.output_path = os.path.realpath(output_dirname).replace("\\", "/")
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
-        write_path = os.path.realpath(os.path.join(workdir, f'studies/{self.output_dirname}'))
+        write_path = os.path.realpath(
+            os.path.join(workdir, f"studies/{self.output_dirname}")
+        )
         write_path = write_path.replace("\\", "/")
         self.write_path = write_path
 
@@ -310,39 +364,48 @@ class EntranceWindow(QMainWindow):
         prefix = f'{title if title else ""}'
         prefix_ct = f'CT_{title if title else ""}'
         prefix_mri = f'MRI_{title if title else ""}'
-        extension = ''
+        extension = ""
         file_name_format = "{:s}-{:%d-%m-%Y}{:s}"
         date = datetime.now()
-        return (prefix, file_name_format.format(prefix_ct, date, extension),
-                file_name_format.format(prefix_mri, date,
-                                        extension))
+        return (
+            prefix,
+            file_name_format.format(prefix_ct, date, extension),
+            file_name_format.format(prefix_mri, date, extension),
+        )
 
     @Slot()
     def openStudy(self):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
 
-        study_path = QFileDialog.getExistingDirectory(self,
-                                                      "Выбрать исследование",
-                                                      f"{workdir}/studies",
-                                                      options=options)
+        study_path = QFileDialog.getExistingDirectory(
+            self, "Выбрать исследование", f"{workdir}/studies", options=options
+        )
         study_title = study_path.split("/")[-1]
 
-        ct_file = [f for f in os.listdir(study_path)
-                   if os.path.isfile(os.path.join(study_path, f))
-                   and f.startswith('CT')
-                   and f.endswith('.nii.gz')]
-        mri_file = [f for f in os.listdir(study_path)
-                    if os.path.isfile(os.path.join(study_path, f))
-                    and f.startswith('MRI')
-                    and f.endswith('.nii.gz')]
+        ct_file = [
+            f
+            for f in os.listdir(study_path)
+            if os.path.isfile(os.path.join(study_path, f))
+            and f.startswith("CT")
+            and f.endswith(".nii.gz")
+        ]
+        mri_file = [
+            f
+            for f in os.listdir(study_path)
+            if os.path.isfile(os.path.join(study_path, f))
+            and f.startswith("MRI")
+            and f.endswith(".nii.gz")
+        ]
 
-        self.context.update({
-            "study_path": study_path,
-            "study_title": study_title,
-            "CT_filename": ct_file[0],
-            "MRI_filename": mri_file[0]
-        })
+        self.context.update(
+            {
+                "study_path": study_path,
+                "study_title": study_title,
+                "CT_filename": ct_file[0],
+                "MRI_filename": mri_file[0],
+            }
+        )
 
     def eventFilter(self, source, event):
         """
@@ -383,9 +446,9 @@ class EntranceWindow(QMainWindow):
         The result of the event handling.
         """
         if event.type() == QEvent.KeyPress and event.key() in (
-                Qt.Key_Enter,
-                Qt.Key_Return,
-                Qt.Key_Down
+            Qt.Key_Enter,
+            Qt.Key_Return,
+            Qt.Key_Down,
         ):
             self.focusNextPrevChild(True)
         if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Up:
