@@ -304,8 +304,8 @@ class EntranceWindow(QMainWindow):
         self.scatter3d.show()
         self.scatter2d = Scatter2D(self.coords_ct, self.coords_mri)
         self.scatter2d.show()
-        self.histogram = Histogram(self.differences)
-        self.histogram.show()
+        # self.histogram = Histogram(self.differences)
+        # self.histogram.show()
         self.plots = Plots(self.slice_differences)
         self.plots.show()
 

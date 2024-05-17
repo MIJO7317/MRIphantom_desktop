@@ -192,7 +192,7 @@ def count_difference(ct_path, mri_path, save_path):
     This function calculates differences between marker coordinates from CT and MRI images.
     It computes various statistics such as mean difference,
     minimum difference, maximum difference, standard deviation,
-    and the number of differences exceeding certain thresholds (0.5 mm and 1 mm).
+    and the percentage of differences exceeding certain thresholds (0.5 mm and 1 mm).
     The results are saved in JSON files for overall statistics and per-slice statistics.
 
     Parameters:
@@ -221,7 +221,11 @@ def count_difference(ct_path, mri_path, save_path):
         slice_distances[f"{slice_num}"] = {}
         slice_distances[f"{slice_num}"]["distances"] = []
         for point_ct in coords_ct[slice_num]:
+            if point_ct[0] == 100 and point_ct[1] == 100:
+                continue  # Skip points where x=100 and y=100
             for point_mri in coords_mri[slice_num]:
+                if point_mri[0] == 100 and point_mri[1] == 100:
+                    continue  # Skip points where x=100 and y=100
                 distance = math.sqrt(
                     (point_ct[0] - point_mri[0]) ** 2
                     + (point_ct[1] - point_mri[1]) ** 2
@@ -230,54 +234,61 @@ def count_difference(ct_path, mri_path, save_path):
                     slice_distances[f"{slice_num}"]["distances"].append(distance)
                     distances.append(distance)
 
+    # Filter distances to keep only values <= 5 mm
+    distances = np.array(distances)
+    filtered_distances = distances[distances <= 5]
+
     for key in slice_distances:
         distances_array = np.array(slice_distances[key]["distances"])
+        distances_array = distances_array[distances_array <= 5]  # Filter per-slice distances
+
         if len(distances_array) > 0:
-            slice_distances[key]["Mean difference, mm"] = float(
-                np.mean(distances_array)
-            )
+            slice_distances[key]["Mean difference, mm"] = float(np.mean(distances_array))
             non_zero = distances_array[np.nonzero(distances_array)]
             if len(non_zero) > 0:
-                slice_distances[key]["Min difference, mm"] = float(
-                    np.min(distances_array[np.nonzero(distances_array)])
-                )
+                slice_distances[key]["Min difference, mm"] = float(np.min(non_zero))
             else:
                 slice_distances[key]["Min difference, mm"] = float(0)
             slice_distances[key]["Max difference, mm"] = float(np.max(distances_array))
             slice_distances[key]["Std, mm"] = float(np.std(distances_array))
-            slice_distances[key]["Number of differences > 0.5 mm"] = int(
-                (distances_array > 0.5).sum()
-            )
-            slice_distances[key]["Number of differences > 1 mm"] = int(
-                (distances_array > 1).sum()
-            )
+            slice_distances[key]["Percentage of differences > 0.5 mm"] = float((distances_array > 0.5).sum() / len(distances_array) * 100)
+            slice_distances[key]["Percentage of differences > 1 mm"] = float((distances_array > 1).sum() / len(distances_array) * 100)
         else:
             slice_distances[key]["Mean difference, mm"] = float(0)
             slice_distances[key]["Min difference, mm"] = float(0)
             slice_distances[key]["Max difference, mm"] = float(0)
             slice_distances[key]["Std, mm"] = float(0)
-            slice_distances[key]["Number of differences > 0.5 mm"] = int(0)
-            slice_distances[key]["Number of differences > 1 mm"] = int(0)
+            slice_distances[key]["Percentage of differences > 0.5 mm"] = float(0)
+            slice_distances[key]["Percentage of differences > 1 mm"] = float(0)
 
-    distances = np.array(distances)
-    mean_distance = np.mean(distances)
-    non_zero = distances[np.nonzero(distances)]
-    if len(non_zero) > 0:
-        min_distance = np.min(distances[np.nonzero(distances)])
+    if len(filtered_distances) > 0:
+        mean_distance = np.mean(filtered_distances)
+        non_zero = filtered_distances[np.nonzero(filtered_distances)]
+        if len(non_zero) > 0:
+            min_distance = np.min(non_zero)
+        else:
+            min_distance = float(0)
+        max_distance = np.max(filtered_distances)
+        std_distance = np.std(filtered_distances)
+        num_05 = (filtered_distances > 0.5).sum()
+        num_1 = (filtered_distances > 1).sum()
+        percentage_05 = (num_05 / len(filtered_distances)) * 100
+        percentage_1 = (num_1 / len(filtered_distances)) * 100
     else:
+        mean_distance = float(0)
         min_distance = float(0)
-    max_distance = np.max(distances)
-    std_distance = np.std(distances)
-    num_05 = (distances > 0.5).sum()
-    num_1 = (distances > 1).sum()
+        max_distance = float(0)
+        std_distance = float(0)
+        percentage_05 = float(0)
+        percentage_1 = float(0)
 
     params = {
         "Mean difference, mm": np.round(float(mean_distance), 2),
         "Min difference, mm": np.round(float(min_distance), 2),
         "Max difference, mm": np.round(float(max_distance), 2),
         "Std, mm": np.round(float(std_distance), 2),
-        "Number of differences > 0.5 mm": int(num_05),
-        "Number of differences > 1 mm": int(num_1),
+        "Percentage of differences > 0.5 mm": np.round(float(percentage_05), 2),
+        "Percentage of differences > 1 mm": np.round(float(percentage_1), 2),
     }
 
     with open(os.path.join(save_path, "difference_stats.json"), "w") as fp:
@@ -311,12 +322,12 @@ def get_coords(markers_path):
     shape_coords = coords_array.shape
     list_of_points = []
     for z_slice in range(shape_coords[0]):
-        for num_of_point in range(shape_coords[1]):
-            list_of_points.append(
-                [
-                    coords_array[z_slice, num_of_point, 0],
-                    coords_array[z_slice, num_of_point, 1],
-                    z_slice,
-                ]
-            )
+        if 35 <= z_slice <= 105:  # Only include layers z from 35 to 105
+            for num_of_point in range(shape_coords[1]):
+                x = coords_array[z_slice, num_of_point, 0]
+                y = coords_array[z_slice, num_of_point, 1]
+                if x == 100 and y == 100:  # Skip points where x=100 and y=100
+                    continue
+                list_of_points.append([x, y, z_slice])
+
     return list_of_points
