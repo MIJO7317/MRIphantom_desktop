@@ -162,7 +162,7 @@ class EntranceWindow(QMainWindow):
         self.ct_img = None
         self.mri_img = None
 
-        self.ui.phantomTypeCombo.addItem("Elekta MR phantom (Axial Grid)")
+        self.ui.phantomTypeCombo.addItem("Elekta (Axial Grid)")
 
         self.ui.analyzeButton.setCheckable(True)
         self.ui.analyzeButton.toggled.connect(self.analyzeImages)

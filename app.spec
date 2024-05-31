@@ -1,9 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
+
 block_cipher = None
 excluded_modules = ['torch.distributions']
-datas=[('studies', 'studies'), ('templates', 'templates'), ('pdfs', 'pdfs'), ('assets', 'assets'), ('UI', 'UI')]
+datas=[('studies', 'studies'), ('assets', 'assets'), ('UI', 'UI')]
 datas += collect_data_files('timm', include_py_files=True)
 
 a = Analysis(

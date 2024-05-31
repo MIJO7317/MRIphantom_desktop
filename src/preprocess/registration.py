@@ -24,3 +24,31 @@ def rigid_reg(fixed: str, moving: str, save_path: str):
     nib.save(ants_fixed, os.path.join(save_path, 'CT_fixed.nii.gz'))
 
     return ants_warped
+
+
+def apply_manual_shift(image: ants.ANTsImage, manual_shift=(0, 0, 5)):
+    """
+    Apply a manual shift to an image.
+
+    Args:
+        image: ants.ANTsImage, the image to be shifted.
+        manual_shift: tuple, the manual shift to be applied in the (x, y, z) directions.
+
+    Returns:
+        ants.ANTsImage: the shifted image.
+    """
+    # Convert manual shift to a transformation matrix
+    manual_shift_transform = ants.create_ants_transform(
+        dimension=image.dimension,
+        transform_type="Euler3DTransform",
+        translation=manual_shift
+    )
+
+    # Apply the manual shift to the image
+    shifted_image = ants.apply_ants_transform(
+        transform=manual_shift_transform,
+        moving=image,
+        data_type="image"
+    )
+
+    return shifted_image
