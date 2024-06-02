@@ -55,12 +55,12 @@ class Plots(QWidget):
                                  name='Среднеквадратичное отклонение',
                                  mode='markers'), row=2, col=1)
         fig.add_trace(go.Scatter(x=df.index,
-                                 y=df['Number of differences > 0.5 mm'],
-                                 name='Число отклонений > 0.5 мм',
+                                 y=df['Percentage of differences > 0.5 mm'],
+                                 name='Процент отклонений > 0.5 мм',
                                  mode='markers'), row=2, col=2)
         fig.add_trace(go.Scatter(x=df.index,
-                                 y=df['Number of differences > 1 mm'],
-                                 name='Число отклонений > 1 мм',
+                                 y=df['Percentage of differences > 1 mm'],
+                                 name='Процент отклонений > 1 мм',
                                  mode='markers'), row=2, col=3)
         fig.update_xaxes(title_text='Номер среза')
         fig.update_yaxes(title_text='Величина отклонения, мм')

@@ -31,8 +31,9 @@ from src.segmentation.process import (
     isolate_markers,
     get_coords,
     count_difference,
+    count_difference_geometry
 )
-from src.preprocess.registration import rigid_reg
+from src.preprocess.registration import rigid_reg, apply_manual_shift
 
 from src.image_importer.importer import ImporterWindow
 
@@ -250,34 +251,68 @@ class EntranceWindow(QMainWindow):
         None
         """
         # corregistrate
-        rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
-        self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
-        self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
+        if self.is_geometric is False:
+            rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
+            apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
 
-        # create generators for original images
-        ct_slice_gen = slice_img_generator(self.fixed_image_path, self.is_interpolated)
-        mri_slice_gen = slice_img_generator(
-            self.moving_image_path, self.is_interpolated
-        )
+            self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
+            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
 
-        # threshold segmentation
-        ct_thresh_gen = perform_thresholding(ct_slice_gen, False, self.is_interpolated)
-        mri_thresh_gen = perform_thresholding(mri_slice_gen, True, self.is_interpolated)
+            # create generators for original images
+            ct_slice_gen = slice_img_generator(self.fixed_image_path, self.is_interpolated)
+            mri_slice_gen = slice_img_generator(
+                self.moving_image_path, self.is_interpolated
+            )
 
-        ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
-        mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
-        # detect markers and save as .pickle
-        isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
-        isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
-        # perform marker analysis
-        _, self.differences, self.slice_differences = count_difference(
-            ct_pickle_path, mri_pickle_path, self.write_path
-        )
+            # threshold segmentation
+            ct_thresh_gen = perform_thresholding(ct_slice_gen, False, self.is_interpolated)
+            mri_thresh_gen = perform_thresholding(mri_slice_gen, True, self.is_interpolated)
 
-        self.coords_ct = get_coords(os.path.join(self.write_path, "markers_CT.pickle"))
-        self.coords_mri = get_coords(
-            os.path.join(self.write_path, "markers_MRI.pickle")
-        )
+            ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
+            mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
+            # detect markers and save as .pickle
+            isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
+            isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
+            # perform marker analysis
+            _, self.differences, self.slice_differences = count_difference(
+                ct_pickle_path, mri_pickle_path, self.write_path
+            )
+
+            self.coords_ct = get_coords(os.path.join(self.write_path, "markers_CT.pickle"))
+            self.coords_mri = get_coords(
+                os.path.join(self.write_path, "markers_MRI.pickle")
+            )
+        else:
+            rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
+            # apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
+
+            self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
+            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
+
+            # create generators for original images
+            ct_slice_gen = slice_img_generator(self.fixed_image_path, self.is_interpolated)
+            mri_slice_gen = slice_img_generator(
+                self.moving_image_path, self.is_interpolated
+            )
+
+            # threshold segmentation
+            ct_thresh_gen = perform_thresholding(ct_slice_gen, False, self.is_interpolated)
+            mri_thresh_gen = perform_thresholding(mri_slice_gen, True, self.is_interpolated)
+
+            ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
+            mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
+            # detect markers and save as .pickle
+            isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
+            isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
+            # perform marker analysis
+            _, self.differences, self.slice_differences = count_difference_geometry(
+                ct_pickle_path, mri_pickle_path, self.write_path
+            )
+
+            self.coords_ct = get_coords(os.path.join(self.write_path, "markers_CT.pickle"))
+            self.coords_mri = get_coords(
+                os.path.join(self.write_path, "markers_MRI.pickle")
+            )
 
     @Slot()
     def finishAnalysis(self):

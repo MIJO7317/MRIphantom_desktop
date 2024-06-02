@@ -26,7 +26,7 @@ def rigid_reg(fixed: str, moving: str, save_path: str):
     return ants_warped
 
 
-def apply_manual_shift(image: ants.ANTsImage, manual_shift=(0, 0, 5)):
+def apply_manual_shift(fixed: str, moving: str, save_path: str,  manual_shift=(0, 0, -10)):
     """
     Apply a manual shift to an image.
 
@@ -37,9 +37,13 @@ def apply_manual_shift(image: ants.ANTsImage, manual_shift=(0, 0, 5)):
     Returns:
         ants.ANTsImage: the shifted image.
     """
+
+    ants_moving = ants.image_read(moving)
+    ants_fixed = ants.image_read(fixed)
+
     # Convert manual shift to a transformation matrix
     manual_shift_transform = ants.create_ants_transform(
-        dimension=image.dimension,
+        dimension=ants_moving.dimension,
         transform_type="Euler3DTransform",
         translation=manual_shift
     )
@@ -47,8 +51,12 @@ def apply_manual_shift(image: ants.ANTsImage, manual_shift=(0, 0, 5)):
     # Apply the manual shift to the image
     shifted_image = ants.apply_ants_transform(
         transform=manual_shift_transform,
-        moving=image,
+        data=ants_moving,
+        reference=ants_fixed,
         data_type="image"
     )
+
+    nib.save(shifted_image, os.path.join(save_path, 'MRI_warped.nii.gz'))
+    # nib.save(nib.Nifti1Image(shifted_image.numpy(), ants_moving.affine), os.path.join(save_path, 'MRI_warped.nii.gz'))
 
     return shifted_image

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'load_splash_screen.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.1
+## Created by: Qt User Interface Compiler version 6.6.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -40,7 +40,7 @@ class Ui_SplashScreen(object):
         self.dropShadowFrame.setFrameShadow(QFrame.Raised)
         self.label_title = QLabel(self.dropShadowFrame)
         self.label_title.setObjectName(u"label_title")
-        self.label_title.setGeometry(QRect(30, 60, 431, 81))
+        self.label_title.setGeometry(QRect(20, 60, 431, 81))
         palette = QPalette()
         brush = QBrush(QColor(153, 204, 255, 255))
         brush.setStyle(Qt.SolidPattern)
@@ -149,7 +149,7 @@ class Ui_SplashScreen(object):
         self.label_title.setAlignment(Qt.AlignCenter)
         self.label_description = QLabel(self.dropShadowFrame)
         self.label_description.setObjectName(u"label_description")
-        self.label_description.setGeometry(QRect(50, 130, 241, 51))
+        self.label_description.setGeometry(QRect(50, 130, 321, 61))
         font1 = QFont()
         font1.setPointSize(14)
         self.label_description.setFont(font1)
@@ -221,17 +221,18 @@ class Ui_SplashScreen(object):
 
     def retranslateUi(self, SplashScreen):
         SplashScreen.setWindowTitle(QCoreApplication.translate("SplashScreen", u"MainWindow", None))
-        self.label_title.setText(QCoreApplication.translate("SplashScreen", u"<html><head/><body><p><span style=\" font-size:72pt; font-weight:700;\">MRI</span><span style=\" font-size:72pt;\">phantom</span></p></body></html>", None))
+        self.label_title.setText(QCoreApplication.translate("SplashScreen", u"<html><head/><body><p><span style=\" font-size:48pt; font-weight:700;\">MRI</span><span style=\" font-size:48pt;\">phantom</span></p></body></html>", None))
         self.label_description.setText(QCoreApplication.translate("SplashScreen", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "hr { height: 1px; border-width: 0; }\n"
 "li.unchecked::marker { content: \"\\2610\"; }\n"
 "li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:'.AppleSystemUIFont'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\">\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u043d\u043e-\u0430\u043f\u043f\u0430\u0440\u0430\u0442\u043d\u044b\u0439 \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0441</p>\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\">\u0434\u043b\u044f \u0430\u043d\u0430\u043b\u0438\u0437"
-                        "\u0430 \u0438\u0441\u043a\u0430\u0436\u0435\u043d\u0438\u0439 \u041c\u0420\u0422<br /></p></body></html>", None))
+"</style></head><body style=\" font-family:'Segoe UI'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\"><span style=\" font-family:'.AppleSystemUIFont';\">\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u043d\u043e-\u0430\u043f\u043f\u0430\u0440\u0430\u0442\u043d\u044b\u0439 \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0441</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; l"
+                        "ine-height:10%; font-family:'.AppleSystemUIFont';\"><br /></p>\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\"><span style=\" font-family:'.AppleSystemUIFont';\">\u0434\u043b\u044f \u0430\u043d\u0430\u043b\u0438\u0437\u0430 \u0438\u0441\u043a\u0430\u0436\u0435\u043d\u0438\u0439 \u041c\u0420\u0422<br /></span></p></body></html>", None))
         self.label_loading.setText(QCoreApplication.translate("SplashScreen", u"\u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0430...", None))
         self.label_credits.setText(QCoreApplication.translate("SplashScreen", u"<html><head/><body><p><span style=\" font-size:12pt;\">\u0421\u043e\u0437\u0434\u0430\u043d\u043e \u043f\u0440\u0438 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0435 \u0433\u0440\u0430\u043d\u0442\u0430 \u211674534 </span><span style=\" font-size:12pt; font-weight:700;\">\u0424\u043e\u043d\u0434\u0430 \u0421\u043e\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u0418\u043d\u043d\u043e\u0432\u0430\u0446\u0438\u044f\u043c</span></p></body></html>", None))
         self.label_description_2.setText(QCoreApplication.translate("SplashScreen", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -240,8 +241,10 @@ class Ui_SplashScreen(object):
 "hr { height: 1px; border-width: 0; }\n"
 "li.unchecked::marker { content: \"\\2610\"; }\n"
 "li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:'.AppleSystemUIFont'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\">v. 0.1 2024</p>\n"
-"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\"><br /></p></body></html>", None))
+"</style></head><body style=\" font-family:'Segoe UI'; font-size:14pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%;\"><span style=\" font-family:'.AppleSystemUIFont';\">v. 0.1.1</span></p>\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%; font-family:'.AppleSystemUIFont';\"><br /></p>\n"
+"<p align=\"center\" style=\"-qt-paragraph-type:empty; margin-"
+                        "top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:10%; font-family:'.AppleSystemUIFont';\"><br /></p></body></html>", None))
     # retranslateUi
 
