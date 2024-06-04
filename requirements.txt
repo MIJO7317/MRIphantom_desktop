@@ -20,7 +20,8 @@ six
 tenacity
 tifffile
 tzdata
-
 vtk
 matplotlib
 pydicom
+antspyx
+dcm2niix
