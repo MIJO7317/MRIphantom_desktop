@@ -29,8 +29,7 @@ class Plots(QWidget):
         Initialize plots
         """
         df = pd.DataFrame.from_dict(self.data_per_slice).T
-        # print(df)
-        df = df.iloc[35:110]
+        df = df.iloc[41:107]
         print(df)
         fig = make_subplots(rows=2, cols=2, start_cell="top-left",
                             subplot_titles=(

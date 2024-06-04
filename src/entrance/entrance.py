@@ -31,7 +31,7 @@ from src.segmentation.process import (
     isolate_markers,
     get_coords,
     count_difference,
-    count_difference_geometry
+    count_difference_geometry,
 )
 from src.preprocess.registration import rigid_reg, apply_manual_shift
 
@@ -170,6 +170,8 @@ class EntranceWindow(QMainWindow):
         self.analyze_thread_pool = QThreadPool()
         self.registration_thread_pool = QThreadPool()
 
+        self.ui.statusLabel.setText("Готов к работе")
+
         self.spinner = Spinner()
         self.thread_pool = QThreadPool()
 
@@ -252,37 +254,56 @@ class EntranceWindow(QMainWindow):
         """
         # corregistrate
         if self.is_geometric is False:
+            self.ui.statusLabel.setText("Выполняется совмещение МРТ и КТ")
             rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
             # apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
 
             self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
             self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
 
+            self.ui.statusLabel.setText("Выполняется распаковка КТ изображений")
             # create generators for original images
-            ct_slice_gen = slice_img_generator(self.fixed_image_path, self.is_interpolated)
+            ct_slice_gen = slice_img_generator(
+                self.fixed_image_path, self.is_interpolated
+            )
+            self.ui.statusLabel.setText("Выполняется распаковка МРТ изображений")
             mri_slice_gen = slice_img_generator(
                 self.moving_image_path, self.is_interpolated
             )
 
             # threshold segmentation
-            ct_thresh_gen = perform_thresholding(ct_slice_gen, False, self.is_interpolated)
-            mri_thresh_gen = perform_thresholding(mri_slice_gen, True, self.is_interpolated)
+            self.ui.statusLabel.setText("Выполняется сегментация КТ изображений")
+            ct_thresh_gen = perform_thresholding(
+                ct_slice_gen, False, self.is_interpolated
+            )
+            self.ui.statusLabel.setText("Выполняется сегментация МРТ изображений")
+            mri_thresh_gen = perform_thresholding(
+                mri_slice_gen, True, self.is_interpolated
+            )
 
             ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
             mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
             # detect markers and save as .pickle
+            self.ui.statusLabel.setText("Выполняется детекция маркеров на КТ")
             isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
+            self.ui.statusLabel.setText("Выполняется детекция маркеров на МРТ")
             isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
             # perform marker analysis
+            self.ui.statusLabel.setText("Выполняется расчет отклонений")
             _, self.differences, self.slice_differences = count_difference(
                 ct_pickle_path, mri_pickle_path, self.write_path
             )
 
-            self.coords_ct = get_coords(os.path.join(self.write_path, "markers_CT.pickle"))
+            self.coords_ct = get_coords(
+                os.path.join(self.write_path, "markers_CT.pickle")
+            )
             self.coords_mri = get_coords(
                 os.path.join(self.write_path, "markers_MRI.pickle")
             )
+            self.ui.statusLabel.setText("Расчет выполнен")
+
         else:
+            self.ui.statusLabel.setText("Выполняется распаковка и предобработка МРТ")
             rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
             # apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
 
@@ -290,29 +311,42 @@ class EntranceWindow(QMainWindow):
             self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
 
             # create generators for original images
-            ct_slice_gen = slice_img_generator(self.fixed_image_path, self.is_interpolated)
+            ct_slice_gen = slice_img_generator(
+                self.fixed_image_path, self.is_interpolated
+            )
             mri_slice_gen = slice_img_generator(
                 self.moving_image_path, self.is_interpolated
             )
 
             # threshold segmentation
-            ct_thresh_gen = perform_thresholding(ct_slice_gen, False, self.is_interpolated)
-            mri_thresh_gen = perform_thresholding(mri_slice_gen, True, self.is_interpolated)
+            self.ui.statusLabel.setText("Выполняется сегментация МРТ")
+            ct_thresh_gen = perform_thresholding(
+                ct_slice_gen, False, self.is_interpolated
+            )
+            mri_thresh_gen = perform_thresholding(
+                mri_slice_gen, True, self.is_interpolated
+            )
 
             ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
             mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
             # detect markers and save as .pickle
+            self.ui.statusLabel.setText("Выполняется детекция маркеров на МРТ")
             isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
             isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
             # perform marker analysis
+            self.ui.statusLabel.setText("Выполняется расчет отклонений")
             _, self.differences, self.slice_differences = count_difference_geometry(
                 ct_pickle_path, mri_pickle_path, self.write_path
             )
 
-            self.coords_ct = get_coords(os.path.join(self.write_path, "markers_CT.pickle"))
+            self.coords_ct = get_coords(
+                os.path.join(self.write_path, "markers_CT.pickle")
+            )
             self.coords_mri = get_coords(
                 os.path.join(self.write_path, "markers_MRI.pickle")
             )
+            self.ui.statusLabel.setText("Расчет выполнен")
+
 
     @Slot()
     def finishAnalysis(self):
@@ -332,7 +366,9 @@ class EntranceWindow(QMainWindow):
         with open(stats_path, "r") as fp:
             data = json.load(fp)
         self.params_table = Table(
-            data, headers=["Параметр", "Значение"], title="Итоговая статистика по фантому"
+            data,
+            headers=["Параметр", "Значение"],
+            title="Итоговая статистика по фантому",
         )
         self.params_table.show()
         self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)
