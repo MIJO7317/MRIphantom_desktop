@@ -26,9 +26,11 @@ class Scatter2D(QWidget):
         self.browser = QWebEngineView(self)
 
         self.slider = QSlider(Qt.Horizontal)
-        self.slider.setMinimum(0)
+        self.min_value_slider = 41
+        self.max_value_slider = 107
+        self.slider.setMinimum(self.min_value_slider)
         self.slider.setMaximum(
-            len(data_ct) // 88
+            self.max_value_slider
         )  # Set the maximum value as per your requirement
         self.slider.valueChanged.connect(self.update_scatter_plot)
 
@@ -38,7 +40,7 @@ class Scatter2D(QWidget):
         self.resize(850, 850)
         self.init_scatter2d()
 
-    def init_scatter2d(self, z_value=0):
+    def init_scatter2d(self, z_value=50):
         """
         Initialize 2D scatter viewer
         """

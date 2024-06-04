@@ -29,15 +29,18 @@ class Plots(QWidget):
         Initialize plots
         """
         df = pd.DataFrame.from_dict(self.data_per_slice).T
-        fig = make_subplots(rows=2, cols=3, start_cell="top-left",
+        # print(df)
+        df = df.iloc[35:110]
+        print(df)
+        fig = make_subplots(rows=2, cols=2, start_cell="top-left",
                             subplot_titles=(
                                 'Среднее отклонение, мм',
                                 'Максимальное отклонение, мм',
-                                'Минимальное отклонение, мм',
-                                'Среднеквадратичное отклонение, мм',
-                                'Число отклонений > 0.5 мм',
-                                'Число отклонений > 1 мм'
+                                'Процент отклонений > 0.5 мм',
+                                'Процент отклонений > 1 мм'
                                 ))
+
+        # Add traces
         fig.add_trace(go.Scatter(x=df.index,
                                  y=df['Mean difference, mm'],
                                  name='Среднее отклонение, мм',
@@ -47,31 +50,41 @@ class Plots(QWidget):
                                  name='Максимальное отклонение, мм',
                                  mode='markers'), row=1, col=2)
         fig.add_trace(go.Scatter(x=df.index,
-                                 y=df['Min difference, mm'],
-                                 name='Минимальное отклонение, мм',
-                                 mode='markers'), row=1, col=3)
-        fig.add_trace(go.Scatter(x=df.index,
-                                 y=df['Std, mm'],
-                                 name='Среднеквадратичное отклонение',
-                                 mode='markers'), row=2, col=1)
-        fig.add_trace(go.Scatter(x=df.index,
                                  y=df['Percentage of differences > 0.5 mm'],
                                  name='Процент отклонений > 0.5 мм',
-                                 mode='markers'), row=2, col=2)
+                                 mode='markers'), row=2, col=1)
         fig.add_trace(go.Scatter(x=df.index,
                                  y=df['Percentage of differences > 1 mm'],
                                  name='Процент отклонений > 1 мм',
-                                 mode='markers'), row=2, col=3)
-        fig.update_xaxes(title_text='Номер среза')
-        fig.update_yaxes(title_text='Величина отклонения, мм')
+                                 mode='markers'), row=2, col=2)
+
+        # Update axes titles for each subplot
+        fig.update_xaxes(title_text='Номер среза', row=1, col=1)
+        fig.update_yaxes(title_text='мм', row=1, col=1)
+
+        fig.update_xaxes(title_text='Номер среза', row=1, col=2)
+        fig.update_yaxes(title_text='мм', row=1, col=2)
+
+        fig.update_xaxes(title_text='Номер среза', row=2, col=1)
+        fig.update_yaxes(title_text='%', row=2, col=1)
+
+        fig.update_xaxes(title_text='Номер среза', row=2, col=2)
+        fig.update_yaxes(title_text='%', row=2, col=2)
 
         fig.update_layout(
-            title="Отчёт",
+            title="Графики отклонений",
             legend_title="Легенда",
             font=dict(
-                size=12
+                size=14
             )
         )
 
         fig.update_traces(marker_size=6)
         self.browser.setHtml(fig.to_html(include_plotlyjs='cdn'))
+
+
+# if __name__ == '__main__':
+#     df = pd.read_json("C:\\dev\\git\\MRIphantom_desktop\\studies\\1\\slice_difference_stats.json").T
+#     df = df.loc[35:110]
+#     print(df)
+#

@@ -253,7 +253,7 @@ class EntranceWindow(QMainWindow):
         # corregistrate
         if self.is_geometric is False:
             rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
-            apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
+            # apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
 
             self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
             self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
@@ -332,7 +332,7 @@ class EntranceWindow(QMainWindow):
         with open(stats_path, "r") as fp:
             data = json.load(fp)
         self.params_table = Table(
-            data, headers=["Parameter", "Value"], title="Total stats"
+            data, headers=["Параметр", "Значение"], title="Итоговая статистика по фантому"
         )
         self.params_table.show()
         self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)

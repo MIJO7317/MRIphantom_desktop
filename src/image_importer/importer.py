@@ -170,7 +170,7 @@ class ImporterSummaryScreen(QWidget):
         try:
             unpack_dicoms(source_folder, target_folder, name=output_name)
             output_nifti = target_folder / f"{output_name}.nii.gz"
-            QMessageBox.information(self, "Import Successful", f"NIfTI file created at {output_nifti}")
+            QMessageBox.information(self, "Изображение успешно импортировано", f"NIfTI файл создан по пути {output_nifti}")
         except subprocess.CalledProcessError as e:
             QMessageBox.critical(self, "Import Failed", str(e))
 

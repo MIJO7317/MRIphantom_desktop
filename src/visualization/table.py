@@ -37,6 +37,15 @@ class Table(QWidget):
         self.layout.addWidget(p)
         self.resize(500, 400)
 
+        self.custom_key_names = {
+            'Mean difference, mm': 'Среднее отклонение, мм',
+            'Min difference, mm': 'Минимальное отклонение, мм',
+            'Max difference, mm': 'Максимальное отклонение, мм',
+            'Std, mm': 'Стандартное отклонение, мм',
+            'Percentage of differences > 0.5 mm': 'Процент отклонений, превышающих 0.5 мм',
+            'Percentage of differences > 1 mm': 'Процент отклонений, превышающих 1 мм',
+        }
+
         self.init_table()
 
     def init_table(self):
@@ -48,8 +57,11 @@ class Table(QWidget):
             i = self.table.rowCount()
             self.table.setRowCount(i+1)
 
+            # Get custom key name, default to the original key if not found
+            custom_key = self.custom_key_names.get(k, k)
+
             # Write the dictionary key in first column
-            self.table.setItem(i, 0, QTableWidgetItem(k))
+            self.table.setItem(i, 0, QTableWidgetItem(custom_key))
 
             # if only one number is provided
             if isinstance(v, float) or isinstance(v, int):
@@ -60,6 +72,7 @@ class Table(QWidget):
                     self.table.setItem(i, 1+j, QTableWidgetItem(str(v_)))
             else:
                 self.table.setItem(i, 1, QTableWidgetItem(str(v)))
+
 
     def export_to_csv(self):
         # Specify default CSV export option

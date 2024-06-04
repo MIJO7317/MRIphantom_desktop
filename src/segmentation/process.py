@@ -239,13 +239,13 @@ def count_difference(ct_path, mri_path, save_path):
                     slice_distances[f"{slice_num}"]["distances"].append(distance)
                     distances.append(distance)
 
-    # Filter distances to keep only values <= 5 mm
+    # Filter distances to keep only values <= 3 mm
     distances = np.array(distances)
-    filtered_distances = distances[distances <= 5]
+    filtered_distances = distances[distances <= 3]
 
     for key in slice_distances:
         distances_array = np.array(slice_distances[key]["distances"])
-        distances_array = distances_array[distances_array <= 5]  # Filter per-slice distances
+        distances_array = distances_array[distances_array <= 3]  # Filter per-slice distances
 
         if len(distances_array) > 0:
             slice_distances[key]["Mean difference, mm"] = float(np.mean(distances_array))
@@ -355,13 +355,13 @@ def count_difference_geometry(ct_path, mri_path, save_path):
                     slice_distances[f"{slice_num}"]["distances"].append(distance)
                     distances.append(distance)
 
-    # Filter distances to keep only values <= 5 mm
+    # Filter distances to keep only values <= 3 mm
     distances = np.array(distances)
-    filtered_distances = distances[distances <= 5]
+    filtered_distances = distances[distances <= 3]
 
     for key in slice_distances:
         distances_array = np.array(slice_distances[key]["distances"])
-        distances_array = distances_array[distances_array <= 5]  # Filter per-slice distances
+        distances_array = distances_array[distances_array <= 3]  # Filter per-slice distances
 
         if len(distances_array) > 0:
             slice_distances[key]["Mean difference, mm"] = float(np.mean(distances_array))
@@ -443,7 +443,7 @@ def get_coords(markers_path):
     shape_coords = coords_array.shape
     list_of_points = []
     for z_slice in range(shape_coords[0]):
-        if 35 <= z_slice <= 105:  # Only include layers z from 35 to 105
+        if 41 <= z_slice <= 105:  # Only include layers z from 35 to 105
             for num_of_point in range(shape_coords[1]):
                 x = coords_array[z_slice, num_of_point, 0]
                 y = coords_array[z_slice, num_of_point, 1]
