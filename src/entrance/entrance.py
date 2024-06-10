@@ -16,10 +16,8 @@ from PySide6.QtCore import (
 )
 from PySide6 import QtCore
 
-# TODO join visualizations into separate class
 from src.visualization.scatter3d import Scatter3D
 from src.visualization.scatter2d import Scatter2D
-from src.visualization.histogram import Histogram
 from src.visualization.plots import Plots
 from src.visualization.table import Table
 
