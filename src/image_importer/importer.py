@@ -45,7 +45,7 @@ class ImporterMainScreen(QWidget):
 
     def browse_file(self):
         directory_dialog = QFileDialog()
-        self.directory_path = directory_dialog.getExistingDirectory(self, "Select DICOM Directory", "")
+        self.directory_path = directory_dialog.getExistingDirectory(self, "Выберите папку с DICOM-файлами", "")
 
         if self.directory_path:
             self.window_widget.directory_path = self.directory_path
@@ -53,7 +53,7 @@ class ImporterMainScreen(QWidget):
 
     def forward(self):
         if not self.directory_path:
-            QMessageBox.warning(self, "No Directory Selected", "Please select a DICOM directory.")
+            QMessageBox.warning(self, "Папка не выбрана", "Пожалуйста, выберите папку с DICOM-файлами.")
         else:
             self.window_widget.directory_path = self.directory_path
             self.window_widget.switch_to_select_screen()
@@ -78,7 +78,7 @@ class ImporterSelectScreen(QWidget):
 
     def forward(self):
         if not hasattr(self, 'selected_series_id'):
-            QMessageBox.warning(self, "No Series Selected", "Please select a DICOM series.")
+            QMessageBox.warning(self, "Последовательность не выбрана", "Пожалуйста, выберите последовательность.")
         else:
             self.window_widget.series_id = self.selected_series_id
             self.window_widget.series_files = self.series_dict[self.selected_series_id]
@@ -91,7 +91,7 @@ class ImporterSelectScreen(QWidget):
         self.ui.tableWidget.clear()
         self.ui.tableWidget.setRowCount(0)
         self.ui.tableWidget.setColumnCount(2)
-        self.ui.tableWidget.setHorizontalHeaderLabels(["Series ID", "Series Description"])
+        self.ui.tableWidget.setHorizontalHeaderLabels(["ID последовательности", "Описание"])
 
         self.series_dict = {}
         dicom_files = [f for f in os.listdir(self.window_widget.directory_path) if f.endswith('.dcm')]
@@ -138,7 +138,7 @@ class ImporterSummaryScreen(QWidget):
         self.ui.summaryTableWidget.clear()
         self.ui.summaryTableWidget.setRowCount(0)
         self.ui.summaryTableWidget.setColumnCount(2)
-        self.ui.summaryTableWidget.setHorizontalHeaderLabels(["Attribute", "Value"])
+        self.ui.summaryTableWidget.setHorizontalHeaderLabels(["Параметр", "Значение"])
 
         # Use the first file from the selected series to show the summary
         ds = dcmread(self.window_widget.series_files[0])
@@ -150,14 +150,14 @@ class ImporterSummaryScreen(QWidget):
             self.ui.summaryTableWidget.setItem(row_position, 1, QTableWidgetItem(value))
 
         # Add relevant information
-        add_row("Dimensions", f"{ds.Rows} x {ds.Columns}")
-        add_row("Voxel Spacing", str(ds.PixelSpacing) if 'PixelSpacing' in ds else "N/A")
-        add_row("Origin", str(ds.ImagePositionPatient) if 'ImagePositionPatient' in ds else "N/A")
-        add_row("Orientation", str(ds.ImageOrientationPatient) if 'ImageOrientationPatient' in ds else "N/A")
-        add_row("File Size", f"{os.path.getsize(self.window_widget.series_files[0]) / (1024 * 1024):.2f} MB")
-        add_row("Modality", ds.Modality)
+        add_row("Размерность", f"{ds.Rows} x {ds.Columns}")
+        add_row("Размер вокселя", str(ds.PixelSpacing) if 'PixelSpacing' in ds else "N/A")
+        add_row("Начало координат", str(ds.ImagePositionPatient) if 'ImagePositionPatient' in ds else "N/A")
+        add_row("Ориентация", str(ds.ImageOrientationPatient) if 'ImageOrientationPatient' in ds else "N/A")
+        add_row("Размер файла", f"{(os.path.getsize(self.window_widget.series_files[0])) / (1024 * 1024):.2f} MB")
+        add_row("Модальность", ds.Modality)
         add_row("SOP Class UID", ds.SOPClassUID)
-        add_row("Study Date", ds.StudyDate)
+        add_row("Дата исследования", ds.StudyDate)
 
     def import_series(self):
         if not self.window_widget.series_files:
