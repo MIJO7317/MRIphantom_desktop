@@ -35,7 +35,7 @@ class Table(QWidget):
         p = QPushButton("Сохранить таблицу в .csv")
         p.clicked.connect(self.export_to_csv)
         self.layout.addWidget(p)
-        self.resize(500, 400)
+        self.resize(1200, 400)
 
         self.custom_key_names = {
             'Mean difference, mm': 'Среднее отклонение, мм',
