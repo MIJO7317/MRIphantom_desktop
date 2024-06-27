@@ -371,7 +371,7 @@ class EntranceWindow(QMainWindow):
         self.params_table.show()
         self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)
         self.scatter3d.show()
-        self.scatter2d = Scatter2D(self.coords_ct, self.coords_mri)
+        self.scatter2d = Scatter2D(self.coords_ct, self.coords_mri, self.moving_image_path, self.fixed_image_path)
         self.scatter2d.show()
         # self.histogram = Histogram(self.differences)
         # self.histogram.show()
