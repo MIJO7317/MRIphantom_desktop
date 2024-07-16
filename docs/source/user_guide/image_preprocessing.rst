@@ -1,32 +1,30 @@
-Image Preprocessing
+Предобработка изображений
 ===================
 
-Two main methods of image preprocessing are available.
+Доступны два метода предобработки изображений.
 
-You can either work with images in their original resolution for quick results,
-or choose preprocessing with interpolation to improve the quality of marker detection.
-We select the scale factor by which we upscale initial images.
-This enables the marker detection algorithm to operate at a higher quality, resulting in improved precision and finer outcomes.
+Вам доступна обработка изображений в оригинальном разрешении для выполнения ускоренного анализа отклонений, так же присутствует обработка с использованием интерполирования для выполнения более точной детекции маркеров.
+Для использования интерполирования необходимо выбрать коэффициент увеличения изображения.
 
-Pipeline of image processing can be divided into several steps:
+Конвейер обработки изображений может быть разбит на несколько операций:
 
-1. Begin by unpacking input scans slice by slice.
-2. Select the upscale factor (=1 in case of original resolution and =2**3 for interpolation).
-3. Upscale images according to the selected factor (or leave as is).
-4. Apply masking to isolate the central portion of the phantom, containing the plastic rods.
-5. Employ thresholding segmentation to eliminate all except the rods.
-6. Execute marker detection.
-7. Export the marker coordinates as .pickle files.
-8. Conduct analysis using the saved data.
+1. Посрезовая распаковка изображений из файлов .nii.gz.
+2. Выбор коэффициента увеличения (=1 в случае обработки в оригинальном разрешении и =2**3 для обработки с интерполяцией).
+3. Увеличение изображений в соответствии с выбранным коэффициентом увеличения.
+4. Применение маскирования для изоляции центральной части изображения МРТ фантома, на которой видна вставка фантома.
+5. Применение сегментации методом трешхолдинга для удаления лишних частей изображения (корпус фантома, пузырьки воздуха и лишние элементы).
+6. Выполнить детекцию маркеров.
+7. Экспорт координат маркеров в формате .pickle файлов.
+8. Выполнение расчета отклонений с использованием сохраненных данных.
 
-You can also look at the examples below.
+Ниже приведены примеры обработки изображений с использованием процесса, описанного выше.
 
-Original resolution
+Обработка с оригинальным разрешением
 ----------------------
 
-**TODO pictures**
+**TODO картинки**
 
-Interpolation (better quality detection)
+Обработка с использованием интерполяции
 -----------------------------------------
 
-**TODO pictures**
+**TODO картинки**

@@ -1,91 +1,65 @@
-Getting Started
+Начало работы
 =====
 
-Welcome to the MRIphantom Getting Started page. This page contains instructions that you should follow
-to start using the application.
+На данной странице есть вся необходимая информация для начала работы с программным обеспечением MRIphantom QA Solution.
 
-System requirements
+Системные требования
 --------------------
-MRIphantom is compatible with modern operating systems such as Windows, MacOS, and Linux. However, it may encounter compatibility issues on older machines, particularly those running Windows 8.1 or earlier.
 
-Operating system versions
+Программа совместима с современными операционными системами (Windows, MacOS и Linux).
+
+Требования к ОС
 __________________________
 
-Windows: Windows 10 or 11.
+Windows: Windows 10 и выше.
 
-macOS: macOS Big Sur (11) or later (compatible with both Apple Silicon and Intel-based computers).
+macOS: macOS Big Sur (11) и выше (поддерживаются Apple Silicon (процессоры серии M-) и Intel).
 
-Linux: any recent LTS distribution, for example, Ubuntu 18.04 and later.
+Linux: любой поддерживаемый LTS дистрибутив, например, Ubuntu 18.04 и старше.
 
-Hardware configuration
+Требования к аппаратной части
 ________________________
 
-Memory: At least 4GB of RAM.
+ОЗУ: 4GB минимум.
 
-Display: A minimum resolution of 1024 x 768 (FullHD is recommended).
-
-Graphics: Dedicated GPU memory is not required, but recommended for faster rendering.
-
-IO-devices: Compatible with any standard mouse and keyboard.
-
-Internet connection: Not required at the moment.
-
-Installation from source
+Установка из источников
 --------------------------
 
-To use MRIphantom, first clone the repository to your local machine:
+Клонируйте репозиторий MRIphantom на свою локальную машину:
 
 .. code-block:: console
 
    $ git clone git@gitlab.com:bzavolovich/MRIphantom_desktop.git
 
-Make sure you have the latest Python version installed.
+Убедитесь, что у вас установлена версия Python 3.9 или выше.
 
-Create a virtual environment in the project directory by running
-the following command:
+Создайте виртуальное окружение в директории проекта, выполнив следующую команду в консоли:
 
 .. code-block:: console
 
     $ python -m venv venv
 
-and activate it (Linux, macOS):
+Активируйте виртуальное окружение (Linux, macOS):
 
 .. code-block:: console
 
     $ source venv/scripts/activate
 
-or (Windows):
+или (Windows):
 
 .. code-block:: console
 
     ./venv/Scripts/Activate.ps1
 
-Install necessary packages using requirements.txt:
+Установите необходимые пакеты, используя файл requirements.txt:
 
 .. code-block:: console
 
     $ pip install -r requirements.txt
 
-Run the application by executing the following command:
+Запустите приложение:
 
 .. code-block:: console
 
     $ python app.py
 
-
-Using MRIphantom QA Solution
--------------------------------
-
-MRIphantom is currently in its early stages of development.
-Here's how you can get started with MRIphantom QA Solution:
-
-Basics
-_____________________
-
-All you need to start is CT and MRI images of Elekta MRI phantom.
-Currently, our solution is compatible with pre-registered images saved in .nii.gz (or .nii) formats.
-We are working on implementing DICOM support soon.
-
-To conduct the analysis, simply click on the 'Calculate' button.
-
-Refer to the documentation or README files for instructions on using the software.

@@ -1,4 +1,4 @@
-Application Settings
+Настройки приложения
 =====================
 
-**TODO settings**
+**TODO текст**

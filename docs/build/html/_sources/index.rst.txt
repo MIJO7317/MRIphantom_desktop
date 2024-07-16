@@ -1,4 +1,4 @@
-Welcome to MRIphantom QA Solution's documentation!
+Документация MRI QA Solution
 ==================================================
 
 .. image:: assets/pictures/header.png
@@ -6,15 +6,11 @@ Welcome to MRIphantom QA Solution's documentation!
   :alt: Documentation header
 
 
-**MRIphantom QA Solution** is a Python software for automatic analysis
-of MRI images used in radiotherapy planning.
+**MRIphantom QA Solution** это программное обеспечение для автоматического анализа МРТ изображений на предмет дисторсии.
 
-This software allows you to quickly and easily analyze MRI images for geometric distortions.
 
 .. note::
-
-   This project is under active development, so be careful when using the program.
-
+  Проект в активной разработке, поэтому относитесь к результатам анализа с осторожностью.
 
 .. toctree::
     user_guide/getting_started

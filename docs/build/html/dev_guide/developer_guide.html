@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="ru" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Developer Guide &#8212; MRIphantom QA Solution  documentation</title>
+    <title>Руководство разработчика &#8212; документация MRIphantom QA Solution </title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/documentation_options.js?v=372fde1a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Application Settings" href="../user_guide/app_settings.html" />
+    <script src="../_static/translations.js?v=29b1f277"></script>
+    <link rel="index" title="Алфавитный указатель" href="../genindex.html" />
+    <link rel="search" title="Поиск" href="../search.html" />
+    <link rel="prev" title="Настройки приложения" href="../user_guide/app_settings.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -31,20 +32,40 @@
 
           <div class="body" role="main">
             
-  <section id="developer-guide">
-<h1>Developer Guide<a class="headerlink" href="#developer-guide" title="Link to this heading">¶</a></h1>
-<section id="module-overview">
-<h2>Module Overview<a class="headerlink" href="#module-overview" title="Link to this heading">¶</a></h2>
+  <section id="id1">
+<h1>Руководство разработчика<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<section id="id2">
+<h2>Обзор модулей ПО<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <section id="entrance">
 <h3>entrance<a class="headerlink" href="#entrance" title="Link to this heading">¶</a></h3>
 </section>
-<section id="module-MRIphantom_desktop.src.preprocess.unpack">
-<span id="preprocess"></span><h3>preprocess<a class="headerlink" href="#module-MRIphantom_desktop.src.preprocess.unpack" title="Link to this heading">¶</a></h3>
-<p>Module: unpack
+<section id="module-MRIphantom_desktop.src.preprocess.registration">
+<span id="preprocess"></span><h3>preprocess<a class="headerlink" href="#module-MRIphantom_desktop.src.preprocess.registration" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.preprocess.registration.apply_manual_shift">
+<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.preprocess.registration.</span></span><span class="sig-name descname"><span class="pre">apply_manual_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moving</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manual_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">-10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.preprocess.registration.apply_manual_shift" title="Link to this definition">¶</a></dt>
+<dd><p>Apply a manual shift to an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – ants.ANTsImage, the image to be shifted.</p></li>
+<li><p><strong>manual_shift</strong> – tuple, the manual shift to be applied in the (x, y, z) directions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Результат<span class="colon">:</span></dt>
+<dd class="field-even"><p>the shifted image.</p>
+</dd>
+<dt class="field-odd">Тип результата<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ants.ANTsImage</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p id="module-MRIphantom_desktop.src.preprocess.unpack">Module: unpack
 Module for unpacking DICOM files</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti">
-<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.preprocess.unpack.</span></span><span class="sig-name descname"><span class="pre">dicom_to_nifti</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.preprocess.unpack.unpack_dicoms">
+<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.preprocess.unpack.</span></span><span class="sig-name descname"><span class="pre">unpack_dicoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.preprocess.unpack.unpack_dicoms" title="Link to this definition">¶</a></dt>
 <dd><p>Converts folder of dicoms into a nii.gz file.</p>
 </dd></dl>
 
@@ -61,7 +82,26 @@ and analyzing marker data.</p>
 <p>This function calculates differences between marker coordinates from CT and MRI images.
 It computes various statistics such as mean difference,
 minimum difference, maximum difference, standard deviation,
-and the number of differences exceeding certain thresholds (0.5 mm and 1 mm).
+and the percentage of differences exceeding certain thresholds (0.5 mm and 1 mm).
+The results are saved in JSON files for overall statistics and per-slice statistics.</p>
+<p>Parameters:
+- ct_path: A string specifying the path to the pickle file containing CT marker coordinates.
+- mri_path: A string specifying the path to the pickle file containing MRI marker coordinates.
+- save_path: A string specifying the directory where the statistics JSON files will be saved.</p>
+<p>Returns:
+- params: A dictionary containing overall statistics.
+- distances: An array containing all computed differences between CT and MRI marker coordinates.
+- slice_distances: A dictionary containing per-slice statistics.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MRIphantom_desktop.src.segmentation.process.count_difference_geometry">
+<span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.segmentation.process.</span></span><span class="sig-name descname"><span class="pre">count_difference_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ct_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mri_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.segmentation.process.count_difference_geometry" title="Link to this definition">¶</a></dt>
+<dd><p>Counts differences between CT and MRI markers and saves statistics.</p>
+<p>This function calculates differences between marker coordinates from CT and MRI images.
+It computes various statistics such as mean difference,
+minimum difference, maximum difference, standard deviation,
+and the percentage of differences exceeding certain thresholds (0.5 mm and 1 mm).
 The results are saved in JSON files for overall statistics and per-slice statistics.</p>
 <p>Parameters:
 - ct_path: A string specifying the path to the pickle file containing CT marker coordinates.
@@ -174,15 +214,13 @@ Module for 2D scatter viewer</p>
 <dd><p>2D scatter view widget</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d">
-<span class="sig-name descname"><span class="pre">init_scatter2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">init_scatter2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter2d.Scatter2D.init_scatter2d" title="Link to this definition">¶</a></dt>
 <dd><p>Initialize 2D scatter viewer</p>
 </dd></dl>
 
 </dd></dl>
 
-<p id="module-MRIphantom_desktop.src.visualization.scatter3d">Module: scatter3d
-Module for 3D scatter viewer</p>
-<dl class="py class">
+<dl class="py class" id="module-MRIphantom_desktop.src.visualization.scatter3d">
 <dt class="sig sig-object py" id="MRIphantom_desktop.src.visualization.scatter3d.Scatter3D">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRIphantom_desktop.src.visualization.scatter3d.</span></span><span class="sig-name descname"><span class="pre">Scatter3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_mri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3D</span> <span class="pre">просмотр</span> <span class="pre">отклонений'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRIphantom_desktop.src.visualization.scatter3d.Scatter3D" title="Link to this definition">¶</a></dt>
 <dd><p>Class for 3D scatter viewer</p>
@@ -215,65 +253,54 @@ Module for table widget</p>
 
 </section>
 </section>
-<section id="build-instructions">
-<h2>Build Instructions<a class="headerlink" href="#build-instructions" title="Link to this heading">¶</a></h2>
-<p>To build the MRIphantom application using PyInstaller and an app.spec configuration file, follow these steps:</p>
-<p>Install PyInstaller:
-If you haven’t already installed PyInstaller, you can do so via pip by running the following command:</p>
+<section id="id3">
+<h2>Инструкции по сборке ПО<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p>Для сборки приложения используется пакет PyInstaller и файл конфигурации app.spec (можно найти в корне репозитория).</p>
+<p>Установка пакета PyInstaller:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>pyinstaller
 </pre></div>
 </div>
-<p>Use the app.spec Configuration File located in the rood directory of the project:
-The app.spec file is used by PyInstaller to specify how the application should be bundled.</p>
-<p>Run PyInstaller:
-Once you have checked the app.spec file, you can use PyInstaller to build the application by running the following command in your terminal or command prompt:</p>
+<p>Используйте файл конфигурации app.spec (можно найти в корне репозитория).
+Файл app.spec используется пакетом PyInstaller для конфигурации процесса сборки приложения.</p>
+<p>Начать процесс сборки:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pyinstaller<span class="w"> </span>app.spec
 </pre></div>
 </div>
-<p>Locate the Executable:
-After PyInstaller completes the build process, you can find the executable file in the dist directory within the project folder.
-The exact location may vary depending on your operating system and the configuration specified in app.spec.</p>
-<p>Test the Application:
-Before using the application, it’s a good idea to test it to ensure that it functions correctly.
-Run the executable file generated by PyInstaller to verify that the application works as expected.</p>
+<p>После завершения процесса сборки вы сможете найти исполняемые файлы программы в директории dist в корне проекта.
+Точное расположения исполняемого файла может отличаться в зависимости от вашей операционной системы, а так же от сожержания файла app.spec.</p>
+<p>Перед использованием приложения убедитесь, что оно функционирует без ошибок.</p>
 </section>
-<section id="debugging">
-<h2>Debugging<a class="headerlink" href="#debugging" title="Link to this heading">¶</a></h2>
-<p>A special Debug Mode is enabled by exporting system variable DEBUG=2:</p>
+<section id="id4">
+<h2>Отладка<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p>Специальный отладочный режим приложения запускается при указании системной переменной DEBUG=2.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span><span class="w"> </span><span class="nv">DEBUG</span><span class="o">=</span><span class="m">2</span>
 </pre></div>
 </div>
-<p>Debug Mode disables splash screen and other excessive functionality.</p>
+<p>Отладочный режим отключает экран загрузки и другие излишние компоненты приложения.</p>
 </section>
-<section id="style-guide">
-<h2>Style Guide<a class="headerlink" href="#style-guide" title="Link to this heading">¶</a></h2>
-<section id="general">
-<h3>General<a class="headerlink" href="#general" title="Link to this heading">¶</a></h3>
-<p>Line length:
-Preferably keep lines shorter than 100 characters.
-Always keep lines shorter than 120 characters.
-Markdown (.md) files are excluded from this restriction, to allow editing the text without worrying about line breaks.</p>
+<section id="id5">
+<h2>Стайлгайд проекта<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<section id="id6">
+<h3>Основное<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<p>Длина строки:
+Желательно придерживаться длин строк менее 120 символов.</p>
 </section>
-<section id="toolkits-and-libraries">
-<h3>Toolkits and libraries<a class="headerlink" href="#toolkits-and-libraries" title="Link to this heading">¶</a></h3>
+<section id="id7">
+<h3>Линтеры<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
 <p>Pylint
-Flake8
-Python style guide</p>
+Flake8</p>
 </section>
 <section id="python">
 <h3>Python<a class="headerlink" href="#python" title="Link to this heading">¶</a></h3>
-<p>Follow the MRIphantom Flake8 configuration.
-Imports:
+<p>Импорты:
 - Standard library imports
 - Related third party imports
 - Local library specific imports</p>
 </section>
-<section id="docstrings">
-<h3>Docstrings<a class="headerlink" href="#docstrings" title="Link to this heading">¶</a></h3>
-<p>Include docstrings for each class, method and function.
-Keep the comments up to date.
-Use the # TODO comment to mark code parts that should be revisited.
-Use the # FIXME comment to specify parts of code that should be fixed.</p>
+<section id="docstring">
+<h3>Docstring<a class="headerlink" href="#docstring" title="Link to this heading">¶</a></h3>
+<p>Необходимо написание докстрингов для основных классов, методов и функций приложения.
+Обновляйте документацию.</p>
 </section>
 </section>
 </section>
@@ -294,24 +321,26 @@ Use the # FIXME comment to specify parts of code that should be fixed.</p>
 
 
 
-<h3>Navigation</h3>
+<h3>Навигация</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">User Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_io.html">Data Loading and Saving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_preprocessing.html">Image Preprocessing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Image Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/segmentation.html">Image Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/app_settings.html">Application Settings</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-overview">Module Overview</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/getting_started.html">Начало работы</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/user_interface.html">Пользовательский интерфейс</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/data_io.html">Испорт и экспорт данных</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/image_preprocessing.html">Предобработка изображений</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/registration.html">Регистрация изображений</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/segmentation.html">Сегментация изображений</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/app_settings.html">Настройки приложения</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Руководство разработчика</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Обзор модулей ПО</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#entrance">entrance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-MRIphantom_desktop.src.preprocess.unpack">preprocess</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.preprocess.unpack.dicom_to_nifti"><code class="docutils literal notranslate"><span class="pre">dicom_to_nifti()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-MRIphantom_desktop.src.preprocess.registration">preprocess</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.preprocess.registration.apply_manual_shift"><code class="docutils literal notranslate"><span class="pre">apply_manual_shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.preprocess.unpack.unpack_dicoms"><code class="docutils literal notranslate"><span class="pre">unpack_dicoms()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-MRIphantom_desktop.src.segmentation.process">segmentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.count_difference"><code class="docutils literal notranslate"><span class="pre">count_difference()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.count_difference_geometry"><code class="docutils literal notranslate"><span class="pre">count_difference_geometry()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.get_coords"><code class="docutils literal notranslate"><span class="pre">get_coords()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.isolate_markers"><code class="docutils literal notranslate"><span class="pre">isolate_markers()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#MRIphantom_desktop.src.segmentation.process.perform_thresholding"><code class="docutils literal notranslate"><span class="pre">perform_thresholding()</span></code></a></li>
@@ -344,13 +373,13 @@ Use the # FIXME comment to specify parts of code that should be fixed.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#build-instructions">Build Instructions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#debugging">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#style-guide">Style Guide</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#general">General</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#toolkits-and-libraries">Toolkits and libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Инструкции по сборке ПО</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Отладка</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">Стайлгайд проекта</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Основное</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Линтеры</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#python">Python</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#docstrings">Docstrings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docstring">Docstring</a></li>
 </ul>
 </li>
 </ul>
@@ -361,16 +390,16 @@ Use the # FIXME comment to specify parts of code that should be fixed.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../user_guide/app_settings.html" title="previous chapter">Application Settings</a></li>
+      <li>Previous: <a href="../user_guide/app_settings.html" title="предыдущая глава">Настройки приложения</a></li>
   </ul></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3 id="searchlabel">Быстрый поиск</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
+      <input type="submit" value="Искать" />
     </form>
     </div>
 </div>

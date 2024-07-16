@@ -1,9 +1,7 @@
-User Interface
+Пользовательский интерфейс
 =====
 
-Application overview.
-
-Main Window
+Главное окно
 --------------------
 
 .. image:: main_window.png
@@ -11,36 +9,36 @@ Main Window
   :alt: Main window
 
 
-Visualizations
+Визуализация
 --------------------
 
-3D viewer
+3D просмотр
 _______________
 
 .. image:: 3dview.png
   :width: 800
   :alt: 3d viewer
 
-2D viewer
+2D просмотр
 _______________
 
 .. image:: 2dviewer.png
   :width: 800
   :alt: 2d viewer
 
-Graphs
+Графики
 _______________
 
 .. image:: graphs.png
   :width: 800
   :alt: graphs
 
-Heatmap
+Тепловая карта отклонений
 _______________
 
-In development
+Находится в разработке 
 
-Statistics Table
+Таблица со статистикой
 _______________
 
 .. image:: stats.png

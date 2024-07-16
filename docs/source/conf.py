@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.abspath('../../..'))
 project = 'MRIphantom QA Solution'
 copyright = '2024, bzavolovich et al.'
 author = 'bzavolovich et al.'
+language = 'ru'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

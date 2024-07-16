@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+<html lang="ru" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Image Preprocessing &#8212; MRIphantom QA Solution  documentation</title>
+    <title>Предобработка изображений &#8212; документация MRIphantom QA Solution </title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=12dfc556" />
-    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/documentation_options.js?v=372fde1a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Image Registration" href="registration.html" />
-    <link rel="prev" title="Data Loading and Saving" href="data_io.html" />
+    <script src="../_static/translations.js?v=29b1f277"></script>
+    <link rel="index" title="Алфавитный указатель" href="../genindex.html" />
+    <link rel="search" title="Поиск" href="../search.html" />
+    <link rel="next" title="Регистрация изображений" href="registration.html" />
+    <link rel="prev" title="Испорт и экспорт данных" href="data_io.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -32,32 +33,30 @@
 
           <div class="body" role="main">
             
-  <section id="image-preprocessing">
-<h1>Image Preprocessing<a class="headerlink" href="#image-preprocessing" title="Link to this heading">¶</a></h1>
-<p>Two main methods of image preprocessing are available.</p>
-<p>You can either work with images in their original resolution for quick results,
-or choose preprocessing with interpolation to improve the quality of marker detection.
-We select the scale factor by which we upscale initial images.
-This enables the marker detection algorithm to operate at a higher quality, resulting in improved precision and finer outcomes.</p>
-<p>Pipeline of image processing can be divided into several steps:</p>
+  <section id="id1">
+<h1>Предобработка изображений<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>Доступны два метода предобработки изображений.</p>
+<p>Вам доступна обработка изображений в оригинальном разрешении для выполнения ускоренного анализа отклонений, так же присутствует обработка с использованием интерполирования для выполнения более точной детекции маркеров.
+Для использования интерполирования необходимо выбрать коэффициент увеличения изображения.</p>
+<p>Конвейер обработки изображений может быть разбит на несколько операций:</p>
 <ol class="arabic simple">
-<li><p>Begin by unpacking input scans slice by slice.</p></li>
-<li><p>Select the upscale factor (=1 in case of original resolution and =2**3 for interpolation).</p></li>
-<li><p>Upscale images according to the selected factor (or leave as is).</p></li>
-<li><p>Apply masking to isolate the central portion of the phantom, containing the plastic rods.</p></li>
-<li><p>Employ thresholding segmentation to eliminate all except the rods.</p></li>
-<li><p>Execute marker detection.</p></li>
-<li><p>Export the marker coordinates as .pickle files.</p></li>
-<li><p>Conduct analysis using the saved data.</p></li>
+<li><p>Посрезовая распаковка изображений из файлов .nii.gz.</p></li>
+<li><p>Выбор коэффициента увеличения (=1 в случае обработки в оригинальном разрешении и =2**3 для обработки с интерполяцией).</p></li>
+<li><p>Увеличение изображений в соответствии с выбранным коэффициентом увеличения.</p></li>
+<li><p>Применение маскирования для изоляции центральной части изображения МРТ фантома, на которой видна вставка фантома.</p></li>
+<li><p>Применение сегментации методом трешхолдинга для удаления лишних частей изображения (корпус фантома, пузырьки воздуха и лишние элементы).</p></li>
+<li><p>Выполнить детекцию маркеров.</p></li>
+<li><p>Экспорт координат маркеров в формате .pickle файлов.</p></li>
+<li><p>Выполнение расчета отклонений с использованием сохраненных данных.</p></li>
 </ol>
-<p>You can also look at the examples below.</p>
-<section id="original-resolution">
-<h2>Original resolution<a class="headerlink" href="#original-resolution" title="Link to this heading">¶</a></h2>
-<p><strong>TODO pictures</strong></p>
+<p>Ниже приведены примеры обработки изображений с использованием процесса, описанного выше.</p>
+<section id="id2">
+<h2>Обработка с оригинальным разрешением<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<p><strong>TODO картинки</strong></p>
 </section>
-<section id="interpolation-better-quality-detection">
-<h2>Interpolation (better quality detection)<a class="headerlink" href="#interpolation-better-quality-detection" title="Link to this heading">¶</a></h2>
-<p><strong>TODO pictures</strong></p>
+<section id="id3">
+<h2>Обработка с использованием интерполяции<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<p><strong>TODO картинки</strong></p>
 </section>
 </section>
 
@@ -77,19 +76,19 @@ This enables the marker detection algorithm to operate at a higher quality, resu
 
 
 
-<h3>Navigation</h3>
+<h3>Навигация</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_interface.html">User Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_io.html">Data Loading and Saving</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Image Preprocessing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#original-resolution">Original resolution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#interpolation-better-quality-detection">Interpolation (better quality detection)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Начало работы</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_interface.html">Пользовательский интерфейс</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_io.html">Испорт и экспорт данных</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Предобработка изображений</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Обработка с оригинальным разрешением</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Обработка с использованием интерполяции</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="registration.html">Image Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Image Segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="app_settings.html">Application Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Регистрация изображений</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Сегментация изображений</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app_settings.html">Настройки приложения</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev_guide/developer_guide.html">Developer Guide</a></li>
 </ul>
 
@@ -97,17 +96,17 @@ This enables the marker detection algorithm to operate at a higher quality, resu
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="data_io.html" title="previous chapter">Data Loading and Saving</a></li>
-      <li>Next: <a href="registration.html" title="next chapter">Image Registration</a></li>
+      <li>Previous: <a href="data_io.html" title="предыдущая глава">Испорт и экспорт данных</a></li>
+      <li>Next: <a href="registration.html" title="следующая глава">Регистрация изображений</a></li>
   </ul></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3 id="searchlabel">Быстрый поиск</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
+      <input type="submit" value="Искать" />
     </form>
     </div>
 </div>

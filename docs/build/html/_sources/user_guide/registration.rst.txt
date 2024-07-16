@@ -1,5 +1,4 @@
-Image Registration
+Регистрация изображений
 ====================
 
-Currently, no image registration is supported.
-Please use third-party software to automatically or manually register images (such as ITK-snap, etc.).
+Поддерживается автоматическая регистрация изображений МРТ и КТ.

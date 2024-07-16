@@ -1,19 +1,15 @@
-Data Loading and Saving
+Испорт и экспорт данных
 ==========================
 
-This section gives information on supported data formats and file extensions.
+В данной секции представлена информация о поддерживаемых форматах данных.
 
-
-Import data
+Импорт данных
 -------------
 
-At the moment, the only available format is .nii.gz.
+На данный момент поддерживается формат DICOM.
 
-DICOM support is in development.
 
-Export data
+Экспорт данных
 ----------------
 
-You can export reports in .csv format.
-
-.html report is in development.
+Доступна выгрузка отчета в формате .csv.
