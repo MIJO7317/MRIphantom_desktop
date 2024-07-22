@@ -13,7 +13,7 @@ __________________________
 
 Windows: Windows 10 и выше.
 
-macOS: macOS Big Sur (11) и выше (поддерживаются Apple Silicon (процессоры серии M-) и Intel).
+macOS: macOS Big Sur (11) и выше.
 
 Linux: любой поддерживаемый LTS дистрибутив, например, Ubuntu 18.04 и старше.
 
@@ -63,3 +63,37 @@ ________________________
 
     $ python app.py
 
+
+Тестирование на удаленном рабочем столе
+--------------------------
+
+Для внутреннего пользования.
+
+Установка VPN
+________________________
+Необходимо cкачать и установить WireGuard VPN по ссылке https://www.wireguard.com/install/
+
+Добавьте файл конфигурации user*.conf в WireGuard VPN и активируйте его.
+
+Подключение через Microsoft Remote Desktop
+________________________
+Установите Microsoft Remote Desktop
+
+ Windows – https://apps.microsoft.com/detail/9wzdncrfj3ps?ocid=webpdpshare
+ macOS – https://apps.apple.com/ru/app/microsoft-remote-desktop/id1295203466?mt=12
+
+Настройте новое подключение:
+
+в графу “PC name” введите адрес:
+172.18.113.2
+
+Введите свой логин и пароль.
+
+Запуск программы
+________________________
+
+Подключитесь к удаленному рабочему столу.
+
+Для тестирования программы перейдите в корень диска С:\ и запустите от имени администратора файл MRI_QA_Solution.bat
+
+Файлы для тестирования лежат в папке C:\MRI_QA_Solution\test_images

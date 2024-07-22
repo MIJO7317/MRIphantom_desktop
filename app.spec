@@ -11,10 +11,10 @@ datas += collect_data_files('timm', include_py_files=True)
 
 a = Analysis(
     ['app.py'],
-    pathex=['C:\dev\git\MRIphantom_desktop', 'C:\dev\git\MRIphantom_desktop\src'],
+    pathex=['/Users/bzavolovich/Developer/MRIphantom_desktop', '/Users/bzavolovich/Developer/MRIphantom_desktop/src'],
     binaries=[],
     datas=datas,
-    hiddenimports=['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg'],
+    hiddenimports=['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg', 'PySide6.QtWebEngineWidgets', 'QtWebEngineWidgets'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -31,18 +31,17 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='MRIphantom',
+    name='app',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="./assets/icons/MRIphantom_icon.ico"
 )
 coll = COLLECT(
     exe,
@@ -53,4 +52,10 @@ coll = COLLECT(
     upx=True,
     upx_exclude=[],
     name='app',
+)
+app = BUNDLE(
+    coll,
+    name='app.app',
+    icon=None,
+    bundle_identifier=None,
 )

@@ -2,6 +2,7 @@ studies/
 venv/
 Users/
 sandbox/
+images/
 pdfs/
 __pycache__
 difference_stats.csv

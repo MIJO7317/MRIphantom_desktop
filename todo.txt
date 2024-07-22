@@ -1,8 +1,6 @@
 0. create 'settings' or 'options' in the main window (+ file that stores them)
 1. automatically select a range of slices where markers are present
 1.1. automatically center isocenter image (find shift value for all images)
-2. (completed) 'interpolation' for marker detection
-3. (completed) make 'interpolation' option in the entrance window
 3.1. speed up interpolation by (13), (10, get rid of saving files), switch to cv2 rescale functions instead of skimage.transform.rescale()
 4. fix floating pillar (missing/nonexistent markers)
 5. add geometrical model of the phantom (another option in the entrance menu)
@@ -10,7 +8,6 @@
 7. export results into pdf + pdf viewer
 8. language switch
 9. create logger
-10. rewrite functions in process as generators (get rid of stupid debug saving)
 11. Neural Network segmentation (enable from 'options')
 12. Add timers (analysis timing in logs). Total time in interface + time left estimation.
 13. Compute MRI and CT in parallel

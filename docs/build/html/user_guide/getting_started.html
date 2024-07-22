@@ -15,7 +15,7 @@
     <link rel="index" title="Алфавитный указатель" href="../genindex.html" />
     <link rel="search" title="Поиск" href="../search.html" />
     <link rel="next" title="Пользовательский интерфейс" href="user_interface.html" />
-    <link rel="prev" title="Документация MRI QA Solution" href="../index.html" />
+    <link rel="prev" title="Документация программного обеспечения MRI QA Solution" href="../index.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -42,7 +42,7 @@
 <section id="id3">
 <h3>Требования к ОС<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
 <p>Windows: Windows 10 и выше.</p>
-<p>macOS: macOS Big Sur (11) и выше (поддерживаются Apple Silicon (процессоры серии M-) и Intel).</p>
+<p>macOS: macOS Big Sur (11) и выше.</p>
 <p>Linux: любой поддерживаемый LTS дистрибутив, например, Ubuntu 18.04 и старше.</p>
 </section>
 <section id="id4">
@@ -78,6 +78,33 @@
 </pre></div>
 </div>
 </section>
+<section id="id6">
+<h2>Тестирование на удаленном рабочем столе<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<p>Для внутреннего пользования.</p>
+<section id="vpn">
+<h3>Установка VPN<a class="headerlink" href="#vpn" title="Link to this heading">¶</a></h3>
+<p>Необходимо cкачать и установить WireGuard VPN по ссылке <a class="reference external" href="https://www.wireguard.com/install/">https://www.wireguard.com/install/</a></p>
+<p>Добавьте файл конфигурации user*.conf в WireGuard VPN и активируйте его.</p>
+</section>
+<section id="microsoft-remote-desktop">
+<h3>Подключение через Microsoft Remote Desktop<a class="headerlink" href="#microsoft-remote-desktop" title="Link to this heading">¶</a></h3>
+<p>Установите Microsoft Remote Desktop</p>
+<blockquote>
+<div><p>Windows – <a class="reference external" href="https://apps.microsoft.com/detail/9wzdncrfj3ps?ocid=webpdpshare">https://apps.microsoft.com/detail/9wzdncrfj3ps?ocid=webpdpshare</a>
+macOS – <a class="reference external" href="https://apps.apple.com/ru/app/microsoft-remote-desktop/id1295203466?mt=12">https://apps.apple.com/ru/app/microsoft-remote-desktop/id1295203466?mt=12</a></p>
+</div></blockquote>
+<p>Настройте новое подключение:</p>
+<p>в графу “PC name” введите адрес:
+172.18.113.2</p>
+<p>Введите свой логин и пароль.</p>
+</section>
+<section id="id7">
+<h3>Запуск программы<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<p>Подключитесь к удаленному рабочему столу.</p>
+<p>Для тестирования программы перейдите в корень диска С:и запустите от имени администратора файл MRI_QA_Solution.bat</p>
+<p>Файлы для тестирования лежат в папке C:MRI_QA_Solutiontest_images</p>
+</section>
+</section>
 </section>
 
 
@@ -105,22 +132,28 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#id5">Установка из источников</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">Тестирование на удаленном рабочем столе</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#vpn">Установка VPN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#microsoft-remote-desktop">Подключение через Microsoft Remote Desktop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Запуск программы</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_interface.html">Пользовательский интерфейс</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_io.html">Испорт и экспорт данных</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_io.html">Импорт и экспорт данных</a></li>
 <li class="toctree-l1"><a class="reference internal" href="image_preprocessing.html">Предобработка изображений</a></li>
 <li class="toctree-l1"><a class="reference internal" href="registration.html">Регистрация изображений</a></li>
 <li class="toctree-l1"><a class="reference internal" href="segmentation.html">Сегментация изображений</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_settings.html">Настройки приложения</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev_guide/developer_guide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev_guide/developer_guide.html">Руководство разработчика</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../index.html" title="предыдущая глава">Документация MRI QA Solution</a></li>
+      <li>Previous: <a href="../index.html" title="предыдущая глава">Документация программного обеспечения MRI QA Solution</a></li>
       <li>Next: <a href="user_interface.html" title="следующая глава">Пользовательский интерфейс</a></li>
   </ul></li>
 </ul>
