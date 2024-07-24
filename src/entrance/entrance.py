@@ -3,7 +3,7 @@ import sys
 import inspect
 import json
 from datetime import datetime
-from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QFileDialog
+from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QFileDialog, QLabel
 from PySide6.QtCore import (
     Slot,
     QEvent,
@@ -16,11 +16,11 @@ from PySide6.QtCore import (
 )
 from PySide6 import QtCore
 
-# TODO join visualizations into separate class
 from src.visualization.scatter3d import Scatter3D
 from src.visualization.scatter2d import Scatter2D
 from src.visualization.plots import Plots
 from src.visualization.table import Table
+from src.visualization.sequence_viewer import DICOMViewer
 
 from UI.main_window_v2 import Ui_MainWindow
 from src.spinner.spinner import Spinner
@@ -141,6 +141,9 @@ class EntranceWindow(QMainWindow):
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
 
+        self.ui.moving_viewer = None
+        self.ui.fixed_viewer = None
+
         self.ui.titleEdit.setPlaceholderText("Название теста")
         self.ui.descriptionEdit.setPlaceholderText("Описание")
 
@@ -189,6 +192,7 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
+
         fixedImageImporter = ImporterWindow()
         fixedImageImporter.setAttribute(Qt.WA_DeleteOnClose)
         fixedImageImporter.show()
@@ -202,6 +206,14 @@ class EntranceWindow(QMainWindow):
         if directory:
             self.ui.fixedimgEdit.setText(directory)
             self.fixed_image_path = directory
+
+        self.fixed_image_viewer = DICOMViewer(fixedImageImporter.directory_path)
+        self.fixed_viewer_layout = QVBoxLayout(self.ui.fixed_widget)
+        self.fixed_viewer_layout.addWidget(QLabel('Добавлен виджет'))
+        self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
+
+        
+
 
     def openMovingImageDirectoryDialog(self):
         """
@@ -232,6 +244,9 @@ class EntranceWindow(QMainWindow):
         if directory:
             self.ui.movingimgEdit.setText(directory)
             self.moving_image_path = directory
+
+        self.ui.moving_viewer = DICOMViewer(movingImageImporter.directory_path)
+
 
     @Slot()
     def analyze(self):

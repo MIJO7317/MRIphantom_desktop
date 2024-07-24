@@ -17,8 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QHBoxLayout, QLabel, QLayout, QLineEdit,
-    QMainWindow, QPushButton, QSizePolicy, QSlider,
-    QVBoxLayout, QWidget)
+    QMainWindow, QPushButton, QSizePolicy, QVBoxLayout,
+    QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
@@ -166,43 +166,17 @@ class Ui_MainWindow(object):
         self.body_frame.setMaximumSize(QSize(16777215, 622))
         self.body_frame.setFrameShape(QFrame.NoFrame)
         self.body_frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_2 = QHBoxLayout(self.body_frame)
-        self.horizontalLayout_2.setSpacing(0)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout = QHBoxLayout(self.body_frame)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.moving_im_layout = QVBoxLayout()
-        self.moving_im_layout.setObjectName(u"moving_im_layout")
-        self.moving_viewer = QWidget(self.body_frame)
-        self.moving_viewer.setObjectName(u"moving_viewer")
-        self.moving_viewer.setStyleSheet(u"border: 2px solid #c8c8c8;")
+        self.moving_widget = QWidget(self.body_frame)
+        self.moving_widget.setObjectName(u"moving_widget")
 
-        self.moving_im_layout.addWidget(self.moving_viewer)
+        self.horizontalLayout.addWidget(self.moving_widget)
 
+        self.fixed_widget = QWidget(self.body_frame)
+        self.fixed_widget.setObjectName(u"fixed_widget")
 
-        self.horizontalLayout.addLayout(self.moving_im_layout)
-
-        self.fixed_im_layout = QVBoxLayout()
-        self.fixed_im_layout.setObjectName(u"fixed_im_layout")
-        self.fixed_viewer = QWidget(self.body_frame)
-        self.fixed_viewer.setObjectName(u"fixed_viewer")
-        self.fixed_viewer.setStyleSheet(u"border: 2px solid #c8c8c8;")
-
-        self.fixed_im_layout.addWidget(self.fixed_viewer)
-
-
-        self.horizontalLayout.addLayout(self.fixed_im_layout)
-
-        self.z_slider = QSlider(self.body_frame)
-        self.z_slider.setObjectName(u"z_slider")
-        self.z_slider.setMinimumSize(QSize(20, 300))
-        self.z_slider.setMaximumSize(QSize(20, 1500))
-        self.z_slider.setOrientation(Qt.Vertical)
-        self.z_slider.setTickPosition(QSlider.TicksAbove)
-        self.z_slider.setTickInterval(5)
-
-        self.horizontalLayout.addWidget(self.z_slider)
+        self.horizontalLayout.addWidget(self.fixed_widget)
 
         self.info_layout = QFrame(self.body_frame)
         self.info_layout.setObjectName(u"info_layout")
@@ -520,9 +494,6 @@ class Ui_MainWindow(object):
 
 
         self.horizontalLayout.addWidget(self.info_layout)
-
-
-        self.horizontalLayout_2.addLayout(self.horizontalLayout)
 
 
         self.verticalLayout_8.addWidget(self.body_frame)

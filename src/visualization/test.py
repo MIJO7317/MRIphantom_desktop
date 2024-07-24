@@ -1,10 +1,10 @@
 import sys
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget, QLabel, QMainWindow, QFrame
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkRenderingContextOpenGL2 import *
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkIOImage import vtkDICOMImageReader
-from vtkmodules.vtkInteractionImage import vtkImageViewer2
+from vtkmodules.vtkInteractionImage import vtkImageViewer, vtkImageViewer2
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 from vtkmodules.vtkRenderingCore import (
     vtkActor2D,
@@ -77,15 +77,16 @@ class DICOMViewer(QWidget):
     def __init__(self, dicom_dir):
         super().__init__()
 
-        self.layout = QVBoxLayout(self)
-
-        self.vtk_widget = QVTKRenderWindowInteractor(self)
-        self.layout.addWidget(self.vtk_widget)
+        # self.layout = QVBoxLayout(self)
 
         self.colors = vtkNamedColors()
         self.reader = vtkDICOMImageReader()
         self.reader.SetDirectoryName(dicom_dir)
         self.reader.Update()
+
+        self.vtk_widget = QVTKRenderWindowInteractor(self)
+        # self.layout.addWidget(self.vtk_widget)
+        # self.layout.addWidget(QLabel('Виджет добавлен'))
 
         self.image_viewer = vtkImageViewer2()
         self.image_viewer.SetInputConnection(self.reader.GetOutputPort())
@@ -139,13 +140,13 @@ class DICOMViewer(QWidget):
         self.image_viewer.Render()
         self.image_viewer.GetRenderer().ResetCamera()
         self.image_viewer.GetRenderer().SetBackground(self.colors.GetColor3d('SlateGray'))
-        # self.image_viewer.GetRenderWindow().SetSize(800, 800)
-        # self.image_viewer.GetRenderWindow().SetWindowName('ReadDICOMSeries')
+        self.image_viewer.GetRenderWindow().SetSize(800, 800)
+        self.image_viewer.GetRenderWindow().SetWindowName('ReadDICOMSeries')
         self.image_viewer.Render()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    dicom_directory = '/Users/bzavolovich/Developer/MRIphantom_desktop/images/DICOM_CT_contour'  # Replace with your DICOM directory path
+    dicom_directory = '/Users/bzavolovich/Developer/MRIphantom_desktop/images/DICOM_MR_contour'  # Replace with your DICOM directory path
     viewer = DICOMViewer(dicom_directory)
     viewer.show()
     sys.exit(app.exec_())
