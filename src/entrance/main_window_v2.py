@@ -7,7 +7,6 @@ from PySide6.QtCore import (
 )
 
 
-from UI.main_window import Ui_MainWindow
 
 workdir = os.path.realpath(
     os.path.abspath(

@@ -19,11 +19,10 @@ from PySide6 import QtCore
 # TODO join visualizations into separate class
 from src.visualization.scatter3d import Scatter3D
 from src.visualization.scatter2d import Scatter2D
-from src.visualization.histogram import Histogram
 from src.visualization.plots import Plots
 from src.visualization.table import Table
 
-from UI.main_window import Ui_MainWindow
+from UI.main_window_v2 import Ui_MainWindow
 from src.spinner.spinner import Spinner
 from src.segmentation.process import (
     slice_img_generator,
