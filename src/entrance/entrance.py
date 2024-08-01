@@ -20,9 +20,10 @@ from src.visualization.scatter3d import Scatter3D
 from src.visualization.scatter2d import Scatter2D
 from src.visualization.plots import Plots
 from src.visualization.table import Table
-from src.visualization.sequence_viewer import DICOMViewer
+from src.visualization.sequence_viewer import VTKSliceViewer
 
 from UI.main_window_v2 import Ui_MainWindow
+
 from src.spinner.spinner import Spinner
 from src.segmentation.process import (
     slice_img_generator,
@@ -32,7 +33,7 @@ from src.segmentation.process import (
     count_difference,
     count_difference_geometry,
 )
-from src.preprocess.registration import rigid_reg, apply_manual_shift
+from src.registration.registration import ManualRegistrationWindow, rigid_reg
 
 from src.image_importer.importer import ImporterWindow
 
@@ -170,12 +171,16 @@ class EntranceWindow(QMainWindow):
         self.ui.analyzeButton.setCheckable(True)
         self.ui.analyzeButton.toggled.connect(self.analyzeImages)
         self.analyze_thread_pool = QThreadPool()
+
+        self.ui.registrationButton.setCheckable(True)
+        self.ui.registrationButton.toggled.connect(self.register_button_pressed)
         self.registration_thread_pool = QThreadPool()
 
         self.ui.statusLabel.setText("Готов к работе")
 
         self.spinner = Spinner()
         self.thread_pool = QThreadPool()
+
 
     def openFixedImageDirectoryDialog(self):
         """
@@ -192,8 +197,13 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
-
-        fixedImageImporter = ImporterWindow()
+        self.study_name = self.ui.titleEdit.text()
+        write_path = os.path.realpath(
+            os.path.join(workdir, f"studies/{self.study_name}")
+        )
+        self.write_path = write_path
+        os.makedirs(write_path, exist_ok=True)
+        fixedImageImporter = ImporterWindow('fixed', write_path)
         fixedImageImporter.setAttribute(Qt.WA_DeleteOnClose)
         fixedImageImporter.show()
 
@@ -201,18 +211,17 @@ class EntranceWindow(QMainWindow):
         fixedImageImporter.destroyed.connect(loop.quit)
         loop.exec()
 
-        directory = os.path.join(fixedImageImporter.directory_path, "image.nii.gz")
+        dicom_dir = fixedImageImporter.directory_path
+        saved_nifti_filepath = os.path.join(write_path, "image_fixed.nii.gz")
 
-        if directory:
-            self.ui.fixedimgEdit.setText(directory)
-            self.fixed_image_path = directory
+        if saved_nifti_filepath:
+            self.ui.fixedimgEdit.setText(saved_nifti_filepath)
+            self.fixed_image_path = saved_nifti_filepath
 
-        self.fixed_image_viewer = DICOMViewer(fixedImageImporter.directory_path)
+        self.fixed_image_viewer = VTKSliceViewer(dicom_dir)
         self.fixed_viewer_layout = QVBoxLayout(self.ui.fixed_widget)
-        self.fixed_viewer_layout.addWidget(QLabel('Добавлен виджет'))
+        self.fixed_viewer_layout.addWidget(QLabel('КТ'))
         self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
-
-        
 
 
     def openMovingImageDirectoryDialog(self):
@@ -231,7 +240,13 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
-        movingImageImporter = ImporterWindow()
+        self.study_name = self.ui.titleEdit.text()
+        write_path = os.path.realpath(
+            os.path.join(workdir, f"studies/{self.study_name}")
+        )
+        self.write_path = write_path
+        os.makedirs(write_path, exist_ok=True)
+        movingImageImporter = ImporterWindow('moving', write_path)
         movingImageImporter.setAttribute(Qt.WA_DeleteOnClose)
         movingImageImporter.show()
 
@@ -239,14 +254,58 @@ class EntranceWindow(QMainWindow):
         movingImageImporter.destroyed.connect(loop.quit)
         loop.exec()
 
-        directory = os.path.join(movingImageImporter.directory_path, "image.nii.gz")
+        dicom_dir = movingImageImporter.directory_path
+        saved_nifti_filepath = os.path.join(write_path, "image_moving.nii.gz")
 
-        if directory:
-            self.ui.movingimgEdit.setText(directory)
-            self.moving_image_path = directory
+        if saved_nifti_filepath:
+            self.ui.movingimgEdit.setText(saved_nifti_filepath)
+            self.moving_image_path = saved_nifti_filepath
 
-        self.ui.moving_viewer = DICOMViewer(movingImageImporter.directory_path)
+        self.moving_image_viewer = VTKSliceViewer(dicom_dir)
+        self.moving_viewer_layout = QVBoxLayout(self.ui.moving_widget)
+        self.moving_viewer_layout.addWidget(QLabel('МРТ'))
+        self.moving_viewer_layout.addWidget(self.moving_image_viewer)
 
+    def register_button_pressed(self):
+        self.ui.statusLabel.setText("Выполняется совмещение МРТ и КТ")
+
+        worker_register = Worker(self.registerImages())
+        self.registration_thread_pool.start(worker_register)
+        worker_register.signaller.finished.connect(self.finishRegistration())
+
+    def registerImages(self):
+        rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
+
+    def finishRegistration(self):
+        self.ui.statusLabel.setText("Автоматическая регистрация завершена")
+
+        manual_window = ManualRegistrationWindow(
+            os.path.join(self.write_path, 'CT_fixed.nii.gz'),
+            os.path.join(self.write_path, 'MRI_warped.nii.gz'),
+            self.write_path
+        )
+        manual_window.setAttribute(Qt.WA_DeleteOnClose)
+        manual_window.show()
+
+        loop = QEventLoop()
+        manual_window.destroyed.connect(loop.quit)
+        loop.exec()
+
+        # обновить МРТ
+        self.moving_viewer_layout.removeWidget(self.moving_image_viewer)
+        self.moving_image_viewer.deleteLater()
+
+        moving_path = os.path.join(self.write_path, 'MRI_warped_fixed.nii.gz')
+        self.moving_image_viewer = VTKSliceViewer(moving_path, is_dicom=False)
+        self.moving_viewer_layout.addWidget(self.moving_image_viewer)
+
+        # обновить КТ
+        self.fixed_viewer_layout.removeWidget(self.fixed_image_viewer)
+        self.fixed_image_viewer.deleteLater()
+
+        fixed_path = os.path.join(self.write_path, 'CT_fixed.nii.gz')
+        self.fixed_image_viewer = VTKSliceViewer(fixed_path, is_dicom=False)
+        self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
 
     @Slot()
     def analyze(self):
@@ -266,13 +325,9 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
-        # corregistrate
-        if self.is_geometric is False:
-            self.ui.statusLabel.setText("Выполняется совмещение МРТ и КТ")
-            rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
-            # apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
 
-            self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
+        if self.is_geometric is False:
+            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii.gz")
             self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
 
             self.ui.statusLabel.setText("Выполняется распаковка КТ изображений")
@@ -318,10 +373,7 @@ class EntranceWindow(QMainWindow):
 
         else:
             self.ui.statusLabel.setText("Выполняется распаковка и предобработка МРТ")
-            rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
-            # apply_manual_shift(self.fixed_image_path, self.moving_image_path, self.write_path)
-
-            self.moving_image_path = os.path.join(self.write_path, "MRI_warped.nii.gz")
+            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii.gz")
             self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
 
             # create generators for original images
@@ -389,8 +441,6 @@ class EntranceWindow(QMainWindow):
         self.scatter3d.show()
         self.scatter2d = Scatter2D(self.coords_ct, self.coords_mri)
         self.scatter2d.show()
-        # self.histogram = Histogram(self.differences)
-        # self.histogram.show()
         self.plots = Plots(self.slice_differences)
         self.plots.show()
 
@@ -424,10 +474,10 @@ class EntranceWindow(QMainWindow):
         self.analyze_thread_pool.start(worker_to_nifti)
         worker_to_nifti.signaller.finished.connect(self.finishAnalysis)
 
-        self.ui.descriptionEdit.setText("")
-        self.ui.titleEdit.setText("")
-        self.ui.fixedimgEdit.setText("")
-        self.ui.movingimgEdit.setText("")
+        # self.ui.descriptionEdit.setText("")
+        # self.ui.titleEdit.setText("")
+        # self.ui.fixedimgEdit.setText("")
+        # self.ui.movingimgEdit.setText("")
 
     def createFilename(self, title):
         """

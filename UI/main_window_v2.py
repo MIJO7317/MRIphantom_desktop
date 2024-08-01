@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1470, 709)
+        MainWindow.resize(1470, 734)
         MainWindow.setStyleSheet(u"font-family: Montserrat;\n"
 "font-weight : 400;\n"
 "border-color: transparent\n"
@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
         self.body_frame = QFrame(self.centralwidget)
         self.body_frame.setObjectName(u"body_frame")
         self.body_frame.setEnabled(True)
-        self.body_frame.setMaximumSize(QSize(16777215, 622))
+        self.body_frame.setMaximumSize(QSize(16777215, 16777215))
         self.body_frame.setFrameShape(QFrame.NoFrame)
         self.body_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout = QHBoxLayout(self.body_frame)
@@ -197,13 +197,12 @@ class Ui_MainWindow(object):
         self.study_frame = QFrame(self.info_layout)
         self.study_frame.setObjectName(u"study_frame")
         self.study_frame.setEnabled(True)
-        self.study_frame.setMaximumSize(QSize(300, 370))
+        self.study_frame.setMinimumSize(QSize(300, 365))
+        self.study_frame.setMaximumSize(QSize(300, 365))
         self.study_frame.setFrameShape(QFrame.NoFrame)
         self.study_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.study_frame)
-#ifndef Q_OS_MAC
-        self.verticalLayout_2.setSpacing(-1)
-#endif
+        self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setSizeConstraint(QLayout.SetNoConstraint)
         self.verticalLayout_2.setContentsMargins(5, 5, 10, 5)
@@ -367,7 +366,7 @@ class Ui_MainWindow(object):
         self.interpolateButton.setPalette(palette)
         font2 = QFont()
         font2.setFamilies([u"Montserrat"])
-        font2.setPointSize(13)
+        font2.setPointSize(10)
         font2.setBold(False)
         self.interpolateButton.setFont(font2)
 
@@ -451,6 +450,27 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.geometryButton)
 
+        self.registrationButton = QPushButton(self.study_frame)
+        self.registrationButton.setObjectName(u"registrationButton")
+        self.registrationButton.setMinimumSize(QSize(0, 34))
+        self.registrationButton.setStyleSheet(u"QPushButton {\n"
+"background-color: rgba(0, 235, 255, 20);\n"
+"color: black;\n"
+"border-radius: 10px;\n"
+"border: 2px solid rgba(0, 235, 255, 255);\n"
+"font-size: 14px;\n"
+"}\n"
+"\n"
+"QPushButton:checked {\n"
+"background-color: white;\n"
+"color: rgb(98, 70, 234);\n"
+"border-radius: 10px;\n"
+"border: 2px solid rgb(98, 70, 234);\n"
+"font-size: 14px;\n"
+"}")
+
+        self.verticalLayout_2.addWidget(self.registrationButton)
+
         self.analyzeButton = QPushButton(self.study_frame)
         self.analyzeButton.setObjectName(u"analyzeButton")
         self.analyzeButton.setMinimumSize(QSize(0, 34))
@@ -477,8 +497,8 @@ class Ui_MainWindow(object):
 
         self.controls_frame = QFrame(self.info_layout)
         self.controls_frame.setObjectName(u"controls_frame")
-        self.controls_frame.setMinimumSize(QSize(0, 200))
-        self.controls_frame.setMaximumSize(QSize(300, 300))
+        self.controls_frame.setMinimumSize(QSize(0, 150))
+        self.controls_frame.setMaximumSize(QSize(300, 16777215))
         self.controls_layout = QVBoxLayout(self.controls_frame)
         self.controls_layout.setObjectName(u"controls_layout")
         self.statusLabel = QLabel(self.controls_frame)
@@ -518,7 +538,8 @@ class Ui_MainWindow(object):
         self.phantomTypeCombo.setCurrentText("")
         self.interpolateButton.setText(QCoreApplication.translate("MainWindow", u"\u0418\u043d\u0442\u0435\u0440\u043f\u043e\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u043c\u0430\u0440\u043a\u0435\u0440\u043e\u0432", None))
         self.geometryButton.setText(QCoreApplication.translate("MainWindow", u"\u0413\u0435\u043e\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u043c\u043e\u0434\u0435\u043b\u044c", None))
-        self.analyzeButton.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442", None))
+        self.registrationButton.setText(QCoreApplication.translate("MainWindow", u" \u0420\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044f \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0439", None))
+        self.analyzeButton.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439", None))
         self.statusLabel.setText("")
     # retranslateUi
 

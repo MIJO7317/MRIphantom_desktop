@@ -1,14 +1,12 @@
 import sys
 import vtk
-import os
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtWidgets
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkInteractionImage import vtkImageViewer2
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkRenderingCore import (
     vtkActor2D,
-    vtkRenderWindowInteractor,
     vtkTextMapper,
     vtkTextProperty
 )
@@ -34,7 +32,6 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
         self.min_slice = image_viewer.GetSliceMin()
         self.max_slice = image_viewer.GetSliceMax()
         self.slice = self.min_slice
-        # print(f'Slicer: Min = {self.min_slice}, Max= {self.max_slice}')
 
     def set_status_mapper(self, status_mapper):
         self.status_mapper = status_mapper
@@ -51,13 +48,11 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
     def move_slice_forward(self):
         if self.slice < self.max_slice:
             self.slice += 1
-            # print(f'MoveSliceForward::Slice = {self.slice}')
             self.update_status()
 
     def move_slice_backward(self):
         if self.slice > self.min_slice:
             self.slice -= 1
-            # print(f'MoveSliceBackward::Slice = {self.slice}')
             self.update_status()
 
     def key_press_event(self, obj, event):
@@ -85,7 +80,7 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
             coord_msg = f'X: {x_coord:.2f} mm, Y: {y_coord:.2f} mm, Z: {z_coord:.2f} mm'
             self.coord_mapper.SetInput(coord_msg)
             self.image_viewer.Render()
-        super().OnMouseMove()  # Call parent class method
+        super().OnMouseMove()
 
     def update_status(self):
         self.image_viewer.SetSlice(self.slice)
@@ -99,52 +94,77 @@ class StatusMessage:
     def format(slice: int, max_slice: int, z_position: float):
         return f'Slice Number {slice + 1}/{max_slice + 1} (Z: {z_position:.2f} mm)'
 
-class VTKSliceViewer(QtWidgets.QWidget):
-    def __init__(self, file_path, is_dicom=True, parent=None):
+class VTKOverlayViewer(QtWidgets.QWidget):
+    def __init__(self, filepath_fixed, filepath_moving, is_dicom=False, parent=None):
         super().__init__(parent)
 
-        # Set up the layout
+        self.x = 0
+        self.y = 0
+        self.z = 0
+
         self.layout = QtWidgets.QVBoxLayout(self)
         self.vtk_widget = QVTKRenderWindowInteractor(self)
         self.layout.addWidget(self.vtk_widget)
-        self.colors = vtkNamedColors()
 
-        # Set up the VTK renderer and interactor
         self.ren = vtk.vtkRenderer()
         self.vtk_widget.GetRenderWindow().AddRenderer(self.ren)
         self.iren = self.vtk_widget.GetRenderWindow().GetInteractor()
 
-        # Determine if file_path is a directory or a file
         if is_dicom:
-            # Load and display the DICOM series
-            self.reader = vtk.vtkDICOMImageReader()
-            self.reader.SetDirectoryName(file_path)
+            self.reader_fixed = vtk.vtkDICOMImageReader()
+            self.reader_fixed.SetDirectoryName(filepath_fixed)
         else:
-            # Load and display the NIFTI file
-            self.reader = vtk.vtkNIFTIImageReader()
-            self.reader.SetFileName(file_path)
+            self.reader_fixed = vtk.vtkNIFTIImageReader()
+            self.reader_fixed.SetFileName(filepath_fixed)
 
-        self.reader.Update()
+            self.reader_moving = vtk.vtkNIFTIImageReader()
+            self.reader_moving.SetFileName(filepath_moving)
+
+        self.reader_fixed.Update()
+        if not is_dicom:
+            self.reader_moving.Update()
+
+        red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
+        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
+
+        color_fixed = vtk.vtkImageMapToColors()
+        color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
+        color_fixed.SetLookupTable(red_color_map)
+
+        if not is_dicom:
+            color_moving = vtk.vtkImageMapToColors()
+            color_moving.SetInputConnection(self.reader_moving.GetOutputPort())
+            color_moving.SetLookupTable(green_color_map)
+
+            self.blend = vtk.vtkImageBlend()
+            self.blend.AddInputConnection(color_fixed.GetOutputPort())
+            self.blend.AddInputConnection(color_moving.GetOutputPort())
+            self.blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
+            self.blend.SetOpacity(1, 0.5)  # Opacity for the moving image
+            self.blend.Update()
+        else:
+            self.blend = vtk.vtkImageBlend()
+            self.blend.AddInputConnection(color_fixed.GetOutputPort())
+            self.blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
+            self.blend.Update()
 
         self.image_viewer = vtkImageViewer2()
         self.image_viewer.SetRenderWindow(self.vtk_widget.GetRenderWindow())
-        self.image_viewer.SetInputConnection(self.reader.GetOutputPort())
+        self.image_viewer.SetInputConnection(self.blend.GetOutputPort())
 
-        # Get additional information from DICOM or NIFTI file
         if is_dicom:
-            patient_name = self.reader.GetPatientName() if self.reader.GetPatientName() else "Unknown"
-            study_uid = self.reader.GetStudyUID() if self.reader.GetStudyUID() else "Unknown"
-            dimensions = self.reader.GetOutput().GetDimensions()
-            voxel_size = self.reader.GetOutput().GetSpacing()
-            origin = self.reader.GetOutput().GetOrigin()
+            patient_name = self.reader_fixed.GetPatientName() if self.reader_fixed.GetPatientName() else "Unknown"
+            study_uid = self.reader_fixed.GetStudyUID() if self.reader_fixed.GetStudyUID() else "Unknown"
+            dimensions = self.reader_fixed.GetOutput().GetDimensions()
+            voxel_size = self.reader_fixed.GetOutput().GetSpacing()
+            origin = self.reader_fixed.GetOutput().GetOrigin()
             additional_info = f'Patient: {patient_name}\nStudy UID: {study_uid}\nDimensions: {dimensions}\nVoxel Size: {voxel_size}\nOrigin: {origin}'
         else:
-            dimensions = self.reader.GetOutput().GetDimensions()
-            voxel_size = self.reader.GetOutput().GetSpacing()
-            origin = self.reader.GetOutput().GetOrigin()
+            dimensions = self.reader_fixed.GetOutput().GetDimensions()
+            voxel_size = self.reader_fixed.GetOutput().GetSpacing()
+            origin = self.reader_fixed.GetOutput().GetOrigin()
             additional_info = f'Dimensions: {dimensions}\nVoxel Size: {voxel_size}\nOrigin: {origin}'
 
-        # Slice text properties
         self.slice_text_prop = vtkTextProperty()
         self.slice_text_prop.SetFontFamilyToCourier()
         self.slice_text_prop.SetFontSize(12)
@@ -160,7 +180,6 @@ class VTKSliceViewer(QtWidgets.QWidget):
         self.slice_text_actor.SetMapper(self.slice_text_mapper)
         self.slice_text_actor.SetPosition(15, 10)
 
-        # Usage text properties
         self.usage_text_prop = vtkTextProperty()
         self.usage_text_prop.SetFontFamilyToCourier()
         self.usage_text_prop.SetFontSize(14)
@@ -179,7 +198,6 @@ class VTKSliceViewer(QtWidgets.QWidget):
         self.usage_text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
         self.usage_text_actor.GetPositionCoordinate().SetValue(0.05, 0.95)
 
-        # Cursor coordinates text properties
         self.coord_text_prop = vtkTextProperty()
         self.coord_text_prop.SetFontFamilyToCourier()
         self.coord_text_prop.SetFontSize(12)
@@ -213,35 +231,130 @@ class VTKSliceViewer(QtWidgets.QWidget):
         self.image_viewer.GetRenderWindow().SetSize(400, 400)
         self.image_viewer.GetRenderWindow().SetWindowName('ReadDICOMSeries' if is_dicom else 'ReadNIFTIFile')
 
-        # Add text actors to the renderer
         self.image_viewer.GetRenderer().AddActor2D(self.slice_text_actor)
         self.image_viewer.GetRenderer().AddActor2D(self.usage_text_actor)
         self.image_viewer.GetRenderer().AddActor2D(self.coord_text_actor)
+        self.image_viewer.Render()
+
+        self.image_data = self.reader_fixed.GetOutput()
+        self.extent = self.image_data.GetExtent()
+
+        self.iren.Initialize()
+
+
+    def create_color_map(self, color):
+        color_transfer = vtk.vtkColorTransferFunction()
+        color_transfer.AddRGBPoint(0, 0, 0, 0)
+        color_transfer.AddRGBPoint(255, *color)
+        return color_transfer
+
+    def update_position(self, x, y, z):
+        # Apply the Z-axis translation
+        self.x = x
+        self.y = y
+        self.z = z
+        self.update_view()
+
+    def update_rotation(self, rot_x, rot_y, rot_z):
+        # Apply the Z-axis translation
+        self.rotation_x = rot_x
+        self.rotation_y = rot_y
+        self.rotation_z = rot_z
+        self.update_view_rotation()
+
+    def update_view(self):
+
+        transform = vtk.vtkTransform()
+        transform.Translate(self.x, self.y, self.z)
+
+        transform_filter = vtk.vtkImageReslice()
+        transform_filter.SetInputConnection(self.reader_moving.GetOutputPort())
+        transform_filter.SetResliceTransform(transform)
+        transform_filter.SetResliceAxesDirectionCosines(
+            1, 0, 0, 0, 1, 0, 0, 0, 1
+        )
+        transform_filter.SetOutputSpacing(self.reader_moving.GetOutput().GetSpacing())
+        transform_filter.SetOutputOrigin(self.reader_moving.GetOutput().GetOrigin())
+        transform_filter.SetInterpolationModeToLinear()
+        transform_filter.Update()
+
+        red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
+        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
+
+        color_fixed = vtk.vtkImageMapToColors()
+        color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
+        color_fixed.SetLookupTable(red_color_map)
+
+        color_moving = vtk.vtkImageMapToColors()
+        color_moving.SetInputConnection(transform_filter.GetOutputPort())
+        color_moving.SetLookupTable(green_color_map)
+
+        self.blend.RemoveAllInputs()
+        self.blend.AddInputConnection(color_fixed.GetOutputPort())
+        self.blend.AddInputConnection(color_moving.GetOutputPort())
+        self.blend.SetOpacity(0, 0.5)  # Set opacity for the fixed image
+        self.blend.SetOpacity(1, 0.5)  # Set opacity for the moving image
+        self.blend.Update()
 
         self.image_viewer.Render()
 
-        # Get the image data
-        self.image_data = self.reader.GetOutput()
-        self.extent = self.image_data.GetExtent()
+    def update_view_rotation(self):
+        rotation_x = self.rotation_x
+        rotation_y = self.rotation_y
+        rotation_z = self.rotation_z
 
-        # Initialize VTK
-        self.iren.Initialize()
+        transform = vtk.vtkTransform()
+
+        transform.RotateX(rotation_x)
+        transform.RotateY(rotation_y)
+        transform.RotateZ(rotation_z)
+
+        transform_filter = vtk.vtkImageReslice()
+        transform_filter.SetInputConnection(self.reader_moving.GetOutputPort())
+        transform_filter.SetResliceTransform(transform)
+        transform_filter.SetResliceAxesDirectionCosines(
+            1, 0, 0, 0, 1, 0, 0, 0, 1
+        )
+        transform_filter.SetOutputSpacing(self.reader_moving.GetOutput().GetSpacing())
+        transform_filter.SetOutputOrigin(self.reader_moving.GetOutput().GetOrigin())
+        transform_filter.SetInterpolationModeToLinear()
+        transform_filter.Update()
+
+        red_color_map = self.create_color_map((1, 0, 0))
+        green_color_map = self.create_color_map((0, 1, 0))
+
+        color_fixed = vtk.vtkImageMapToColors()
+        color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
+        color_fixed.SetLookupTable(red_color_map)
+
+        color_moving = vtk.vtkImageMapToColors()
+        color_moving.SetInputConnection(transform_filter.GetOutputPort())
+        color_moving.SetLookupTable(green_color_map)
+
+        self.blend.RemoveAllInputs()
+        self.blend.AddInputConnection(color_fixed.GetOutputPort())
+        self.blend.AddInputConnection(color_moving.GetOutputPort())
+        self.blend.SetOpacity(0, 0.5)
+        self.blend.SetOpacity(1, 0.5)
+        self.blend.Update()
+
+        self.image_viewer.Render()
+
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, file_path, is_dicom=True, parent=None):
+    def __init__(self, fixed_file, moving_file, is_dicom=False, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("DICOM/NIFTI Viewer")
+        self.setWindowTitle("Overlay Viewer")
         self.resize(800, 800)
 
-        # Set up the central widget with VTK content
-        self.central_widget = VTKSliceViewer(file_path, is_dicom, self)
+        self.central_widget = VTKOverlayViewer(fixed_file, moving_file, is_dicom, self)
         self.setCentralWidget(self.central_widget)
 
 if __name__ == "__main__":
-    file_path = "C:\\dev\\git\\MRIphantom_desktop\\studies\\1registration\\MRI_warped.nii.gz"
-    is_dicom = True if os.path.isdir(file_path) else False
+    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\danke\\MRI_warped_fixed.nii.gz"
+    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\danke\\CT_fixed.nii.gz"
 
     app = QtWidgets.QApplication(sys.argv)
-    window = MainWindow(file_path, is_dicom)
+    window = MainWindow(fixed_file, moving_file, False)
     window.show()
     sys.exit(app.exec())

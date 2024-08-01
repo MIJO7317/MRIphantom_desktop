@@ -1,0 +1,15 @@
+build
+dist
+docs
+images
+sandbox
+venv
+.flake8
+.gitignore
+.gitlab-ci.yml
+.pylintrc
+app.spec
+input_CT.nii.gz
+input_MRI_resliced.nii.gz
+README.md
+todo.txt

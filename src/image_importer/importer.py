@@ -120,11 +120,13 @@ class ImporterSelectScreen(QWidget):
 
 
 class ImporterSummaryScreen(QWidget):
-    def __init__(self, window_widget):
+    def __init__(self, window_widget, image_type, target_dir):
         super().__init__()
         self.ui = Ui_ImporterSummaryScreen()
         self.ui.setupUi(self)
         self.window_widget = window_widget
+        self.target_dir = target_dir
+        self.image_type = image_type
 
         # connect actions to navigation buttons
         self.ui.backButton.clicked.connect(window_widget.switch_to_select_screen)
@@ -164,12 +166,14 @@ class ImporterSummaryScreen(QWidget):
             return
 
         source_folder = Path(self.window_widget.directory_path)
-        target_folder = source_folder
-        output_name = "image"
+        if self.image_type == 'fixed':
+            output_name = "image_fixed"
+        else:
+            output_name = "image_moving"
 
         try:
-            unpack_dicoms(source_folder, target_folder, name=output_name)
-            output_nifti = target_folder / f"{output_name}.nii.gz"
+            unpack_dicoms(source_folder, self.target_dir, name=output_name)
+            output_nifti = os.path.join(self.target_dir, f"{output_name}.nii.gz")
             QMessageBox.information(self, "Изображение успешно импортировано", f"NIfTI файл создан по пути {output_nifti}")
         except subprocess.CalledProcessError as e:
             QMessageBox.critical(self, "Import Failed", str(e))
@@ -178,7 +182,7 @@ class ImporterSummaryScreen(QWidget):
 
 
 class ImporterWindow(QStackedWidget):
-    def __init__(self):
+    def __init__(self, image_type, target_dir):
         super().__init__()
 
         self.importer_main = ImporterMainScreen(self)
@@ -187,14 +191,13 @@ class ImporterWindow(QStackedWidget):
         self.importer_select = ImporterSelectScreen(self)
         self.addWidget(self.importer_select)
 
-        self.importer_summary = ImporterSummaryScreen(self)
+        self.importer_summary = ImporterSummaryScreen(window_widget=self, image_type=image_type, target_dir=target_dir)
         self.addWidget(self.importer_summary)
 
         self.setCurrentWidget(self.importer_main)
         self.directory_path = None
         self.series_id = None
         self.series_files = []
-
 
     def switch_to_main_screen(self):
         self.setCurrentWidget(self.importer_main)
@@ -203,7 +206,7 @@ class ImporterWindow(QStackedWidget):
     def switch_to_select_screen(self):
         self.importer_select.update_sequences()
         self.setCurrentWidget(self.importer_select)
-        self.setWindowTitle("Выбрать серию - MRI QA Solution")
+        self.setWindowTitle("Выбрать последовательность - MRI QA Solution")
 
     def switch_to_summary_screen(self):
         self.importer_summary.update_summary()
