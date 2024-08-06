@@ -182,6 +182,8 @@ class ManualRegistrationWindow(QMainWindow):
             self.ui.yz_slider.value()
         ]
         apply_manual_shift(self.fixed_autoreg_file, self.moving_autoreg_file, self.save_path, *params)
+        self.close()
+
 
 
 

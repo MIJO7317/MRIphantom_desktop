@@ -50,7 +50,7 @@ class Ui_ImporterSummaryScreen(object):
 
         self.labelTitle = QLabel(ImporterSummaryScreen)
         self.labelTitle.setObjectName(u"labelTitle")
-        self.labelTitle.setGeometry(QRect(10, 10, 311, 31))
+        self.labelTitle.setGeometry(QRect(10, 10, 471, 31))
         font = QFont()
         font.setPointSize(14)
         font.setBold(True)

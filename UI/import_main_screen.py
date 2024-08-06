@@ -45,7 +45,7 @@ class Ui_ImporterMainScreen(object):
 
         self.labelTitle = QLabel(ImporterMainScreen)
         self.labelTitle.setObjectName(u"labelTitle")
-        self.labelTitle.setGeometry(QRect(10, 10, 231, 31))
+        self.labelTitle.setGeometry(QRect(10, 10, 431, 31))
         font = QFont()
         font.setPointSize(14)
         font.setBold(True)
@@ -112,8 +112,8 @@ class Ui_ImporterMainScreen(object):
         ImporterMainScreen.setWindowTitle(QCoreApplication.translate("ImporterMainScreen", u"Import DICOM", None))
         self.forwardButton.setText(QCoreApplication.translate("ImporterMainScreen", u"\u0414\u0430\u043b\u0435\u0435", None))
         self.cancelButton.setText(QCoreApplication.translate("ImporterMainScreen", u"\u041e\u0442\u043c\u0435\u043d\u0430", None))
-        self.labelTitle.setText(QCoreApplication.translate("ImporterMainScreen", u"1/3 \u0418\u043c\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
-        self.infoLabel.setText(QCoreApplication.translate("ImporterMainScreen", u"\u0424\u0430\u0439\u043b \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f:", None))
+        self.labelTitle.setText(QCoreApplication.translate("ImporterMainScreen", u"1/3 \u0418\u043c\u043f\u043e\u0440\u0442 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0439", None))
+        self.infoLabel.setText(QCoreApplication.translate("ImporterMainScreen", u"\u041f\u0443\u0442\u044c \u043a \u043f\u0430\u043f\u043a\u0435 \u0441 \u041c\u0420\u0422/\u041a\u0422 \u043f\u043e\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c\u044e", None))
         self.browseButton.setText(QCoreApplication.translate("ImporterMainScreen", u"\u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0444\u0430\u0439\u043b", None))
         self.typeInfoLabel.setText(QCoreApplication.translate("ImporterMainScreen", u"\u0422\u0438\u043f \u0434\u0430\u043d\u043d\u044b\u0445", None))
     # retranslateUi

@@ -50,7 +50,7 @@ class Ui_ImporterSelectScreen(object):
 
         self.labelTitle = QLabel(ImporterSelectScreen)
         self.labelTitle.setObjectName(u"labelTitle")
-        self.labelTitle.setGeometry(QRect(10, 10, 231, 31))
+        self.labelTitle.setGeometry(QRect(10, 10, 481, 31))
         font = QFont()
         font.setPointSize(14)
         font.setBold(True)
@@ -72,6 +72,6 @@ class Ui_ImporterSelectScreen(object):
         self.backButton.setText(QCoreApplication.translate("ImporterSelectScreen", u"\u041d\u0430\u0437\u0430\u0434", None))
         self.forwardButton.setText(QCoreApplication.translate("ImporterSelectScreen", u"\u0414\u0430\u043b\u0435\u0435", None))
         self.cancelButton.setText(QCoreApplication.translate("ImporterSelectScreen", u"\u041e\u0442\u043c\u0435\u043d\u0430", None))
-        self.labelTitle.setText(QCoreApplication.translate("ImporterSelectScreen", u"2/3 \u0412\u044b\u0431\u0440\u0430\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435", None))
+        self.labelTitle.setText(QCoreApplication.translate("ImporterSelectScreen", u"2/3 \u0412\u044b\u0431\u043e\u0440 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f", None))
     # retranslateUi
 

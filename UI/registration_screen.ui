@@ -316,7 +316,7 @@ font-size: 26px;</string>
                    <string notr="true"/>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление сдвигом&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление сдвигом МРТ&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -334,15 +334,24 @@ font-size: 26px;</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
                    <item>
                     <widget class="QLabel" name="x_label">
+                     <property name="maximumSize">
+                      <size>
+                       <width>85</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
-                      <string>X</string>
+                      <string>по оси X, мм</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="x_slider">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                    <widget class="QDoubleSpinBox" name="x_slider">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>25</height>
+                      </size>
                      </property>
                     </widget>
                    </item>
@@ -360,15 +369,24 @@ font-size: 26px;</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_6">
                    <item>
                     <widget class="QLabel" name="y_label">
+                     <property name="maximumSize">
+                      <size>
+                       <width>85</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
-                      <string>Y</string>
+                      <string>по оси Y, мм</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="y_slider">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                    <widget class="QDoubleSpinBox" name="y_slider">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>25</height>
+                      </size>
                      </property>
                     </widget>
                    </item>
@@ -386,15 +404,24 @@ font-size: 26px;</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
                    <item>
                     <widget class="QLabel" name="z_label">
+                     <property name="maximumSize">
+                      <size>
+                       <width>85</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
-                      <string>Z</string>
+                      <string>по оси Z, мм</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="z_slider">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                    <widget class="QDoubleSpinBox" name="z_slider">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>25</height>
+                      </size>
                      </property>
                     </widget>
                    </item>
@@ -431,7 +458,7 @@ font-size: 26px;</string>
                    <string notr="true"/>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление вращением&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление вращением МРТ&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -449,15 +476,24 @@ font-size: 26px;</string>
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
                    <item>
                     <widget class="QLabel" name="xy_label">
+                     <property name="maximumSize">
+                      <size>
+                       <width>120</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
                      <property name="text">
-                      <string>XY</string>
+                      <string>вокруг оси XY, °</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="xy_slider">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                    <widget class="QDoubleSpinBox" name="xy_slider">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>25</height>
+                      </size>
                      </property>
                     </widget>
                    </item>
@@ -476,14 +512,17 @@ font-size: 26px;</string>
                    <item>
                     <widget class="QLabel" name="xz_label">
                      <property name="text">
-                      <string>XZ</string>
+                      <string>вокруг оси XZ, °</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="xz_slider">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                    <widget class="QDoubleSpinBox" name="xz_slider">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>25</height>
+                      </size>
                      </property>
                     </widget>
                    </item>
@@ -502,14 +541,17 @@ font-size: 26px;</string>
                    <item>
                     <widget class="QLabel" name="yz_label">
                      <property name="text">
-                      <string>YZ</string>
+                      <string>вокруг оси YZ, °</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSlider" name="yz_slider">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
+                    <widget class="QDoubleSpinBox" name="yz_slider">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>25</height>
+                      </size>
                      </property>
                     </widget>
                    </item>
@@ -527,13 +569,20 @@ font-size: 26px;</string>
                  <height>34</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Montserrat</family>
+                 <pointsize>-1</pointsize>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
 background-color: rgba(0, 235, 255, 20);
 color: black;
 border-radius: 10px;
 border: 2px solid rgba(0, 235, 255, 255);
-font-size: 14px;
+font-size: 12px;
 }
 
 QPushButton:checked {
@@ -541,11 +590,11 @@ background-color: white;
 color: rgb(98, 70, 234);
 border-radius: 10px;
 border: 2px solid rgb(98, 70, 234);
-font-size: 14px;
+font-size: 12px;
 }</string>
                </property>
                <property name="text">
-                <string>Сохранить изменения</string>
+                <string>Выполнить ручное совмещение изображений</string>
                </property>
               </widget>
              </item>

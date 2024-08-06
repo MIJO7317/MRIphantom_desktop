@@ -62,7 +62,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>231</width>
+     <width>431</width>
      <height>31</height>
     </rect>
    </property>
@@ -76,7 +76,7 @@
     </font>
    </property>
    <property name="text">
-    <string>1/3 Импортировать изображение</string>
+    <string>1/3 Импорт изображений</string>
    </property>
   </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
@@ -109,7 +109,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Файл изображения:</string>
+       <string>Путь к папке с МРТ/КТ последовательностью</string>
       </property>
      </widget>
     </item>
