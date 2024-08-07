@@ -62,7 +62,7 @@ class Worker(QRunnable):
     - run: Runs the function in a separate thread.
     """
 
-    def __init__(self, fn):
+    def __init__(self, fn=None):
         super().__init__()
         self.signaller = Signaller()
         self.fn = fn
@@ -212,7 +212,7 @@ class EntranceWindow(QMainWindow):
         loop.exec()
 
         dicom_dir = fixedImageImporter.directory_path
-        saved_nifti_filepath = os.path.join(write_path, "image_fixed.nii.gz")
+        saved_nifti_filepath = os.path.join(write_path, "image_fixed.nii")
 
         if saved_nifti_filepath:
             self.ui.fixedimgEdit.setText(saved_nifti_filepath)
@@ -255,7 +255,7 @@ class EntranceWindow(QMainWindow):
         loop.exec()
 
         dicom_dir = movingImageImporter.directory_path
-        saved_nifti_filepath = os.path.join(write_path, "image_moving.nii.gz")
+        saved_nifti_filepath = os.path.join(write_path, "image_moving.nii")
 
         if saved_nifti_filepath:
             self.ui.movingimgEdit.setText(saved_nifti_filepath)
@@ -283,8 +283,8 @@ class EntranceWindow(QMainWindow):
         self.ui.statusLabel.setText("Совмещение МРТ и КТ завершено")
 
         manual_window = ManualRegistrationWindow(
-            os.path.join(self.write_path, 'CT_fixed.nii.gz'),
-            os.path.join(self.write_path, 'MRI_warped.nii.gz'),
+            os.path.join(self.write_path, 'CT_fixed.nii'),
+            os.path.join(self.write_path, 'MRI_warped.nii'),
             self.write_path
         )
         manual_window.setAttribute(Qt.WA_DeleteOnClose)
@@ -298,7 +298,7 @@ class EntranceWindow(QMainWindow):
         self.moving_viewer_layout.removeWidget(self.moving_image_viewer)
         self.moving_image_viewer.deleteLater()
 
-        moving_path = os.path.join(self.write_path, 'MRI_warped_fixed.nii.gz')
+        moving_path = os.path.join(self.write_path, 'MRI_warped_fixed.nii')
         self.moving_image_viewer = VTKSliceViewer(moving_path, is_dicom=False)
         self.moving_viewer_layout.addWidget(self.moving_image_viewer)
 
@@ -306,7 +306,7 @@ class EntranceWindow(QMainWindow):
         self.fixed_viewer_layout.removeWidget(self.fixed_image_viewer)
         self.fixed_image_viewer.deleteLater()
 
-        fixed_path = os.path.join(self.write_path, 'CT_fixed.nii.gz')
+        fixed_path = os.path.join(self.write_path, 'CT_fixed.nii')
         self.fixed_image_viewer = VTKSliceViewer(fixed_path, is_dicom=False)
         self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
 
@@ -330,8 +330,8 @@ class EntranceWindow(QMainWindow):
         """
 
         if self.is_geometric is False:
-            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii.gz")
-            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
+            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii")
+            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii")
 
             self.ui.statusLabel.setText("Выполняется распаковка КТ изображений")
             # create generators for original images
@@ -376,8 +376,8 @@ class EntranceWindow(QMainWindow):
 
         else:
             self.ui.statusLabel.setText("Выполняется распаковка и предобработка МРТ")
-            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii.gz")
-            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii.gz")
+            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii")
+            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii")
 
             # create generators for original images
             ct_slice_gen = slice_img_generator(
@@ -526,14 +526,14 @@ class EntranceWindow(QMainWindow):
             for f in os.listdir(study_path)
             if os.path.isfile(os.path.join(study_path, f))
             and f.startswith("CT")
-            and f.endswith(".nii.gz")
+            and f.endswith(".nii")
         ]
         mri_file = [
             f
             for f in os.listdir(study_path)
             if os.path.isfile(os.path.join(study_path, f))
             and f.startswith("MRI")
-            and f.endswith(".nii.gz")
+            and f.endswith(".nii")
         ]
 
         self.context.update(
@@ -600,7 +600,6 @@ class EntranceWindow(QMainWindow):
             self.is_interpolated = False
         else:
             self.is_interpolated = True
-        print("Interpolation button state changed: ", self.is_interpolated)
 
     # TODO simplify
     def geometryButtonStateChanged(self):
@@ -608,7 +607,82 @@ class EntranceWindow(QMainWindow):
             self.is_geometric = False
         else:
             self.is_geometric = True
-        print("Geometry button state changed: ", self.is_geometric)
+
+    def shutdown(self):
+        # Stop ongoing processes
+        if hasattr(self, 'analyze_thread_pool'):
+            self.analyze_thread_pool.clear()
+
+        # Close and release resources for visualization objects
+        for attr in ['scatter3d', 'scatter2d', 'plots', 'params_table']:
+            if hasattr(self, attr):
+                obj = getattr(self, attr)
+                if obj is not None:
+                    obj.close()
+                    setattr(self, attr, None)
+
+        # Close the spinner
+        if hasattr(self, 'spinner'):
+            self.spinner.close()
+
+        if hasattr(self, 'thread_pool'):
+            self.thread_pool.waitForDone()
+
+        if hasattr(self, 'fixed_image_viewer'):
+            self.fixed_image_viewer.close()
+            self.fixed_image_viewer.deleteLater()
+            self.fixed_image_viewer = None
+
+        if hasattr(self, 'fixed_viewer_layout'):
+            while self.fixed_viewer_layout.count():
+                item = self.fixed_viewer_layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
+            self.ui.fixed_frame.setLayout(None)
+            self.fixed_viewer_layout.deleteLater()
+            self.fixed_viewer_layout = None
+
+        if hasattr(self, 'moving_image_viewer'):
+            self.moving_image_viewer.close()
+            self.moving_image_viewer.deleteLater()
+            self.moving_image_viewer = None
+
+        if hasattr(self, 'moving_viewer_layout'):
+            while self.moving_viewer_layout.count():
+                item = self.moving_viewer_layout.takeAt(0)
+                widget = item.widget()
+                if widget:
+                    widget.deleteLater()
+            self.ui.moving_frame.setLayout(None)
+            self.moving_viewer_layout.deleteLater()
+            self.moving_viewer_layout = None
+
+        # Clear data
+        self.coords_ct = None
+        self.coords_mri = None
+        self.differences = None
+        self.slice_differences = None
+
+        # Clear file paths
+        self.write_path = None
+        self.output_path = None
+        self.filename_ct = None
+        self.filename_mri = None
+
+        # Clear other attributes
+        self.study_name = None
+        self.context = None
+
+        # Clear UI fields
+        self.ui.descriptionEdit.setText("")
+        self.ui.titleEdit.setText("")
+        self.ui.fixedimgEdit.setText("")
+        self.ui.movingimgEdit.setText("")
+
+    def closeEvent(self, event):
+        self.shutdown()
+        super().closeEvent(event)
 
 
 if __name__ == "__main__":

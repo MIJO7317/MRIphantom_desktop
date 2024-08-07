@@ -32,7 +32,6 @@ class Plots(QWidget):
         """
         df = pd.DataFrame.from_dict(self.data_per_slice).T
         df = df.iloc[41:107]
-        print(df)
         fig = make_subplots(
             rows=2,
             cols=2,
@@ -115,5 +114,4 @@ class Plots(QWidget):
 if __name__ == '__main__':
     df = pd.read_json('/Users/bzavolovich/Developer/MRIphantom_desktop/studies/05.04/slice_difference_stats.json').T
     # df = df.loc[35:110]
-    print(df)
 

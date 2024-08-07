@@ -23,12 +23,6 @@ class Viewer(QWidget):
         self.data_ct = image_ct.get_fdata()
         self.data_mri = image_mri.get_fdata()
 
-        print('min ct: ', np.min(self.data_ct))
-        print('max ct: ', np.max(self.data_ct))
-
-        print('min mri: ', np.min(self.data_mri))
-        print('max mri: ', np.max(self.data_mri))
-
         self.image_shape = self.data_ct.shape
 
         self.slider = QSlider(Qt.Horizontal)

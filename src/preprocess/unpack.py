@@ -3,18 +3,14 @@ Module: unpack
 Module for unpacking DICOM files
 """
 from subprocess import check_call
+import os
 from pathlib import Path
+import dicom2nifti
 
 
 def unpack_dicoms(source_folder: Path, target_folder: Path, name=None):
-    """Converts folder of dicoms into a nii.gz file."""
-    cmd = ['dcm2niix', '-z', 'y']
-    if name is not None:
-        cmd.append('-f')
-        cmd.append(name)
-    cmd.append('-o')
-    cmd.append(f'{str(target_folder)}/')
-    cmd.append(f'{str(source_folder)}/')
-    return check_call(cmd)
-
-
+    dicom2nifti.dicom_series_to_nifti(
+        source_folder,
+        os.path.join(target_folder, name),
+        reorient_nifti=True
+    )

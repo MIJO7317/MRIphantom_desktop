@@ -16,24 +16,15 @@ from src.visualization.overlay_viewer import VTKOverlayViewer
 def rigid_reg(fixed: str, moving: str, save_path: str):
     ants_fixed = ants.image_read(fixed)
     ants_moving = ants.image_read(moving)
-
     res = ants.registration(
         fixed=ants_fixed, moving=ants_moving, type_of_transform="Rigid"
     )
-
     transform = ants.read_transform(res["fwdtransforms"][0])
-
     ants_warped = ants.apply_ants_transform(
         transform, ants_moving, data_type="image", reference=ants_fixed
     )
-
-    print('registration finished')
-
-    nib.save(ants_warped, os.path.join(save_path, 'MRI_warped.nii.gz'))
-    nib.save(ants_fixed, os.path.join(save_path, 'CT_fixed.nii.gz'))
-
-    print('images saved')
-
+    nib.save(ants_warped, os.path.join(save_path, 'MRI_warped.nii'))
+    nib.save(ants_fixed, os.path.join(save_path, 'CT_fixed.nii'))
     return ants_warped
 
 
@@ -105,7 +96,7 @@ def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: flo
         data_type="image"
     )
 
-    nib.save(shifted_image, os.path.join(save_path, 'MRI_warped_fixed.nii.gz'))
+    nib.save(shifted_image, os.path.join(save_path, 'MRI_warped_fixed.nii'))
 
     return shifted_image
 
@@ -162,14 +153,6 @@ class ManualRegistrationWindow(QMainWindow):
         self.overlay_viewer.update_parameters(x, y, z, xy, xz, yz)
 
     def save_images(self):
-        print('x = ', self.ui.x_slider.value())
-        print('y = ', self.ui.y_slider.value())
-        print('z = ', self.ui.z_slider.value())
-        print('xy = ', self.ui.xy_slider.value())
-        print('xz = ', self.ui.xz_slider.value())
-        print('yz = ', self.ui.yz_slider.value())
-        # совместить изображения с указанными значениями слайдеров
-        # сохранить изображения
         params = [
             self.ui.x_slider.value(),
             self.ui.y_slider.value(),
@@ -187,8 +170,8 @@ class ManualRegistrationWindow(QMainWindow):
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
-    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\test\\CT_fixed.nii.gz"
-    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\test\\MRI_warped.nii.gz"
+    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\test\\CT_fixed.nii"
+    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\test\\MRI_warped.nii"
     window = ManualRegistrationWindow(fixed_file, moving_file, 'C:\\dev\\git\\MRIphantom_desktop\\studies\\test')
     window.show()
     sys.exit(app.exec())

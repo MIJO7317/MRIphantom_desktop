@@ -8,7 +8,6 @@ from src.entrance.entrance import EntranceWindow
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(
     inspect.currentframe()))[0]))
-print(cmd_folder)
 if cmd_folder not in sys.path:
 
     sys.path.insert(0, cmd_folder)
@@ -16,15 +15,11 @@ if cmd_folder not in sys.path:
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 
-# export DEBUG=2 in terminal to enter debug mode
 DEBUG = 0
 try:
     DEBUG = int(os.environ['DEBUG'])
 except KeyError:
-    print('DEBUG environment variable is not set. Please set DEBUG variable.'
-          ' Set DEBUG=2 for debug mode')
-
-print("sys.path:", sys.path)
+    print('Set DEBUG=2 for debug mode')
 
 
 if __name__ == "__main__":

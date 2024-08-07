@@ -228,6 +228,13 @@ class VTKSliceViewer(QtWidgets.QWidget):
         # Initialize VTK
         self.iren.Initialize()
 
+    def close(self):
+        if self.vtk_widget:
+            self.vtk_widget.GetRenderWindow().Finalize()
+            self.vtk_widget.TerminateApp()
+            self.vtk_widget.close()
+        super().close()
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, file_path, is_dicom=True, parent=None):
         super().__init__(parent)
