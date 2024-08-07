@@ -2,7 +2,8 @@ import sys
 import vtk
 import os
 from PySide6 import QtCore, QtWidgets
-from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+import vtkmodules.qt
+from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkInteractionImage import vtkImageViewer2
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 from vtkmodules.vtkCommonColor import vtkNamedColors

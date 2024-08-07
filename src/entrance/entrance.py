@@ -219,7 +219,7 @@ class EntranceWindow(QMainWindow):
             self.fixed_image_path = saved_nifti_filepath
 
         self.fixed_image_viewer = VTKSliceViewer(dicom_dir)
-        self.fixed_viewer_layout = QVBoxLayout(self.ui.fixed_widget)
+        self.fixed_viewer_layout = QVBoxLayout(self.ui.fixed_frame)
         self.fixed_viewer_layout.addWidget(QLabel('КТ'))
         self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
 
@@ -262,12 +262,13 @@ class EntranceWindow(QMainWindow):
             self.moving_image_path = saved_nifti_filepath
 
         self.moving_image_viewer = VTKSliceViewer(dicom_dir)
-        self.moving_viewer_layout = QVBoxLayout(self.ui.moving_widget)
+        self.moving_viewer_layout = QVBoxLayout(self.ui.moving_frame)
         self.moving_viewer_layout.addWidget(QLabel('МРТ'))
         self.moving_viewer_layout.addWidget(self.moving_image_viewer)
 
     def register_button_pressed(self):
-        self.ui.statusLabel.setText("Выполняется совмещение МРТ и КТ")
+        self.ui.statusLabel.setText("Выполняется совмещение МРТ и КТ...")
+        QApplication.processEvents()  # Force update the UI
 
         worker_register = Worker(self.registerImages())
         self.registration_thread_pool.start(worker_register)
@@ -275,9 +276,11 @@ class EntranceWindow(QMainWindow):
 
     def registerImages(self):
         rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
+        self.ui.statusLabel.setText("Открыто окно ручной корректировки совмещения...")
+        QApplication.processEvents()  # Force update the UI
 
     def finishRegistration(self):
-        self.ui.statusLabel.setText("Автоматическая регистрация завершена")
+        self.ui.statusLabel.setText("Совмещение МРТ и КТ завершено")
 
         manual_window = ManualRegistrationWindow(
             os.path.join(self.write_path, 'CT_fixed.nii.gz'),

@@ -8,10 +8,13 @@ from src.entrance.entrance import EntranceWindow
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(
     inspect.currentframe()))[0]))
+print(cmd_folder)
 if cmd_folder not in sys.path:
+
     sys.path.insert(0, cmd_folder)
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+
 
 # export DEBUG=2 in terminal to enter debug mode
 DEBUG = 0

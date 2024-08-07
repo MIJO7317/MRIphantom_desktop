@@ -1,7 +1,8 @@
 import sys
 import vtk
 from PySide6 import QtWidgets
-from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+import vtkmodules.qt
+from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkInteractionImage import vtkImageViewer2
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 from vtkmodules.vtkCommonColor import vtkNamedColors
@@ -125,7 +126,7 @@ class VTKOverlayViewer(QtWidgets.QWidget):
             self.reader_moving.Update()
 
         red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
-        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
+        green_color_map = self.create_color_map((0, 0, 1))  # Blue for moving image
 
         color_fixed = vtk.vtkImageMapToColors()
         color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
@@ -248,24 +249,32 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         color_transfer.AddRGBPoint(255, *color)
         return color_transfer
 
-    def update_position(self, x, y, z):
-        # Apply the Z-axis translation
-        self.x = x
-        self.y = y
-        self.z = z
+    def update_parameters(self, x=None, y=None, z=None, rot_x=None, rot_y=None, rot_z=None):
+        # Update position parameters
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
+        if z is not None:
+            self.z = z
+
+        # Update rotation parameters
+        if rot_x is not None:
+            self.rotation_x = rot_x
+        if rot_y is not None:
+            self.rotation_y = rot_y
+        if rot_z is not None:
+            self.rotation_z = rot_z
+
+        # Update the view
         self.update_view()
 
-    def update_rotation(self, rot_x, rot_y, rot_z):
-        # Apply the Z-axis translation
-        self.rotation_x = rot_x
-        self.rotation_y = rot_y
-        self.rotation_z = rot_z
-        self.update_view_rotation()
-
     def update_view(self):
-
         transform = vtk.vtkTransform()
         transform.Translate(self.x, self.y, self.z)
+        transform.RotateX(self.rotation_x)
+        transform.RotateY(self.rotation_y)
+        transform.RotateZ(self.rotation_z)
 
         transform_filter = vtk.vtkImageReslice()
         transform_filter.SetInputConnection(self.reader_moving.GetOutputPort())
@@ -279,7 +288,7 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         transform_filter.Update()
 
         red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
-        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
+        green_color_map = self.create_color_map((0, 0, 1))  # Blue for moving image
 
         color_fixed = vtk.vtkImageMapToColors()
         color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
@@ -294,48 +303,6 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         self.blend.AddInputConnection(color_moving.GetOutputPort())
         self.blend.SetOpacity(0, 0.5)  # Set opacity for the fixed image
         self.blend.SetOpacity(1, 0.5)  # Set opacity for the moving image
-        self.blend.Update()
-
-        self.image_viewer.Render()
-
-    def update_view_rotation(self):
-        rotation_x = self.rotation_x
-        rotation_y = self.rotation_y
-        rotation_z = self.rotation_z
-
-        transform = vtk.vtkTransform()
-
-        transform.RotateX(rotation_x)
-        transform.RotateY(rotation_y)
-        transform.RotateZ(rotation_z)
-
-        transform_filter = vtk.vtkImageReslice()
-        transform_filter.SetInputConnection(self.reader_moving.GetOutputPort())
-        transform_filter.SetResliceTransform(transform)
-        transform_filter.SetResliceAxesDirectionCosines(
-            1, 0, 0, 0, 1, 0, 0, 0, 1
-        )
-        transform_filter.SetOutputSpacing(self.reader_moving.GetOutput().GetSpacing())
-        transform_filter.SetOutputOrigin(self.reader_moving.GetOutput().GetOrigin())
-        transform_filter.SetInterpolationModeToLinear()
-        transform_filter.Update()
-
-        red_color_map = self.create_color_map((1, 0, 0))
-        green_color_map = self.create_color_map((0, 1, 0))
-
-        color_fixed = vtk.vtkImageMapToColors()
-        color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
-        color_fixed.SetLookupTable(red_color_map)
-
-        color_moving = vtk.vtkImageMapToColors()
-        color_moving.SetInputConnection(transform_filter.GetOutputPort())
-        color_moving.SetLookupTable(green_color_map)
-
-        self.blend.RemoveAllInputs()
-        self.blend.AddInputConnection(color_fixed.GetOutputPort())
-        self.blend.AddInputConnection(color_moving.GetOutputPort())
-        self.blend.SetOpacity(0, 0.5)
-        self.blend.SetOpacity(1, 0.5)
         self.blend.Update()
 
         self.image_viewer.Render()

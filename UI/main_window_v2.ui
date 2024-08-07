@@ -281,10 +281,33 @@ font-size: 26px;</string>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QWidget" name="moving_widget" native="true"/>
+        <widget class="QFrame" name="moving_frame">
+         <property name="frameShape">
+          <enum>QFrame::Panel</enum>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QWidget" name="fixed_widget" native="true"/>
+        <widget class="QFrame" name="fixed_frame">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Panel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>1</number>
+         </property>
+         <property name="midLineWidth">
+          <number>0</number>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QFrame" name="info_layout">
@@ -349,7 +372,7 @@ font-size: 26px;</string>
              <enum>QFrame::NoFrame</enum>
             </property>
             <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
+             <enum>QFrame::Plain</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <property name="spacing">
@@ -1611,11 +1634,14 @@ font-size: 14px;
              </size>
             </property>
             <layout class="QVBoxLayout" name="controls_layout">
+             <property name="topMargin">
+              <number>225</number>
+             </property>
              <item>
               <widget class="QLabel" name="statusLabel">
                <property name="minimumSize">
                 <size>
-                 <width>300</width>
+                 <width>280</width>
                  <height>30</height>
                 </size>
                </property>
@@ -1629,7 +1655,7 @@ font-size: 14px;
                 <string notr="true"/>
                </property>
                <property name="text">
-                <string/>
+                <string>Статус</string>
                </property>
               </widget>
              </item>

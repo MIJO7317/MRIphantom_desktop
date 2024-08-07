@@ -128,12 +128,12 @@ class ManualRegistrationWindow(QMainWindow):
         self.fixed_autoreg_file = fixed_file
         self.save_path = save_path
 
-        self.ui.x_slider.valueChanged.connect(self.update_position)
-        self.ui.y_slider.valueChanged.connect(self.update_position)
-        self.ui.z_slider.valueChanged.connect(self.update_position)
-        self.ui.xy_slider.valueChanged.connect(self.update_rotation)
-        self.ui.xz_slider.valueChanged.connect(self.update_rotation)
-        self.ui.yz_slider.valueChanged.connect(self.update_rotation)
+        self.ui.x_slider.valueChanged.connect(self.update_parameters)
+        self.ui.y_slider.valueChanged.connect(self.update_parameters)
+        self.ui.z_slider.valueChanged.connect(self.update_parameters)
+        self.ui.xy_slider.valueChanged.connect(self.update_parameters)
+        self.ui.xz_slider.valueChanged.connect(self.update_parameters)
+        self.ui.yz_slider.valueChanged.connect(self.update_parameters)
 
         self.setup_sliders()
 
@@ -152,17 +152,14 @@ class ManualRegistrationWindow(QMainWindow):
         self.ui.xz_slider.setRange(-90, 90)
         self.ui.yz_slider.setRange(-90, 90)
 
-    def update_position(self):
+    def update_parameters(self):
         x = self.ui.x_slider.value()
         y = self.ui.y_slider.value()
         z = self.ui.z_slider.value()
-        self.overlay_viewer.update_position(x, y, z)
-
-    def update_rotation(self):
         xy = self.ui.xy_slider.value()
         xz = self.ui.xz_slider.value()
         yz = self.ui.yz_slider.value()
-        self.overlay_viewer.update_rotation(xy, xz, yz)
+        self.overlay_viewer.update_parameters(x, y, z, xy, xz, yz)
 
     def save_images(self):
         print('x = ', self.ui.x_slider.value())

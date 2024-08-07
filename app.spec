@@ -1,20 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
-import sys ; sys.setrecursionlimit(sys.getrecursionlimit() * 5)
-
+import sys
+sys.setrecursionlimit(sys.getrecursionlimit() * 5)
 
 block_cipher = None
 excluded_modules = ['torch.distributions']
-datas=[('studies', 'studies'), ('assets', 'assets'), ('UI', 'UI')]
+datas = [('studies', 'studies'), ('assets', 'assets'), ('UI', 'UI')]
 datas += collect_data_files('timm', include_py_files=True)
-
 
 a = Analysis(
     ['app.py'],
-    pathex=['/Users/bzavolovich/Developer/MRIphantom_desktop', '/Users/bzavolovich/Developer/MRIphantom_desktop/src'],
+    pathex=['C:\\dev\\git\\MRIphantom_desktop', 'C:\\dev\\git\\MRIphantom_desktop\\src'],
     binaries=[],
     datas=datas,
-    hiddenimports=['pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg', 'PySide6.QtWebEngineWidgets', 'QtWebEngineWidgets'],
+    hiddenimports=['dcm2niix', 'vtk', 'vtk.qt', 'pydicom.encoders.gdcm', 'pydicom.encoders.pylibjpeg', 'PySide6.QtWebEngineWidgets', 'QtWebEngineWidgets'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -24,6 +23,7 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
 )
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
@@ -43,6 +43,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+
 coll = COLLECT(
     exe,
     a.binaries,
@@ -53,6 +54,7 @@ coll = COLLECT(
     upx_exclude=[],
     name='app',
 )
+
 app = BUNDLE(
     coll,
     name='app.app',

@@ -168,15 +168,22 @@ class Ui_MainWindow(object):
         self.body_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout = QHBoxLayout(self.body_frame)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.moving_widget = QWidget(self.body_frame)
-        self.moving_widget.setObjectName(u"moving_widget")
+        self.moving_frame = QFrame(self.body_frame)
+        self.moving_frame.setObjectName(u"moving_frame")
+        self.moving_frame.setFrameShape(QFrame.Panel)
 
-        self.horizontalLayout.addWidget(self.moving_widget)
+        self.horizontalLayout.addWidget(self.moving_frame)
 
-        self.fixed_widget = QWidget(self.body_frame)
-        self.fixed_widget.setObjectName(u"fixed_widget")
+        self.fixed_frame = QFrame(self.body_frame)
+        self.fixed_frame.setObjectName(u"fixed_frame")
+        self.fixed_frame.setFocusPolicy(Qt.NoFocus)
+        self.fixed_frame.setStyleSheet(u"")
+        self.fixed_frame.setFrameShape(QFrame.Panel)
+        self.fixed_frame.setFrameShadow(QFrame.Plain)
+        self.fixed_frame.setLineWidth(1)
+        self.fixed_frame.setMidLineWidth(0)
 
-        self.horizontalLayout.addWidget(self.fixed_widget)
+        self.horizontalLayout.addWidget(self.fixed_frame)
 
         self.info_layout = QFrame(self.body_frame)
         self.info_layout.setObjectName(u"info_layout")
@@ -200,7 +207,7 @@ class Ui_MainWindow(object):
         self.study_frame.setMinimumSize(QSize(300, 380))
         self.study_frame.setMaximumSize(QSize(300, 380))
         self.study_frame.setFrameShape(QFrame.NoFrame)
-        self.study_frame.setFrameShadow(QFrame.Raised)
+        self.study_frame.setFrameShadow(QFrame.Plain)
         self.verticalLayout_2 = QVBoxLayout(self.study_frame)
         self.verticalLayout_2.setSpacing(6)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -537,9 +544,10 @@ class Ui_MainWindow(object):
         self.controls_frame.setMaximumSize(QSize(300, 16777215))
         self.controls_layout = QVBoxLayout(self.controls_frame)
         self.controls_layout.setObjectName(u"controls_layout")
+        self.controls_layout.setContentsMargins(-1, 225, -1, -1)
         self.statusLabel = QLabel(self.controls_frame)
         self.statusLabel.setObjectName(u"statusLabel")
-        self.statusLabel.setMinimumSize(QSize(300, 30))
+        self.statusLabel.setMinimumSize(QSize(280, 30))
         self.statusLabel.setMaximumSize(QSize(300, 30))
         self.statusLabel.setStyleSheet(u"")
 
@@ -578,6 +586,6 @@ class Ui_MainWindow(object):
         self.interpolateButton.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u0438\u043d\u0442\u0435\u0440\u043f\u043e\u043b\u044f\u0446\u0438\u044e", None))
         self.geometryButton.setText(QCoreApplication.translate("MainWindow", u"\u0413\u0435\u043e\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u043c\u043e\u0434\u0435\u043b\u044c", None))
         self.analyzeButton.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439", None))
-        self.statusLabel.setText("")
+        self.statusLabel.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0442\u0430\u0442\u0443\u0441", None))
     # retranslateUi
 
