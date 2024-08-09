@@ -3,7 +3,7 @@ Module: plots
 Module for plots widget
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -30,8 +30,8 @@ class Plots(QWidget):
         """
         Initialize plots
         """
-        df = pd.DataFrame.from_dict(self.data_per_slice).T
-        df = df.iloc[41:107]
+        df = pd.DataFrame.from_dict(self.data_per_slice)
+        print(df.columns)
         fig = make_subplots(
             rows=2,
             cols=2,
@@ -112,6 +112,8 @@ class Plots(QWidget):
 
 
 if __name__ == '__main__':
-    df = pd.read_json('/Users/bzavolovich/Developer/MRIphantom_desktop/studies/05.04/slice_difference_stats.json').T
-    # df = df.loc[35:110]
-
+    df = pd.read_json('C:\\dev\\git\\MRIphantom_desktop\\studies\\1221124\\slice_difference_stats.json').T
+    app = QApplication()
+    plots_widget = Plots(df)
+    plots_widget.show()
+    app.exec()

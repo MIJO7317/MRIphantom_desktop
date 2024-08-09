@@ -2,6 +2,8 @@ import os
 import sys
 import inspect
 import json
+import numpy as np
+import nibabel as nib
 from datetime import datetime
 from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QFileDialog, QLabel
 from PySide6.QtCore import (
@@ -33,6 +35,7 @@ from src.segmentation.process import (
     count_difference,
     count_difference_geometry,
 )
+from src.segmentation.process_v2 import segmentation, count_difference_2
 from src.registration.registration import ManualRegistrationWindow, rigid_reg
 
 from src.image_importer.importer import ImporterWindow
@@ -333,36 +336,71 @@ class EntranceWindow(QMainWindow):
             self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii")
             self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii")
 
-            self.ui.statusLabel.setText("Выполняется распаковка КТ изображений")
-            # create generators for original images
-            ct_slice_gen = slice_img_generator(
-                self.fixed_image_path, self.is_interpolated
-            )
-            self.ui.statusLabel.setText("Выполняется распаковка МРТ изображений")
-            mri_slice_gen = slice_img_generator(
-                self.moving_image_path, self.is_interpolated
-            )
+            self.ui.statusLabel.setText("Выполняется сегментация изображений...")
+            img_mri = nib.load(self.moving_image_path)
+            img_mri_data = img_mri.get_fdata()
+            img_mri = img_mri_data[:, :, :].copy()
+            img_mri = img_mri + np.abs(np.min(img_mri))
+            img_mri *= 255.0 / (np.max(img_mri) + 1e-5)
+            img_mri = img_mri.astype(np.uint8)
 
-            # threshold segmentation
-            self.ui.statusLabel.setText("Выполняется сегментация КТ изображений")
-            ct_thresh_gen = perform_thresholding(
-                ct_slice_gen, False, self.is_interpolated
-            )
-            self.ui.statusLabel.setText("Выполняется сегментация МРТ изображений")
-            mri_thresh_gen = perform_thresholding(
-                mri_slice_gen, True, self.is_interpolated
-            )
+            img_ct = nib.load(self.fixed_image_path)
+            img_ct_data = img_ct.get_fdata()
+            img_ct = img_ct_data[:, :, :].copy()
+            img_ct = img_ct + np.abs(np.min(img_ct))
+            img_ct *= 255.0 / (np.max(img_ct) + 1e-5)
+            img_ct = img_ct.astype(np.uint8)
 
             ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
             mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
-            # detect markers and save as .pickle
-            self.ui.statusLabel.setText("Выполняется детекция маркеров на КТ")
-            isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
-            self.ui.statusLabel.setText("Выполняется детекция маркеров на МРТ")
-            isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
-            # perform marker analysis
-            self.ui.statusLabel.setText("Выполняется расчет отклонений")
-            _, self.differences, self.slice_differences = count_difference(
+            all_mri_points, all_ct_points = segmentation(
+                img_mri[:, :, 45:105],
+                img_ct[:, :, 45:105],
+                mri_pickle_path,
+                ct_pickle_path
+            )
+
+            # self.ui.statusLabel.setText("Выполняется распаковка КТ изображений")
+            # # create generators for original images
+            # ct_slice_gen = slice_img_generator(
+            #     self.fixed_image_path, self.is_interpolated
+            # )
+            # self.ui.statusLabel.setText("Выполняется распаковка МРТ изображений")
+            # mri_slice_gen = slice_img_generator(
+            #     self.moving_image_path, self.is_interpolated
+            # )
+            #
+            # # threshold segmentation
+            # self.ui.statusLabel.setText("Выполняется сегментация КТ изображений")
+            # ct_thresh_gen = perform_thresholding(
+            #     ct_slice_gen, False, self.is_interpolated
+            # )
+            # self.ui.statusLabel.setText("Выполняется сегментация МРТ изображений")
+            # mri_thresh_gen = perform_thresholding(
+            #     mri_slice_gen, True, self.is_interpolated
+            # )
+            #
+            # ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
+            # mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
+            # # detect markers and save as .pickle
+            # self.ui.statusLabel.setText("Выполняется детекция маркеров на КТ")
+            # isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
+            # self.ui.statusLabel.setText("Выполняется детекция маркеров на МРТ")
+            # isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
+            # # perform marker analysis
+            # self.ui.statusLabel.setText("Выполняется расчет отклонений")
+            # _, self.differences, self.slice_differences = count_difference(
+            #     ct_pickle_path, mri_pickle_path, self.write_path
+            # )
+            #
+            # self.coords_ct = get_coords(
+            #     os.path.join(self.write_path, "markers_CT.pickle")
+            # )
+            # self.coords_mri = get_coords(
+            #     os.path.join(self.write_path, "markers_MRI.pickle")
+            # )
+
+            _, self.differences, self.slice_differences = count_difference_2(
                 ct_pickle_path, mri_pickle_path, self.write_path
             )
 

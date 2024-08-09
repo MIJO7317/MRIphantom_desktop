@@ -24,4 +24,4 @@ vtk
 matplotlib
 pydicom
 antspyx
-dcm2niix
+
