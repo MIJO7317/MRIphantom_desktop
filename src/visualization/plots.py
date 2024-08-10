@@ -5,6 +5,7 @@ Module for plots widget
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QApplication
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import Qt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
@@ -30,7 +31,7 @@ class Plots(QWidget):
         """
         Initialize plots
         """
-        df = pd.DataFrame.from_dict(self.data_per_slice)
+        df = pd.DataFrame.from_dict(self.data_per_slice).T
         print(df.columns)
         fig = make_subplots(
             rows=2,
@@ -112,8 +113,13 @@ class Plots(QWidget):
 
 
 if __name__ == '__main__':
-    df = pd.read_json('C:\\dev\\git\\MRIphantom_desktop\\studies\\1221124\\slice_difference_stats.json').T
-    app = QApplication()
+    import sys
+
+    app = QApplication(sys.argv)
+    # Ensure the path to the JSON file is correct and the file exists
+    df = pd.read_json('/Users/bzavolovich/Developer/MRIphantom_desktop/studies/jhjhjhjhj/slice_difference_stats.json')
+
     plots_widget = Plots(df)
     plots_widget.show()
-    app.exec()
+
+    sys.exit(app.exec())

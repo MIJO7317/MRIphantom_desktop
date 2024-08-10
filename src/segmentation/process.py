@@ -443,7 +443,7 @@ def get_coords(markers_path):
     shape_coords = coords_array.shape
     list_of_points = []
     for z_slice in range(shape_coords[0]):
-        if 41 <= z_slice <= 105:  # Only include layers z from 35 to 105
+        if 0 <= z_slice <= 60:  # Only include layers z from 35 to 105
             for num_of_point in range(shape_coords[1]):
                 x = coords_array[z_slice, num_of_point, 0]
                 y = coords_array[z_slice, num_of_point, 1]

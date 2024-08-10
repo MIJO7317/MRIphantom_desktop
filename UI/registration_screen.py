@@ -25,59 +25,10 @@ class Ui_ManualRegistrationWindow(object):
         if not ManualRegistrationWindow.objectName():
             ManualRegistrationWindow.setObjectName(u"ManualRegistrationWindow")
         ManualRegistrationWindow.resize(949, 728)
-        ManualRegistrationWindow.setStyleSheet(u"font-family: Montserrat;\n"
-"font-weight : 400;\n"
-"border-color: transparent\n"
-"\n"
-"\n"
-"\n"
-"\n"
-"\n"
-"")
+        ManualRegistrationWindow.setStyleSheet(u"")
         self.centralwidget = QWidget(ManualRegistrationWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.centralwidget.setStyleSheet(u"QPushButton {\n"
-"background-color: #FFFFFE;\n"
-"color: rgb(43, 44, 52);\n"
-"border-radius: 10px;\n"
-"border: 2px solid #c5c7d4;\n"
-"font-size: 14px;\n"
-"}\n"
-"\n"
-"QPushButton:checked {\n"
-"color: white;\n"
-"background-color: #c5c7d4;\n"
-"border-radius: 10px;\n"
-"border: 2px solid #c5c7d4;\n"
-"font-size: 14px;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"color: rgb(43, 44, 52);\n"
-"background-color: #c5c7d4;\n"
-"border-radius: 10px;\n"
-"border: 2px solid #c5c7d4;\n"
-"font-size: 14px;\n"
-"}\n"
-"\n"
-"QLabel {\n"
-"color: rgb(43, 44, 52);\n"
-"font-size: 14px;\n"
-"}\n"
-"\n"
-"QLineEdit {\n"
-"background-color: #FFFFFE;\n"
-"color: rgb(43, 44, 52);\n"
-"border-radius: 10px;\n"
-"border: 2px solid #c5c7d4;\n"
-"height: 30px;\n"
-"font-size: 12px;\n"
-"}\n"
-"\n"
-"\n"
-"QWidget {\n"
-"background-color: white;\n"
-"}")
+        self.centralwidget.setStyleSheet(u"")
         self.verticalLayout_8 = QVBoxLayout(self.centralwidget)
         self.verticalLayout_8.setSpacing(0)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
@@ -86,8 +37,7 @@ class Ui_ManualRegistrationWindow(object):
         self.header_frame.setObjectName(u"header_frame")
         self.header_frame.setMinimumSize(QSize(400, 0))
         self.header_frame.setMaximumSize(QSize(16777215, 80))
-        self.header_frame.setStyleSheet(u"font-family: Impact;\n"
-"font-weight : 400;")
+        self.header_frame.setStyleSheet(u"")
         self.header_frame.setFrameShape(QFrame.NoFrame)
         self.header_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_3 = QHBoxLayout(self.header_frame)
@@ -97,8 +47,7 @@ class Ui_ManualRegistrationWindow(object):
         self.header = QFrame(self.header_frame)
         self.header.setObjectName(u"header")
         self.header.setMinimumSize(QSize(0, 0))
-        self.header.setStyleSheet(u"background-color: #2B2C34;\n"
-"width: 2000px")
+        self.header.setStyleSheet(u"")
         self.header.setFrameShape(QFrame.NoFrame)
         self.header.setFrameShadow(QFrame.Raised)
         self.header.setLineWidth(0)
@@ -108,8 +57,7 @@ class Ui_ManualRegistrationWindow(object):
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.frame = QFrame(self.header)
         self.frame.setObjectName(u"frame")
-        self.frame.setStyleSheet(u"background-color: white;\n"
-"width: 2000px")
+        self.frame.setStyleSheet(u"")
         self.frame.setFrameShape(QFrame.NoFrame)
         self.frame.setFrameShadow(QFrame.Plain)
         self.frame.setLineWidth(0)
@@ -117,10 +65,10 @@ class Ui_ManualRegistrationWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.mainLabel = QLabel(self.frame)
         self.mainLabel.setObjectName(u"mainLabel")
-        self.mainLabel.setStyleSheet(u"color: rgb(56, 58, 89);	\n"
+        self.mainLabel.setStyleSheet(u"color: rgb(255, 255, 255);	\n"
 "font: 20pt \"Segoe UI\";\n"
 "background-color: transparent;\n"
-"font-size: 26px;")
+"font-size: 20px;")
 
         self.horizontalLayout_5.addWidget(self.mainLabel)
 
@@ -194,6 +142,7 @@ class Ui_ManualRegistrationWindow(object):
         self.x_shift_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_2 = QHBoxLayout(self.x_shift_frame)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.x_label = QLabel(self.x_shift_frame)
         self.x_label.setObjectName(u"x_label")
         self.x_label.setMaximumSize(QSize(85, 16777215))
@@ -203,6 +152,7 @@ class Ui_ManualRegistrationWindow(object):
         self.x_slider = QDoubleSpinBox(self.x_shift_frame)
         self.x_slider.setObjectName(u"x_slider")
         self.x_slider.setMinimumSize(QSize(0, 25))
+        self.x_slider.setSingleStep(0.010000000000000)
 
         self.horizontalLayout_2.addWidget(self.x_slider)
 
@@ -215,6 +165,7 @@ class Ui_ManualRegistrationWindow(object):
         self.y_shift_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_6 = QHBoxLayout(self.y_shift_frame)
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
         self.y_label = QLabel(self.y_shift_frame)
         self.y_label.setObjectName(u"y_label")
         self.y_label.setMaximumSize(QSize(85, 16777215))
@@ -224,6 +175,7 @@ class Ui_ManualRegistrationWindow(object):
         self.y_slider = QDoubleSpinBox(self.y_shift_frame)
         self.y_slider.setObjectName(u"y_slider")
         self.y_slider.setMinimumSize(QSize(0, 25))
+        self.y_slider.setSingleStep(0.010000000000000)
 
         self.horizontalLayout_6.addWidget(self.y_slider)
 
@@ -236,6 +188,7 @@ class Ui_ManualRegistrationWindow(object):
         self.z_shift_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.z_shift_frame)
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.z_label = QLabel(self.z_shift_frame)
         self.z_label.setObjectName(u"z_label")
         self.z_label.setMaximumSize(QSize(85, 16777215))
@@ -245,6 +198,7 @@ class Ui_ManualRegistrationWindow(object):
         self.z_slider = QDoubleSpinBox(self.z_shift_frame)
         self.z_slider.setObjectName(u"z_slider")
         self.z_slider.setMinimumSize(QSize(0, 25))
+        self.z_slider.setSingleStep(0.100000000000000)
 
         self.horizontalLayout_7.addWidget(self.z_slider)
 
@@ -275,6 +229,7 @@ class Ui_ManualRegistrationWindow(object):
         self.xy_rotation_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_8 = QHBoxLayout(self.xy_rotation_frame)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
         self.xy_label = QLabel(self.xy_rotation_frame)
         self.xy_label.setObjectName(u"xy_label")
         self.xy_label.setMaximumSize(QSize(120, 16777215))
@@ -284,6 +239,9 @@ class Ui_ManualRegistrationWindow(object):
         self.xy_slider = QDoubleSpinBox(self.xy_rotation_frame)
         self.xy_slider.setObjectName(u"xy_slider")
         self.xy_slider.setMinimumSize(QSize(0, 25))
+        self.xy_slider.setMinimum(-99.000000000000000)
+        self.xy_slider.setMaximum(99.000000000000000)
+        self.xy_slider.setSingleStep(0.010000000000000)
 
         self.horizontalLayout_8.addWidget(self.xy_slider)
 
@@ -296,6 +254,7 @@ class Ui_ManualRegistrationWindow(object):
         self.xz_rotation_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_9 = QHBoxLayout(self.xz_rotation_frame)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
         self.xz_label = QLabel(self.xz_rotation_frame)
         self.xz_label.setObjectName(u"xz_label")
 
@@ -304,6 +263,10 @@ class Ui_ManualRegistrationWindow(object):
         self.xz_slider = QDoubleSpinBox(self.xz_rotation_frame)
         self.xz_slider.setObjectName(u"xz_slider")
         self.xz_slider.setMinimumSize(QSize(0, 25))
+        self.xz_slider.setMinimum(-99.000000000000000)
+        self.xz_slider.setMaximum(99.000000000000000)
+        self.xz_slider.setSingleStep(0.010000000000000)
+        self.xz_slider.setValue(0.000000000000000)
 
         self.horizontalLayout_9.addWidget(self.xz_slider)
 
@@ -316,6 +279,7 @@ class Ui_ManualRegistrationWindow(object):
         self.yz_rotation_frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_10 = QHBoxLayout(self.yz_rotation_frame)
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
         self.yz_label = QLabel(self.yz_rotation_frame)
         self.yz_label.setObjectName(u"yz_label")
 
@@ -324,6 +288,9 @@ class Ui_ManualRegistrationWindow(object):
         self.yz_slider = QDoubleSpinBox(self.yz_rotation_frame)
         self.yz_slider.setObjectName(u"yz_slider")
         self.yz_slider.setMinimumSize(QSize(0, 25))
+        self.yz_slider.setMinimum(-99.000000000000000)
+        self.yz_slider.setMaximum(99.000000000000000)
+        self.yz_slider.setSingleStep(0.010000000000000)
 
         self.horizontalLayout_10.addWidget(self.yz_slider)
 
@@ -340,21 +307,7 @@ class Ui_ManualRegistrationWindow(object):
         font.setFamilies([u"Montserrat"])
         font.setBold(False)
         self.saveButton.setFont(font)
-        self.saveButton.setStyleSheet(u"QPushButton {\n"
-"background-color: rgba(0, 235, 255, 20);\n"
-"color: black;\n"
-"border-radius: 10px;\n"
-"border: 2px solid rgba(0, 235, 255, 255);\n"
-"font-size: 12px;\n"
-"}\n"
-"\n"
-"QPushButton:checked {\n"
-"background-color: white;\n"
-"color: rgb(98, 70, 234);\n"
-"border-radius: 10px;\n"
-"border: 2px solid rgb(98, 70, 234);\n"
-"font-size: 12px;\n"
-"}")
+        self.saveButton.setStyleSheet(u"")
 
         self.verticalLayout_2.addWidget(self.saveButton)
 
@@ -387,6 +340,6 @@ class Ui_ManualRegistrationWindow(object):
         self.xy_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 XY, \u00b0", None))
         self.xz_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 XZ, \u00b0", None))
         self.yz_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 YZ, \u00b0", None))
-        self.saveButton.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0443\u0447\u043d\u043e\u0435 \u0441\u043e\u0432\u043c\u0435\u0449\u0435\u043d\u0438\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0439", None))
+        self.saveButton.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0441\u043e\u0432\u043c\u0435\u0449\u0435\u043d\u0438\u0435", None))
     # retranslateUi
 

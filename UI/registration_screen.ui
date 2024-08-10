@@ -14,60 +14,13 @@
    <string>MRIphantom</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">font-family: Montserrat;
-font-weight : 400;
-border-color: transparent
-
-
-
-
+   <string notr="true">
 
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">QPushButton {
-background-color: #FFFFFE;
-color: rgb(43, 44, 52);
-border-radius: 10px;
-border: 2px solid #c5c7d4;
-font-size: 14px;
-}
-
-QPushButton:checked {
-color: white;
-background-color: #c5c7d4;
-border-radius: 10px;
-border: 2px solid #c5c7d4;
-font-size: 14px;
-}
-
-QPushButton:pressed {
-color: rgb(43, 44, 52);
-background-color: #c5c7d4;
-border-radius: 10px;
-border: 2px solid #c5c7d4;
-font-size: 14px;
-}
-
-QLabel {
-color: rgb(43, 44, 52);
-font-size: 14px;
-}
-
-QLineEdit {
-background-color: #FFFFFE;
-color: rgb(43, 44, 52);
-border-radius: 10px;
-border: 2px solid #c5c7d4;
-height: 30px;
-font-size: 12px;
-}
-
-
-QWidget {
-background-color: white;
-}</string>
+    <string notr="true"/>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_8">
     <property name="spacing">
@@ -100,8 +53,7 @@ background-color: white;
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">font-family: Impact;
-font-weight : 400;</string>
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -134,8 +86,7 @@ font-weight : 400;</string>
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: #2B2C34;
-width: 2000px</string>
+          <string notr="true"/>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
@@ -165,8 +116,7 @@ width: 2000px</string>
           <item>
            <widget class="QFrame" name="frame">
             <property name="styleSheet">
-             <string notr="true">background-color: white;
-width: 2000px</string>
+             <string notr="true"/>
             </property>
             <property name="frameShape">
              <enum>QFrame::NoFrame</enum>
@@ -181,10 +131,10 @@ width: 2000px</string>
              <item>
               <widget class="QLabel" name="mainLabel">
                <property name="styleSheet">
-                <string notr="true">color: rgb(56, 58, 89);	
+                <string notr="true">color: rgb(255, 255, 255);	
 font: 20pt &quot;Segoe UI&quot;;
 background-color: transparent;
-font-size: 26px;</string>
+font-size: 20px;</string>
                </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:26pt;&quot;&gt;Ручное совмещение&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -332,6 +282,18 @@ font-size: 26px;</string>
                    <enum>QFrame::Raised</enum>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
                    <item>
                     <widget class="QLabel" name="x_label">
                      <property name="maximumSize">
@@ -353,6 +315,9 @@ font-size: 26px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -367,6 +332,18 @@ font-size: 26px;</string>
                    <enum>QFrame::Raised</enum>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
                    <item>
                     <widget class="QLabel" name="y_label">
                      <property name="maximumSize">
@@ -388,6 +365,9 @@ font-size: 26px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -402,6 +382,18 @@ font-size: 26px;</string>
                    <enum>QFrame::Raised</enum>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
                    <item>
                     <widget class="QLabel" name="z_label">
                      <property name="maximumSize">
@@ -422,6 +414,9 @@ font-size: 26px;</string>
                        <width>0</width>
                        <height>25</height>
                       </size>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.100000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -474,6 +469,18 @@ font-size: 26px;</string>
                    <enum>QFrame::Raised</enum>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
                    <item>
                     <widget class="QLabel" name="xy_label">
                      <property name="maximumSize">
@@ -495,6 +502,15 @@ font-size: 26px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -509,6 +525,18 @@ font-size: 26px;</string>
                    <enum>QFrame::Raised</enum>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
                    <item>
                     <widget class="QLabel" name="xz_label">
                      <property name="text">
@@ -524,6 +552,18 @@ font-size: 26px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>0.000000000000000</double>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -538,6 +578,18 @@ font-size: 26px;</string>
                    <enum>QFrame::Raised</enum>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_10">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
                    <item>
                     <widget class="QLabel" name="yz_label">
                      <property name="text">
@@ -552,6 +604,15 @@ font-size: 26px;</string>
                        <width>0</width>
                        <height>25</height>
                       </size>
+                     </property>
+                     <property name="minimum">
+                      <double>-99.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>99.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -572,29 +633,14 @@ font-size: 26px;</string>
                <property name="font">
                 <font>
                  <family>Montserrat</family>
-                 <pointsize>-1</pointsize>
                  <bold>false</bold>
                 </font>
                </property>
                <property name="styleSheet">
-                <string notr="true">QPushButton {
-background-color: rgba(0, 235, 255, 20);
-color: black;
-border-radius: 10px;
-border: 2px solid rgba(0, 235, 255, 255);
-font-size: 12px;
-}
-
-QPushButton:checked {
-background-color: white;
-color: rgb(98, 70, 234);
-border-radius: 10px;
-border: 2px solid rgb(98, 70, 234);
-font-size: 12px;
-}</string>
+                <string notr="true"/>
                </property>
                <property name="text">
-                <string>Выполнить ручное совмещение изображений</string>
+                <string>Выполнить совмещение</string>
                </property>
               </widget>
              </item>

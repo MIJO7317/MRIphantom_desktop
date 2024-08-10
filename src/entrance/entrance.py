@@ -28,12 +28,7 @@ from UI.main_window_v2 import Ui_MainWindow
 
 from src.spinner.spinner import Spinner
 from src.segmentation.process import (
-    slice_img_generator,
-    perform_thresholding,
-    isolate_markers,
-    get_coords,
-    count_difference,
-    count_difference_geometry,
+    get_coords
 )
 from src.segmentation.process_v2 import segmentation, count_difference_2
 from src.registration.registration import ManualRegistrationWindow, rigid_reg
@@ -134,8 +129,6 @@ class EntranceWindow(QMainWindow):
         self.output_dirname = None
         self.output_path = None
         self.format = None
-        self.is_interpolated = False
-        self.is_geometric = False
 
         self.initUi()
 
@@ -148,42 +141,65 @@ class EntranceWindow(QMainWindow):
         self.ui.moving_viewer = None
         self.ui.fixed_viewer = None
 
-        self.ui.titleEdit.setPlaceholderText("Название теста")
-        self.ui.descriptionEdit.setPlaceholderText("Описание")
+        self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPageMain)
+        self.ui.mainPageButton.setCheckable(True)
+        self.ui.mainPageButton.setChecked(True)
+        self.ui.mainPageButton.clicked.connect(self.main_page_button_pressed)
+        self.ui.statsPageButton.setCheckable(True)
+        self.ui.statsPageButton.setChecked(False)
+        self.ui.statsPageButton.clicked.connect(self.stats_page_button_pressed)
+        self.ui.scatter3dButton.setCheckable(True)
+        self.ui.scatter3dButton.setChecked(False)
+        self.ui.scatter3dButton.clicked.connect(self.scatter3d_page_button_pressed)
+        self.ui.scatter2dButton.setCheckable(True)
+        self.ui.scatter2dButton.setChecked(False)
+        self.ui.scatter2dButton.clicked.connect(self.scatter2d_page_button_pressed)
 
-        self.ui.fixedimgEdit.setPlaceholderText("Выберите папку с КТ (Fixed)")
-        self.ui.movingimgEdit.setPlaceholderText("Выберите папку с МРТ (Moving)")
+        self.ui.ctPageButton.setCheckable(True)
+        self.ui.ctPageButton.setChecked(True)
+        self.ui.ctPageButton.clicked.connect(self.ct_page_button_pressed)
+        self.ui.geometryPageButton.setChecked(True)
+        self.ui.geometryPageButton.setChecked(False)
+        self.ui.geometryPageButton.clicked.connect(self.geometry_page_button_pressed)
+        self.ui.fixed_stackedWidget.setCurrentIndex(0)
+
+        self.ui.titleEdit.setPlaceholderText("Название теста")
+
+        self.ui.fixedimgEdit.setPlaceholderText("Выберите папку с КТ")
+        self.ui.movingimgEdit.setPlaceholderText("Выберите папку с МРТ")
         self.ui.fixedimgEdit.mousePressEvent = (
             lambda event: self.openFixedImageDirectoryDialog()
         )
         self.ui.movingimgEdit.mousePressEvent = (
             lambda event: self.openMovingImageDirectoryDialog()
         )
-        self.ui.interpolateButton.stateChanged.connect(
-            self.interpolationButtonStateChanged
-        )
-        self.ui.geometryButton.stateChanged.connect(self.geometryButtonStateChanged)
 
         self.fixed_image_path = None
         self.moving_image_path = None
         self.ct_img = None
         self.mri_img = None
 
+        # geometric model selector
         self.ui.phantomTypeCombo.addItem("Elekta (Axial Grid)")
 
+        # registration buttons (automatic and manual)
+        self.ui.autoregistrationButton.setCheckable(True)
+        self.ui.autoregistrationButton.toggled.connect(self.autoregister_button_pressed)
+        self.ui.manualregistrationButton.setCheckable(True)
+        self.ui.manualregistrationButton.toggled.connect(self.manual_registration_button_pressed)
+        self.registration_thread_pool = QThreadPool()
+
+        # analyze button
         self.ui.analyzeButton.setCheckable(True)
         self.ui.analyzeButton.toggled.connect(self.analyzeImages)
         self.analyze_thread_pool = QThreadPool()
 
-        self.ui.registrationButton.setCheckable(True)
-        self.ui.registrationButton.toggled.connect(self.register_button_pressed)
-        self.registration_thread_pool = QThreadPool()
-
+        # statusbar
         self.ui.statusLabel.setText("Готов к работе")
 
+        # loading spinner
         self.spinner = Spinner()
         self.thread_pool = QThreadPool()
-
 
     def openFixedImageDirectoryDialog(self):
         """
@@ -206,15 +222,15 @@ class EntranceWindow(QMainWindow):
         )
         self.write_path = write_path
         os.makedirs(write_path, exist_ok=True)
-        fixedImageImporter = ImporterWindow('fixed', write_path)
-        fixedImageImporter.setAttribute(Qt.WA_DeleteOnClose)
-        fixedImageImporter.show()
+        fixed_image_importer = ImporterWindow('fixed', write_path)
+        fixed_image_importer.setAttribute(Qt.WA_DeleteOnClose)
+        fixed_image_importer.show()
 
         loop = QEventLoop()
-        fixedImageImporter.destroyed.connect(loop.quit)
+        fixed_image_importer.destroyed.connect(loop.quit)
         loop.exec()
 
-        dicom_dir = fixedImageImporter.directory_path
+        dicom_dir = fixed_image_importer.directory_path
         saved_nifti_filepath = os.path.join(write_path, "image_fixed.nii")
 
         if saved_nifti_filepath:
@@ -225,7 +241,6 @@ class EntranceWindow(QMainWindow):
         self.fixed_viewer_layout = QVBoxLayout(self.ui.fixed_frame)
         self.fixed_viewer_layout.addWidget(QLabel('КТ'))
         self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
-
 
     def openMovingImageDirectoryDialog(self):
         """
@@ -249,45 +264,49 @@ class EntranceWindow(QMainWindow):
         )
         self.write_path = write_path
         os.makedirs(write_path, exist_ok=True)
-        movingImageImporter = ImporterWindow('moving', write_path)
-        movingImageImporter.setAttribute(Qt.WA_DeleteOnClose)
-        movingImageImporter.show()
+        moving_image_importer = ImporterWindow('moving', write_path)
+        moving_image_importer.setAttribute(Qt.WA_DeleteOnClose)
+        moving_image_importer.show()
 
         loop = QEventLoop()
-        movingImageImporter.destroyed.connect(loop.quit)
+        moving_image_importer.destroyed.connect(loop.quit)
         loop.exec()
 
-        dicom_dir = movingImageImporter.directory_path
+        dicom_dir = moving_image_importer.directory_path
         saved_nifti_filepath = os.path.join(write_path, "image_moving.nii")
-
         if saved_nifti_filepath:
             self.ui.movingimgEdit.setText(saved_nifti_filepath)
             self.moving_image_path = saved_nifti_filepath
-
         self.moving_image_viewer = VTKSliceViewer(dicom_dir)
         self.moving_viewer_layout = QVBoxLayout(self.ui.moving_frame)
         self.moving_viewer_layout.addWidget(QLabel('МРТ'))
         self.moving_viewer_layout.addWidget(self.moving_image_viewer)
 
-    def register_button_pressed(self):
-        self.ui.statusLabel.setText("Выполняется совмещение МРТ и КТ...")
+    def autoregister_button_pressed(self):
+        self.ui.statusLabel.setText("Выполняется автоматическое совмещение МРТ и КТ...")
         QApplication.processEvents()  # Force update the UI
 
-        worker_register = Worker(self.registerImages())
-        self.registration_thread_pool.start(worker_register)
-        worker_register.signaller.finished.connect(self.finishRegistration())
+        worker_autoregistration = Worker(self.autoregistration())
+        self.registration_thread_pool.start(worker_autoregistration)
+        worker_autoregistration.signaller.finished.connect(self.finish_registration())
 
-    def registerImages(self):
+    def autoregistration(self):
         rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
         self.ui.statusLabel.setText("Открыто окно ручной корректировки совмещения...")
         QApplication.processEvents()  # Force update the UI
 
-    def finishRegistration(self):
-        self.ui.statusLabel.setText("Совмещение МРТ и КТ завершено")
+    def manual_registration_button_pressed(self):
+        self.ui.statusLabel.setText("Открыт интерфейс ручного совмещения...")
+        QApplication.processEvents()  # Force update the UI
 
+        worker_manualregistration = Worker(self.manual_registration())
+        self.registration_thread_pool.start(worker_manualregistration)
+        worker_manualregistration.signaller.finished.connect(self.finish_registration())
+
+    def manual_registration(self):
         manual_window = ManualRegistrationWindow(
-            os.path.join(self.write_path, 'CT_fixed.nii'),
-            os.path.join(self.write_path, 'MRI_warped.nii'),
+            os.path.join(self.write_path, 'image_fixed.nii'),
+            os.path.join(self.write_path, 'image_moving.nii'),
             self.write_path
         )
         manual_window.setAttribute(Qt.WA_DeleteOnClose)
@@ -297,19 +316,18 @@ class EntranceWindow(QMainWindow):
         manual_window.destroyed.connect(loop.quit)
         loop.exec()
 
-        # обновить МРТ
+    def finish_registration(self):
+        self.ui.statusLabel.setText("Совмещение МРТ и КТ завершено")
+
         self.moving_viewer_layout.removeWidget(self.moving_image_viewer)
         self.moving_image_viewer.deleteLater()
-
-        moving_path = os.path.join(self.write_path, 'MRI_warped_fixed.nii')
+        moving_path = os.path.join(self.write_path, 'image_moving.nii')
         self.moving_image_viewer = VTKSliceViewer(moving_path, is_dicom=False)
         self.moving_viewer_layout.addWidget(self.moving_image_viewer)
 
-        # обновить КТ
         self.fixed_viewer_layout.removeWidget(self.fixed_image_viewer)
         self.fixed_image_viewer.deleteLater()
-
-        fixed_path = os.path.join(self.write_path, 'CT_fixed.nii')
+        fixed_path = os.path.join(self.write_path, 'image_fixed.nii')
         self.fixed_image_viewer = VTKSliceViewer(fixed_path, is_dicom=False)
         self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
 
@@ -332,9 +350,9 @@ class EntranceWindow(QMainWindow):
         None
         """
 
-        if self.is_geometric is False:
-            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii")
-            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii")
+        if self.ui.geometryPageButton.isChecked() is False:
+            self.moving_image_path = os.path.join(self.write_path, "image_moving.nii")
+            self.fixed_image_path = os.path.join(self.write_path, "image_fixed.nii")
 
             self.ui.statusLabel.setText("Выполняется сегментация изображений...")
             img_mri = nib.load(self.moving_image_path)
@@ -360,46 +378,6 @@ class EntranceWindow(QMainWindow):
                 ct_pickle_path
             )
 
-            # self.ui.statusLabel.setText("Выполняется распаковка КТ изображений")
-            # # create generators for original images
-            # ct_slice_gen = slice_img_generator(
-            #     self.fixed_image_path, self.is_interpolated
-            # )
-            # self.ui.statusLabel.setText("Выполняется распаковка МРТ изображений")
-            # mri_slice_gen = slice_img_generator(
-            #     self.moving_image_path, self.is_interpolated
-            # )
-            #
-            # # threshold segmentation
-            # self.ui.statusLabel.setText("Выполняется сегментация КТ изображений")
-            # ct_thresh_gen = perform_thresholding(
-            #     ct_slice_gen, False, self.is_interpolated
-            # )
-            # self.ui.statusLabel.setText("Выполняется сегментация МРТ изображений")
-            # mri_thresh_gen = perform_thresholding(
-            #     mri_slice_gen, True, self.is_interpolated
-            # )
-            #
-            # ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
-            # mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
-            # # detect markers and save as .pickle
-            # self.ui.statusLabel.setText("Выполняется детекция маркеров на КТ")
-            # isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
-            # self.ui.statusLabel.setText("Выполняется детекция маркеров на МРТ")
-            # isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
-            # # perform marker analysis
-            # self.ui.statusLabel.setText("Выполняется расчет отклонений")
-            # _, self.differences, self.slice_differences = count_difference(
-            #     ct_pickle_path, mri_pickle_path, self.write_path
-            # )
-            #
-            # self.coords_ct = get_coords(
-            #     os.path.join(self.write_path, "markers_CT.pickle")
-            # )
-            # self.coords_mri = get_coords(
-            #     os.path.join(self.write_path, "markers_MRI.pickle")
-            # )
-
             _, self.differences, self.slice_differences = count_difference_2(
                 ct_pickle_path, mri_pickle_path, self.write_path
             )
@@ -413,56 +391,14 @@ class EntranceWindow(QMainWindow):
             self.ui.statusLabel.setText("Расчет выполнен")
 
         else:
-            self.ui.statusLabel.setText("Выполняется распаковка и предобработка МРТ")
-            self.moving_image_path = os.path.join(self.write_path, "MRI_warped_fixed.nii")
-            self.fixed_image_path = os.path.join(self.write_path, "CT_fixed.nii")
-
-            # create generators for original images
-            ct_slice_gen = slice_img_generator(
-                self.fixed_image_path, self.is_interpolated
-            )
-            mri_slice_gen = slice_img_generator(
-                self.moving_image_path, self.is_interpolated
-            )
-
-            # threshold segmentation
-            self.ui.statusLabel.setText("Выполняется сегментация МРТ")
-            ct_thresh_gen = perform_thresholding(
-                ct_slice_gen, False, self.is_interpolated
-            )
-            mri_thresh_gen = perform_thresholding(
-                mri_slice_gen, True, self.is_interpolated
-            )
-
-            ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
-            mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
-            # detect markers and save as .pickle
-            self.ui.statusLabel.setText("Выполняется детекция маркеров на МРТ")
-            isolate_markers(ct_thresh_gen, ct_pickle_path, self.is_interpolated)
-            isolate_markers(mri_thresh_gen, mri_pickle_path, self.is_interpolated)
-            # perform marker analysis
-            self.ui.statusLabel.setText("Выполняется расчет отклонений")
-            _, self.differences, self.slice_differences = count_difference_geometry(
-                ct_pickle_path, mri_pickle_path, self.write_path
-            )
-
-            self.coords_ct = get_coords(
-                os.path.join(self.write_path, "markers_CT.pickle")
-            )
-            self.coords_mri = get_coords(
-                os.path.join(self.write_path, "markers_MRI.pickle")
-            )
-            self.ui.statusLabel.setText("Расчет выполнен")
-
+            self.ui.statusLabel.setText("Геометрическая модель не загружена")
 
     @Slot()
     def finishAnalysis(self):
         """
         Finishes the analysis process and displays various visualization outputs.
-
         Parameters:
         - self: The instance of the class.
-
         Returns:
         None
         """
@@ -477,13 +413,65 @@ class EntranceWindow(QMainWindow):
             headers=["Параметр", "Значение"],
             title="Итоговая статистика по фантому",
         )
-        self.params_table.show()
+        # Update UI elements
+        self.ui.label.setText('Статистика отклонений')
+
+        # Remove existing layout and widget from stats_frame if they exist
+        if hasattr(self, 'stats_table_layout'):
+            # Remove all widgets from the layout
+            while self.stats_table_layout.count():
+                child = self.stats_table_layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            # Delete the layout itself
+            self.stats_table_layout.deleteLater()
+
+        # Create and add the new layout and widget
+        self.stats_table_layout = QVBoxLayout(self.ui.stats_frame)
+        self.stats_table_layout.addWidget(self.params_table)
+
+        self.ui.label_2.setText('3D просмотр')
+
+        # Remove existing layout and widget from scatter3d_frame if they exist
+        if hasattr(self, 'scatter3d_layout'):
+            while self.scatter3d_layout.count():
+                child = self.scatter3d_layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.scatter3d_layout.deleteLater()
+
+        # Create and add the new layout and widget
         self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)
-        self.scatter3d.show()
+        self.scatter3d_layout = QVBoxLayout(self.ui.scatter3d_frame)
+        self.scatter3d_layout.addWidget(self.scatter3d)
+
+        self.ui.label_3.setText('2D просмотр')
+
+        # Remove existing layout and widget from scatter2d_frame if they exist
+        if hasattr(self, 'scatter2d_layout'):
+            while self.scatter2d_layout.count():
+                child = self.scatter2d_layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.scatter2d_layout.deleteLater()
+
+        # Create and add the new layout and widget
         self.scatter2d = Scatter2D(self.coords_ct, self.coords_mri)
-        self.scatter2d.show()
+        self.scatter2d_layout = QVBoxLayout(self.ui.scatter2d_frame)
+        self.scatter2d_layout.addWidget(self.scatter2d)
+
+        # Remove existing layout and widget from plots_frame if they exist
+        if hasattr(self, 'plots_layout'):
+            while self.plots_layout.count():
+                child = self.plots_layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.plots_layout.deleteLater()
+
+        # Create and add the new layout and widget
         self.plots = Plots(self.slice_differences)
-        self.plots.show()
+        self.plots_layout = QVBoxLayout(self.ui.plots_frame)
+        self.plots_layout.addWidget(self.plots)
 
     @Slot()
     def analyzeImages(self):
@@ -504,7 +492,6 @@ class EntranceWindow(QMainWindow):
         self.context = {
             "workdir": workdir,
             "title": self.ui.titleEdit.text(),
-            "description": self.ui.descriptionEdit.text(),
             "fixedimgpath": self.ui.fixedimgEdit.text(),
             "movingimgpath": self.ui.movingimgEdit.text(),
         }
@@ -515,7 +502,6 @@ class EntranceWindow(QMainWindow):
         self.analyze_thread_pool.start(worker_to_nifti)
         worker_to_nifti.signaller.finished.connect(self.finishAnalysis)
 
-        # self.ui.descriptionEdit.setText("")
         # self.ui.titleEdit.setText("")
         # self.ui.fixedimgEdit.setText("")
         # self.ui.movingimgEdit.setText("")
@@ -632,19 +618,50 @@ class EntranceWindow(QMainWindow):
 
         return super().event(event)
 
-    # TODO simplify
-    def interpolationButtonStateChanged(self):
-        if self.is_interpolated:
-            self.is_interpolated = False
-        else:
-            self.is_interpolated = True
+    def main_page_button_pressed(self):
+        self.ui.statsPageButton.setChecked(False)
+        self.ui.scatter3dButton.setChecked(False)
+        self.ui.scatter2dButton.setChecked(False)
+        self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPageMain)
 
-    # TODO simplify
-    def geometryButtonStateChanged(self):
-        if self.is_geometric:
-            self.is_geometric = False
-        else:
-            self.is_geometric = True
+        self.moving_viewer_layout.removeWidget(self.moving_image_viewer)
+        self.moving_image_viewer.deleteLater()
+        moving_path = os.path.join(self.write_path, 'image_moving.nii')
+        self.moving_image_viewer = VTKSliceViewer(moving_path, is_dicom=False)
+        self.moving_viewer_layout.addWidget(self.moving_image_viewer)
+
+        self.fixed_viewer_layout.removeWidget(self.fixed_image_viewer)
+        self.fixed_image_viewer.deleteLater()
+        fixed_path = os.path.join(self.write_path, 'image_fixed.nii')
+        self.fixed_image_viewer = VTKSliceViewer(fixed_path, is_dicom=False)
+        self.fixed_viewer_layout.addWidget(self.fixed_image_viewer)
+
+
+    def stats_page_button_pressed(self):
+        self.ui.mainPageButton.setChecked(False)
+        self.ui.scatter3dButton.setChecked(False)
+        self.ui.scatter2dButton.setChecked(False)
+        self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPageStats)
+
+    def scatter3d_page_button_pressed(self):
+        self.ui.mainPageButton.setChecked(False)
+        self.ui.statsPageButton.setChecked(False)
+        self.ui.scatter2dButton.setChecked(False)
+        self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPage3d)
+
+    def scatter2d_page_button_pressed(self):
+        self.ui.mainPageButton.setChecked(False)
+        self.ui.statsPageButton.setChecked(False)
+        self.ui.scatter3dButton.setChecked(False)
+        self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPage2d)
+
+    def ct_page_button_pressed(self):
+        self.ui.geometryPageButton.setChecked(False)
+        self.ui.fixed_stackedWidget.setCurrentWidget(self.ui.ct_page)
+
+    def geometry_page_button_pressed(self):
+        self.ui.ctPageButton.setChecked(False)
+        self.ui.fixed_stackedWidget.setCurrentWidget(self.ui.geometry_page)
 
     def shutdown(self):
         # Stop ongoing processes
@@ -713,7 +730,6 @@ class EntranceWindow(QMainWindow):
         self.context = None
 
         # Clear UI fields
-        self.ui.descriptionEdit.setText("")
         self.ui.titleEdit.setText("")
         self.ui.fixedimgEdit.setText("")
         self.ui.movingimgEdit.setText("")

@@ -22,12 +22,11 @@ class Scatter2D(QWidget):
         self.data_mri = data_mri
 
         self.setWindowTitle(title)
-
         self.browser = QWebEngineView(self)
 
         self.slider = QSlider(Qt.Horizontal)
-        self.min_value_slider = 41
-        self.max_value_slider = 107
+        self.min_value_slider = 0
+        self.max_value_slider = 60
         self.slider.setMinimum(self.min_value_slider)
         self.slider.setMaximum(
             self.max_value_slider

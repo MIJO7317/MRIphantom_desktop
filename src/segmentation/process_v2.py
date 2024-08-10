@@ -178,11 +178,11 @@ def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
     return points
 
 
-def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, size_for_resizing=2048, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
+def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, size_for_resizing=1024, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
     """
     Segments MRI and CT images to extract points of interest and saves the coordinates as pickle files.
     """
-
+    # default size_for_resizing=2048
     # Check if the number of slices in MRI and CT images are the same
     if mri_images.shape[2] != ct_images.shape[2]:
         return 'Error: MRI and CT data have different number of images.'
@@ -218,7 +218,7 @@ def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, size_for_re
         while len(mri_points) < 88:
             mri_points.append((100, 100))  # Append (100, 100) if there are fewer than 88 points
         while len(mri_points) > 88:
-            mri_points.pop()  # Remove excess points if there are more than 88 points
+            mri_points.pop()
 
         while len(ct_points) < 88:
             ct_points.append((100, 100))
@@ -260,13 +260,12 @@ def count_difference_2(ct_path, mri_path, save_path, interpolation_coef=1.0, dis
 
     # Process each slice and calculate distances using KD-tree for nearest neighbor search
     for slice_num, (ct_slice, mri_slice) in enumerate(zip(coords_ct, coords_mri)):
+        print(slice_num)
         slice_distances[slice_num] = {"distances": []}
 
-        # Convert to numpy arrays for KD-tree processing
         ct_points = np.array(ct_slice)
         mri_points = np.array(mri_slice)
 
-        # Build KD-tree for CT points
         tree = cKDTree(ct_points)
         slice_distances[slice_num]["distances"], indices = tree.query(mri_points)
 

@@ -32,7 +32,7 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
         self.image_viewer = image_viewer
         self.min_slice = image_viewer.GetSliceMin()
         self.max_slice = image_viewer.GetSliceMax()
-        self.slice = self.min_slice
+        self.slice = (self.min_slice + self.max_slice) // 2
 
     def set_status_mapper(self, status_mapper):
         self.status_mapper = status_mapper
@@ -93,7 +93,7 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
 class StatusMessage:
     @staticmethod
     def format(slice: int, max_slice: int, z_position: float):
-        return f'Slice Number {slice + 1}/{max_slice + 1} (Z: {z_position:.2f} mm)'
+        return f'Slice number {slice + 1}/{max_slice + 1} (Z: {z_position:.2f} mm)'
 
 class VTKOverlayViewer(QtWidgets.QWidget):
     def __init__(self, filepath_fixed, filepath_moving, is_dicom=False, parent=None):
@@ -126,7 +126,7 @@ class VTKOverlayViewer(QtWidgets.QWidget):
             self.reader_moving.Update()
 
         red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
-        green_color_map = self.create_color_map((0, 0, 1))  # Blue for moving image
+        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
 
         color_fixed = vtk.vtkImageMapToColors()
         color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
@@ -152,6 +152,8 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         self.image_viewer = vtkImageViewer2()
         self.image_viewer.SetRenderWindow(self.vtk_widget.GetRenderWindow())
         self.image_viewer.SetInputConnection(self.blend.GetOutputPort())
+        self.image_viewer.SetSlice((self.image_viewer.GetSliceMin() + self.image_viewer.GetSliceMax())//2)
+
 
         if is_dicom:
             patient_name = self.reader_fixed.GetPatientName() if self.reader_fixed.GetPatientName() else "Unknown"
@@ -159,12 +161,22 @@ class VTKOverlayViewer(QtWidgets.QWidget):
             dimensions = self.reader_fixed.GetOutput().GetDimensions()
             voxel_size = self.reader_fixed.GetOutput().GetSpacing()
             origin = self.reader_fixed.GetOutput().GetOrigin()
-            additional_info = f'Patient: {patient_name}\nStudy UID: {study_uid}\nDimensions: {dimensions}\nVoxel Size: {voxel_size}\nOrigin: {origin}'
+            additional_info = (
+                f'Patient: {patient_name}\n'
+                f'UID: {study_uid}\n'
+                f'Dim: {dimensions}\n'
+                f'Voxel size: {voxel_size}\n'
+                f'Origin: {origin}'
+            )
         else:
             dimensions = self.reader_fixed.GetOutput().GetDimensions()
             voxel_size = self.reader_fixed.GetOutput().GetSpacing()
             origin = self.reader_fixed.GetOutput().GetOrigin()
-            additional_info = f'Dimensions: {dimensions}\nVoxel Size: {voxel_size}\nOrigin: {origin}'
+            additional_info = (
+                f'Dim: {dimensions}\n'
+                f'Voxel size: {voxel_size}\n'
+                f'Origin: {origin}'
+            )
 
         self.slice_text_prop = vtkTextProperty()
         self.slice_text_prop.SetFontFamilyToCourier()
@@ -189,8 +201,8 @@ class VTKOverlayViewer(QtWidgets.QWidget):
 
         self.usage_text_mapper = vtkTextMapper()
         self.usage_text_mapper.SetInput(
-            'Slice with mouse wheel\n or Up/Down-Key\n- Zoom with pressed right\n '
-            ' mouse button while dragging\n\n' + additional_info
+            'MRI - green\n CT - red\n'
+             + additional_info
         )
         self.usage_text_mapper.SetTextProperty(self.usage_text_prop)
 
@@ -288,7 +300,7 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         transform_filter.Update()
 
         red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
-        green_color_map = self.create_color_map((0, 0, 1))  # Blue for moving image
+        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
 
         color_fixed = vtk.vtkImageMapToColors()
         color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())

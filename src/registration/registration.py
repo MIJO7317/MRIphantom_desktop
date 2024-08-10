@@ -23,8 +23,8 @@ def rigid_reg(fixed: str, moving: str, save_path: str):
     ants_warped = ants.apply_ants_transform(
         transform, ants_moving, data_type="image", reference=ants_fixed
     )
-    nib.save(ants_warped, os.path.join(save_path, 'MRI_warped.nii'))
-    nib.save(ants_fixed, os.path.join(save_path, 'CT_fixed.nii'))
+    nib.save(ants_warped, os.path.join(save_path, 'image_moving.nii'))
+    nib.save(ants_fixed, os.path.join(save_path, 'image_fixed.nii'))
     return ants_warped
 
 
@@ -96,7 +96,7 @@ def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: flo
         data_type="image"
     )
 
-    nib.save(shifted_image, os.path.join(save_path, 'MRI_warped_fixed.nii'))
+    nib.save(shifted_image, os.path.join(save_path, 'image_moving.nii'))
 
     return shifted_image
 

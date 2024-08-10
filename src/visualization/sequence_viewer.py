@@ -9,10 +9,10 @@ from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkRenderingCore import (
     vtkActor2D,
-    vtkRenderWindowInteractor,
     vtkTextMapper,
     vtkTextProperty
 )
+
 
 class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
     def __init__(self, parent=None):
@@ -34,8 +34,7 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
         self.image_viewer = image_viewer
         self.min_slice = image_viewer.GetSliceMin()
         self.max_slice = image_viewer.GetSliceMax()
-        self.slice = self.min_slice
-        # print(f'Slicer: Min = {self.min_slice}, Max= {self.max_slice}')
+        self.slice = (self.min_slice + self.max_slice) // 2
 
     def set_status_mapper(self, status_mapper):
         self.status_mapper = status_mapper
@@ -95,10 +94,12 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
         self.status_mapper.SetInput(msg)
         self.image_viewer.Render()
 
+
 class StatusMessage:
     @staticmethod
     def format(slice: int, max_slice: int, z_position: float):
-        return f'Slice Number {slice + 1}/{max_slice + 1} (Z: {z_position:.2f} mm)'
+        return f'Slice number {slice + 1}/{max_slice + 1} (Z: {z_position:.2f} mm)'
+
 
 class VTKSliceViewer(QtWidgets.QWidget):
     def __init__(self, file_path, is_dicom=True, parent=None):
@@ -130,6 +131,7 @@ class VTKSliceViewer(QtWidgets.QWidget):
         self.image_viewer = vtkImageViewer2()
         self.image_viewer.SetRenderWindow(self.vtk_widget.GetRenderWindow())
         self.image_viewer.SetInputConnection(self.reader.GetOutputPort())
+        self.image_viewer.SetSlice((self.image_viewer.GetSliceMin() + self.image_viewer.GetSliceMax())//2)
 
         # Get additional information from DICOM or NIFTI file
         if is_dicom:
@@ -138,12 +140,21 @@ class VTKSliceViewer(QtWidgets.QWidget):
             dimensions = self.reader.GetOutput().GetDimensions()
             voxel_size = self.reader.GetOutput().GetSpacing()
             origin = self.reader.GetOutput().GetOrigin()
-            additional_info = f'Patient: {patient_name}\nStudy UID: {study_uid}\nDimensions: {dimensions}\nVoxel Size: {voxel_size}\nOrigin: {origin}'
+            additional_info = (
+                f'Patient: {patient_name}\n'
+                f'UID: {study_uid}\n'
+                f'Dim: {dimensions}\n'
+                f'Voxel size: {voxel_size}\n'
+                f'Origin: {origin}')
         else:
             dimensions = self.reader.GetOutput().GetDimensions()
             voxel_size = self.reader.GetOutput().GetSpacing()
             origin = self.reader.GetOutput().GetOrigin()
-            additional_info = f'Dimensions: {dimensions}\nVoxel Size: {voxel_size}\nOrigin: {origin}'
+            additional_info = (
+                f'Dim: {dimensions}\n'
+                f'Voxel size: {voxel_size}\n'
+                f'Origin: {origin}'
+                )
 
         # Slice text properties
         self.slice_text_prop = vtkTextProperty()
@@ -153,7 +164,11 @@ class VTKSliceViewer(QtWidgets.QWidget):
         self.slice_text_prop.SetJustificationToLeft()
 
         self.slice_text_mapper = vtkTextMapper()
-        msg = StatusMessage.format(self.image_viewer.GetSliceMin(), self.image_viewer.GetSliceMax(), origin[2])
+        msg = StatusMessage.format(
+            self.image_viewer.GetSliceMin(),
+            self.image_viewer.GetSliceMax(),
+            origin[2]
+        )
         self.slice_text_mapper.SetInput(msg)
         self.slice_text_mapper.SetTextProperty(self.slice_text_prop)
 
@@ -170,8 +185,7 @@ class VTKSliceViewer(QtWidgets.QWidget):
 
         self.usage_text_mapper = vtkTextMapper()
         self.usage_text_mapper.SetInput(
-            'Slice with mouse wheel\n or Up/Down-Key\n- Zoom with pressed right\n '
-            ' mouse button while dragging\n\n' + additional_info
+             additional_info
         )
         self.usage_text_mapper.SetTextProperty(self.usage_text_prop)
 
@@ -212,7 +226,9 @@ class VTKSliceViewer(QtWidgets.QWidget):
         self.image_viewer.Render()
         self.image_viewer.GetRenderer().ResetCamera()
         self.image_viewer.GetRenderWindow().SetSize(400, 400)
-        self.image_viewer.GetRenderWindow().SetWindowName('ReadDICOMSeries' if is_dicom else 'ReadNIFTIFile')
+        self.image_viewer.GetRenderWindow().SetWindowName(
+            'ReadDICOMSeries' if is_dicom else 'ReadNIFTIFile'
+        )
 
         # Add text actors to the renderer
         self.image_viewer.GetRenderer().AddActor2D(self.slice_text_actor)
@@ -235,6 +251,7 @@ class VTKSliceViewer(QtWidgets.QWidget):
             self.vtk_widget.close()
         super().close()
 
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, file_path, is_dicom=True, parent=None):
         super().__init__(parent)
@@ -244,6 +261,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Set up the central widget with VTK content
         self.central_widget = VTKSliceViewer(file_path, is_dicom, self)
         self.setCentralWidget(self.central_widget)
+
 
 if __name__ == "__main__":
     file_path = "C:\\dev\\git\\MRIphantom_desktop\\studies\\1registration\\MRI_warped.nii.gz"
