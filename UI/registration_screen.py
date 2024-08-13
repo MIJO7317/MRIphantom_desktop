@@ -65,7 +65,7 @@ class Ui_ManualRegistrationWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.mainLabel = QLabel(self.frame)
         self.mainLabel.setObjectName(u"mainLabel")
-        self.mainLabel.setStyleSheet(u"color: rgb(255, 255, 255);	\n"
+        self.mainLabel.setStyleSheet(u"color: rgb(0, 0, 0);	\n"
 "font: 20pt \"Segoe UI\";\n"
 "background-color: transparent;\n"
 "font-size: 20px;")

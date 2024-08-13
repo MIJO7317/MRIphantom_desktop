@@ -14,9 +14,7 @@
    <string>MRIphantom</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-
-</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
@@ -131,7 +129,7 @@
              <item>
               <widget class="QLabel" name="mainLabel">
                <property name="styleSheet">
-                <string notr="true">color: rgb(255, 255, 255);	
+                <string notr="true">color: rgb(0, 0, 0);	
 font: 20pt &quot;Segoe UI&quot;;
 background-color: transparent;
 font-size: 20px;</string>

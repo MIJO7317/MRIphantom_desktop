@@ -12,16 +12,19 @@ from vtkmodules.vtkRenderingCore import (
     vtkTextProperty
 )
 
+
 class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
-    def __init__(self, parent=None):
+    def __init__(self, slice_type, parent=None):
         super().__init__()
         self.AddObserver('KeyPressEvent', self.key_press_event)
         self.AddObserver('MouseWheelForwardEvent', self.mouse_wheel_forward_event)
         self.AddObserver('MouseWheelBackwardEvent', self.mouse_wheel_backward_event)
         self.AddObserver('MouseMoveEvent', self.mouse_move_event)
+
         self.image_viewer = None
         self.status_mapper = None
         self.coord_mapper = None
+        self.slice_type = slice_type  # Set the slice type
         self.slice = 0
         self.min_slice = 0
         self.max_slice = 0
@@ -30,9 +33,21 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
 
     def set_image_viewer(self, image_viewer):
         self.image_viewer = image_viewer
-        self.min_slice = image_viewer.GetSliceMin()
-        self.max_slice = image_viewer.GetSliceMax()
+
+        # Determine slice min and max based on the slice type
+        if self.slice_type == 'axial':
+            self.min_slice = 0
+            self.max_slice = image_viewer.GetInput().GetDimensions()[2] - 1
+        elif self.slice_type == 'sagittal':
+            self.min_slice = 0
+            self.max_slice = image_viewer.GetInput().GetDimensions()[0] - 1
+        elif self.slice_type == 'coronal':
+            self.min_slice = 0
+            self.max_slice = image_viewer.GetInput().GetDimensions()[1] - 1
+
+        # Set initial slice to the middle of the range
         self.slice = (self.min_slice + self.max_slice) // 2
+        self.image_viewer.SetSlice(self.slice)
 
     def set_status_mapper(self, status_mapper):
         self.status_mapper = status_mapper
@@ -75,9 +90,15 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
         picker.Pick(pos[0], pos[1], 0, self.image_viewer.GetRenderer())
         world_pos = picker.GetPickPosition()
         if world_pos:
-            x_coord = world_pos[0]
-            y_coord = world_pos[1]
-            z_coord = self.origin[2] + self.slice * self.voxel_size[2]
+            x_coord, y_coord, z_coord = world_pos
+            # Calculate coordinate based on slice type
+            if self.slice_type == 'axial':
+                z_coord = self.origin[2] + self.slice * self.voxel_size[2]
+            elif self.slice_type == 'sagittal':
+                x_coord = self.origin[0] + self.slice * self.voxel_size[0]
+            elif self.slice_type == 'coronal':
+                y_coord = self.origin[1] + self.slice * self.voxel_size[1]
+
             coord_msg = f'X: {x_coord:.2f} mm, Y: {y_coord:.2f} mm, Z: {z_coord:.2f} mm'
             self.coord_mapper.SetInput(coord_msg)
             self.image_viewer.Render()
@@ -85,15 +106,24 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
 
     def update_status(self):
         self.image_viewer.SetSlice(self.slice)
-        z_position = self.origin[2] + self.slice * self.voxel_size[2]
+        # Update z_position based on slice type
+        if self.slice_type == 'axial':
+            z_position = self.origin[2] + self.slice * self.voxel_size[2]
+        elif self.slice_type == 'sagittal':
+            z_position = self.origin[0] + self.slice * self.voxel_size[0]
+        elif self.slice_type == 'coronal':
+            z_position = self.origin[1] + self.slice * self.voxel_size[1]
+
         msg = StatusMessage.format(self.slice, self.max_slice, z_position)
         self.status_mapper.SetInput(msg)
         self.image_viewer.Render()
 
+
 class StatusMessage:
     @staticmethod
     def format(slice: int, max_slice: int, z_position: float):
-        return f'Slice number {slice + 1}/{max_slice + 1} (Z: {z_position:.2f} mm)'
+        return f'Slice number {slice + 1}/{max_slice + 1} ({z_position:.2f} mm)'
+
 
 class VTKOverlayViewer(QtWidgets.QWidget):
     def __init__(self, filepath_fixed, filepath_moving, is_dicom=False, parent=None):
@@ -103,64 +133,90 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         self.y = 0
         self.z = 0
 
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.vtk_widget = QVTKRenderWindowInteractor(self)
-        self.layout.addWidget(self.vtk_widget)
+        self.layout = QtWidgets.QGridLayout(self)
 
-        self.ren = vtk.vtkRenderer()
-        self.vtk_widget.GetRenderWindow().AddRenderer(self.ren)
-        self.iren = self.vtk_widget.GetRenderWindow().GetInteractor()
+        # Create VTK renderers for the 3 views: Axial, Sagittal, and Coronal
+        self.axial_viewer = self.create_viewer('axial', filepath_fixed, filepath_moving, is_dicom)
+        self.sagittal_viewer = self.create_viewer('sagittal', filepath_fixed, filepath_moving, is_dicom)
+        self.coronal_viewer = self.create_viewer('coronal', filepath_fixed, filepath_moving, is_dicom)
+
+        # Add VTK widgets to the layout in a 2x2 grid
+        self.layout.addWidget(self.axial_viewer[0], 0, 0)
+        self.layout.addWidget(self.sagittal_viewer[0], 0, 1)
+        self.layout.addWidget(self.coronal_viewer[0], 1, 0)
+
+        self.axial_viewer[1].SetSliceOrientationToXY()  # Axial view
+        self.sagittal_viewer[1].SetSliceOrientationToYZ()  # Sagittal view
+        self.coronal_viewer[1].SetSliceOrientationToXZ()  # Coronal view
+
+        # Set the initial slice for all viewers to the middle slice
+        self.axial_viewer[1].SetSlice((self.axial_viewer[1].GetSliceMin() + self.axial_viewer[1].GetSliceMax()) // 2)
+        self.sagittal_viewer[1].SetSlice(
+            (self.sagittal_viewer[1].GetSliceMin() + self.sagittal_viewer[1].GetSliceMax()) // 2)
+        self.coronal_viewer[1].SetSlice(
+            (self.coronal_viewer[1].GetSliceMin() + self.coronal_viewer[1].GetSliceMax()) // 2)
+
+        # Synchronize slices across views
+        self.axial_viewer[1].AddObserver("SliceChangedEvent", self.sync_views)
+        self.sagittal_viewer[1].AddObserver("SliceChangedEvent", self.sync_views)
+        self.coronal_viewer[1].AddObserver("SliceChangedEvent", self.sync_views)
+
+    def create_viewer(self, slice_type, filepath_fixed, filepath_moving, is_dicom):
+        vtk_widget = QVTKRenderWindowInteractor(self)
+
+        ren = vtk.vtkRenderer()
+        vtk_widget.GetRenderWindow().AddRenderer(ren)
+        iren = vtk_widget.GetRenderWindow().GetInteractor()
 
         if is_dicom:
-            self.reader_fixed = vtk.vtkDICOMImageReader()
-            self.reader_fixed.SetDirectoryName(filepath_fixed)
+            reader_fixed = vtk.vtkDICOMImageReader()
+            reader_fixed.SetDirectoryName(filepath_fixed)
         else:
-            self.reader_fixed = vtk.vtkNIFTIImageReader()
-            self.reader_fixed.SetFileName(filepath_fixed)
+            reader_fixed = vtk.vtkNIFTIImageReader()
+            reader_fixed.SetFileName(filepath_fixed)
 
-            self.reader_moving = vtk.vtkNIFTIImageReader()
-            self.reader_moving.SetFileName(filepath_moving)
+            reader_moving = vtk.vtkNIFTIImageReader()
+            reader_moving.SetFileName(filepath_moving)
 
-        self.reader_fixed.Update()
+        reader_fixed.Update()
         if not is_dicom:
-            self.reader_moving.Update()
+            reader_moving.Update()
 
         red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
         green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
 
         color_fixed = vtk.vtkImageMapToColors()
-        color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
+        color_fixed.SetInputConnection(reader_fixed.GetOutputPort())
         color_fixed.SetLookupTable(red_color_map)
 
         if not is_dicom:
             color_moving = vtk.vtkImageMapToColors()
-            color_moving.SetInputConnection(self.reader_moving.GetOutputPort())
+            color_moving.SetInputConnection(reader_moving.GetOutputPort())
             color_moving.SetLookupTable(green_color_map)
 
-            self.blend = vtk.vtkImageBlend()
-            self.blend.AddInputConnection(color_fixed.GetOutputPort())
-            self.blend.AddInputConnection(color_moving.GetOutputPort())
-            self.blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
-            self.blend.SetOpacity(1, 0.5)  # Opacity for the moving image
-            self.blend.Update()
+            blend = vtk.vtkImageBlend()
+            blend.AddInputConnection(color_fixed.GetOutputPort())
+            blend.AddInputConnection(color_moving.GetOutputPort())
+            blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
+            blend.SetOpacity(1, 0.5)  # Opacity for the moving image
+            blend.Update()
         else:
-            self.blend = vtk.vtkImageBlend()
-            self.blend.AddInputConnection(color_fixed.GetOutputPort())
-            self.blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
-            self.blend.Update()
+            blend = vtk.vtkImageBlend()
+            blend.AddInputConnection(color_fixed.GetOutputPort())
+            blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
+            blend.Update()
 
-        self.image_viewer = vtkImageViewer2()
-        self.image_viewer.SetRenderWindow(self.vtk_widget.GetRenderWindow())
-        self.image_viewer.SetInputConnection(self.blend.GetOutputPort())
-        self.image_viewer.SetSlice((self.image_viewer.GetSliceMin() + self.image_viewer.GetSliceMax())//2)
-
+        image_viewer = vtkImageViewer2()
+        image_viewer.SetRenderWindow(vtk_widget.GetRenderWindow())
+        image_viewer.SetInputConnection(blend.GetOutputPort())
+        image_viewer.SetSlice((image_viewer.GetSliceMin() + image_viewer.GetSliceMax()) // 2)
 
         if is_dicom:
-            patient_name = self.reader_fixed.GetPatientName() if self.reader_fixed.GetPatientName() else "Unknown"
-            study_uid = self.reader_fixed.GetStudyUID() if self.reader_fixed.GetStudyUID() else "Unknown"
-            dimensions = self.reader_fixed.GetOutput().GetDimensions()
-            voxel_size = self.reader_fixed.GetOutput().GetSpacing()
-            origin = self.reader_fixed.GetOutput().GetOrigin()
+            patient_name = reader_fixed.GetPatientName() if reader_fixed.GetPatientName() else "Unknown"
+            study_uid = reader_fixed.GetStudyUID() if reader_fixed.GetStudyUID() else "Unknown"
+            dimensions = reader_fixed.GetOutput().GetDimensions()
+            voxel_size = reader_fixed.GetOutput().GetSpacing()
+            origin = reader_fixed.GetOutput().GetOrigin()
             additional_info = (
                 f'Patient: {patient_name}\n'
                 f'UID: {study_uid}\n'
@@ -169,91 +225,115 @@ class VTKOverlayViewer(QtWidgets.QWidget):
                 f'Origin: {origin}'
             )
         else:
-            dimensions = self.reader_fixed.GetOutput().GetDimensions()
-            voxel_size = self.reader_fixed.GetOutput().GetSpacing()
-            origin = self.reader_fixed.GetOutput().GetOrigin()
+            dimensions = reader_fixed.GetOutput().GetDimensions()
+            voxel_size = reader_fixed.GetOutput().GetSpacing()
+            origin = reader_fixed.GetOutput().GetOrigin()
             additional_info = (
                 f'Dim: {dimensions}\n'
                 f'Voxel size: {voxel_size}\n'
                 f'Origin: {origin}'
             )
 
-        self.slice_text_prop = vtkTextProperty()
-        self.slice_text_prop.SetFontFamilyToCourier()
-        self.slice_text_prop.SetFontSize(12)
-        self.slice_text_prop.SetVerticalJustificationToBottom()
-        self.slice_text_prop.SetJustificationToLeft()
+        slice_text_prop = vtkTextProperty()
+        slice_text_prop.SetFontFamilyToCourier()
+        slice_text_prop.SetFontSize(12)
+        slice_text_prop.SetVerticalJustificationToBottom()
+        slice_text_prop.SetJustificationToLeft()
 
-        self.slice_text_mapper = vtkTextMapper()
-        msg = StatusMessage.format(self.image_viewer.GetSliceMin(), self.image_viewer.GetSliceMax(), origin[2])
-        self.slice_text_mapper.SetInput(msg)
-        self.slice_text_mapper.SetTextProperty(self.slice_text_prop)
+        slice_text_mapper = vtkTextMapper()
+        msg = StatusMessage.format(image_viewer.GetSliceMin(), image_viewer.GetSliceMax(), origin[2])
+        slice_text_mapper.SetInput(msg)
+        slice_text_mapper.SetTextProperty(slice_text_prop)
 
-        self.slice_text_actor = vtkActor2D()
-        self.slice_text_actor.SetMapper(self.slice_text_mapper)
-        self.slice_text_actor.SetPosition(15, 10)
+        slice_text_actor = vtkActor2D()
+        slice_text_actor.SetMapper(slice_text_mapper)
+        slice_text_actor.SetPosition(15, 10)
 
-        self.usage_text_prop = vtkTextProperty()
-        self.usage_text_prop.SetFontFamilyToCourier()
-        self.usage_text_prop.SetFontSize(14)
-        self.usage_text_prop.SetVerticalJustificationToTop()
-        self.usage_text_prop.SetJustificationToLeft()
+        usage_text_prop = vtkTextProperty()
+        usage_text_prop.SetFontFamilyToCourier()
+        usage_text_prop.SetFontSize(14)
+        usage_text_prop.SetVerticalJustificationToTop()
+        usage_text_prop.SetJustificationToLeft()
 
-        self.usage_text_mapper = vtkTextMapper()
-        self.usage_text_mapper.SetInput(
+        usage_text_mapper = vtkTextMapper()
+        usage_text_mapper.SetInput(
             'MRI - green\n CT - red\n'
-             + additional_info
+            + additional_info
         )
-        self.usage_text_mapper.SetTextProperty(self.usage_text_prop)
+        usage_text_mapper.SetTextProperty(usage_text_prop)
 
-        self.usage_text_actor = vtkActor2D()
-        self.usage_text_actor.SetMapper(self.usage_text_mapper)
-        self.usage_text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
-        self.usage_text_actor.GetPositionCoordinate().SetValue(0.05, 0.95)
+        usage_text_actor = vtkActor2D()
+        usage_text_actor.SetMapper(usage_text_mapper)
+        usage_text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
+        usage_text_actor.GetPositionCoordinate().SetValue(0.05, 0.95)
 
-        self.coord_text_prop = vtkTextProperty()
-        self.coord_text_prop.SetFontFamilyToCourier()
-        self.coord_text_prop.SetFontSize(12)
-        self.coord_text_prop.SetVerticalJustificationToTop()
-        self.coord_text_prop.SetJustificationToLeft()
+        coord_text_prop = vtkTextProperty()
+        coord_text_prop.SetFontFamilyToCourier()
+        coord_text_prop.SetFontSize(12)
+        coord_text_prop.SetVerticalJustificationToTop()
+        coord_text_prop.SetJustificationToLeft()
 
-        self.coord_text_mapper = vtkTextMapper()
-        self.coord_text_mapper.SetInput('X: 0.00 mm, Y: 0.00 mm, Z: 0.00 mm')
-        self.coord_text_mapper.SetTextProperty(self.coord_text_prop)
+        coord_text_mapper = vtkTextMapper()
+        coord_text_mapper.SetInput('X: 0.00 mm, Y: 0.00 mm, Z: 0.00 mm')
+        coord_text_mapper.SetTextProperty(coord_text_prop)
 
-        self.coord_text_actor = vtkActor2D()
-        self.coord_text_actor.SetMapper(self.coord_text_mapper)
-        self.coord_text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
-        self.coord_text_actor.GetPositionCoordinate().SetValue(0.05, 0.3)
+        coord_text_actor = vtkActor2D()
+        coord_text_actor.SetMapper(coord_text_mapper)
+        coord_text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
+        coord_text_actor.GetPositionCoordinate().SetValue(0.05, 0.3)
 
-        self.render_window_interactor = self.vtk_widget.GetRenderWindow().GetInteractor()
-        self.my_interactor_style = MyVtkInteractorStyleImage()
+        render_window_interactor = vtk_widget.GetRenderWindow().GetInteractor()
+        my_interactor_style = MyVtkInteractorStyleImage(slice_type)
 
-        self.my_interactor_style.set_image_viewer(self.image_viewer)
-        self.my_interactor_style.set_status_mapper(self.slice_text_mapper)
-        self.my_interactor_style.set_coord_mapper(self.coord_text_mapper)
-        self.my_interactor_style.set_voxel_size(voxel_size)
-        self.my_interactor_style.set_origin(origin)
+        my_interactor_style.set_image_viewer(image_viewer)
+        my_interactor_style.set_status_mapper(slice_text_mapper)
+        my_interactor_style.set_coord_mapper(coord_text_mapper)
+        my_interactor_style.set_voxel_size(voxel_size)
+        my_interactor_style.set_origin(origin)
 
-        self.image_viewer.SetupInteractor(self.render_window_interactor)
-        self.render_window_interactor.SetInteractorStyle(self.my_interactor_style)
-        self.render_window_interactor.Initialize()
+        image_viewer.SetupInteractor(render_window_interactor)
+        render_window_interactor.SetInteractorStyle(my_interactor_style)
+        render_window_interactor.Initialize()
 
-        self.image_viewer.Render()
-        self.image_viewer.GetRenderer().ResetCamera()
-        self.image_viewer.GetRenderWindow().SetSize(400, 400)
-        self.image_viewer.GetRenderWindow().SetWindowName('ReadDICOMSeries' if is_dicom else 'ReadNIFTIFile')
+        image_viewer.Render()
+        image_viewer.GetRenderer().ResetCamera()
+        image_viewer.GetRenderWindow().SetSize(400, 400)
+        image_viewer.GetRenderWindow().SetWindowName('ReadDICOMSeries' if is_dicom else 'ReadNIFTIFile')
 
-        self.image_viewer.GetRenderer().AddActor2D(self.slice_text_actor)
-        self.image_viewer.GetRenderer().AddActor2D(self.usage_text_actor)
-        self.image_viewer.GetRenderer().AddActor2D(self.coord_text_actor)
-        self.image_viewer.Render()
+        image_viewer.GetRenderer().AddActor2D(slice_text_actor)
+        image_viewer.GetRenderer().AddActor2D(usage_text_actor)
+        image_viewer.GetRenderer().AddActor2D(coord_text_actor)
+        image_viewer.Render()
 
-        self.image_data = self.reader_fixed.GetOutput()
-        self.extent = self.image_data.GetExtent()
+        image_data = reader_fixed.GetOutput()
+        extent = image_data.GetExtent()
 
-        self.iren.Initialize()
+        iren.Initialize()
 
+        return vtk_widget, image_viewer, reader_fixed, reader_moving
+
+    def sync_views(self, obj, event):
+        # Get the slice index based on the orientation of the triggering viewer
+        if obj == self.axial_viewer[1]:
+            current_slice = self.axial_viewer[1].GetSlice()
+            # Synchronize the corresponding dimensions for sagittal and coronal
+            self.sagittal_viewer[1].SetSlice(current_slice)
+            self.coronal_viewer[1].SetSlice(current_slice)
+        elif obj == self.sagittal_viewer[1]:
+            current_slice = self.sagittal_viewer[1].GetSlice()
+            # Synchronize the corresponding dimensions for axial and coronal
+            self.axial_viewer[1].SetSlice(current_slice)
+            self.coronal_viewer[1].SetSlice(current_slice)
+        elif obj == self.coronal_viewer[1]:
+            current_slice = self.coronal_viewer[1].GetSlice()
+            # Synchronize the corresponding dimensions for axial and sagittal
+            self.axial_viewer[1].SetSlice(current_slice)
+            self.sagittal_viewer[1].SetSlice(current_slice)
+
+        # Render all viewers after updating slices
+        self.axial_viewer[1].Render()
+        self.sagittal_viewer[1].Render()
+        self.coronal_viewer[1].Render()
 
     def create_color_map(self, color):
         color_transfer = vtk.vtkColorTransferFunction()
@@ -288,36 +368,59 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         transform.RotateY(self.rotation_y)
         transform.RotateZ(self.rotation_z)
 
-        transform_filter = vtk.vtkImageReslice()
-        transform_filter.SetInputConnection(self.reader_moving.GetOutputPort())
-        transform_filter.SetResliceTransform(transform)
-        transform_filter.SetResliceAxesDirectionCosines(
-            1, 0, 0, 0, 1, 0, 0, 0, 1
-        )
-        transform_filter.SetOutputSpacing(self.reader_moving.GetOutput().GetSpacing())
-        transform_filter.SetOutputOrigin(self.reader_moving.GetOutput().GetOrigin())
-        transform_filter.SetInterpolationModeToLinear()
-        transform_filter.Update()
+        # Iterate over each view: axial, sagittal, and coronal
+        for viewer, orientation in [(self.axial_viewer, 'XY'),
+                                    (self.sagittal_viewer, 'YZ'),
+                                    (self.coronal_viewer, 'XZ')]:
+            # Retrieve the appropriate readers for each view
+            if orientation == 'XY':
+                reader_fixed, reader_moving = self.axial_viewer[2], self.axial_viewer[3]
+            elif orientation == 'YZ':
+                reader_fixed, reader_moving = self.sagittal_viewer[2], self.sagittal_viewer[3]
+            elif orientation == 'XZ':
+                reader_fixed, reader_moving = self.coronal_viewer[2], self.coronal_viewer[3]
 
-        red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
-        green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
+            # Reslice transform filter
+            transform_filter = vtk.vtkImageReslice()
+            transform_filter.SetInputConnection(reader_moving.GetOutputPort())
+            transform_filter.SetResliceTransform(transform)
 
-        color_fixed = vtk.vtkImageMapToColors()
-        color_fixed.SetInputConnection(self.reader_fixed.GetOutputPort())
-        color_fixed.SetLookupTable(red_color_map)
+            # Set the reslice axes based on the orientation
+            if orientation == 'XY':
+                transform_filter.SetResliceAxesDirectionCosines(1, 0, 0, 0, 1, 0, 0, 0, 1)
+            elif orientation == 'YZ':
+                transform_filter.SetResliceAxesDirectionCosines(1, 0, 0, 0, 1, 0, 0, 0, 1)
+            elif orientation == 'XZ':
+                transform_filter.SetResliceAxesDirectionCosines(1, 0, 0, 0, 1, 0, 0, 0, 1)
 
-        color_moving = vtk.vtkImageMapToColors()
-        color_moving.SetInputConnection(transform_filter.GetOutputPort())
-        color_moving.SetLookupTable(green_color_map)
+            transform_filter.SetOutputSpacing(reader_moving.GetOutput().GetSpacing())
+            transform_filter.SetOutputOrigin(reader_moving.GetOutput().GetOrigin())
+            transform_filter.SetInterpolationModeToLinear()
+            transform_filter.Update()
 
-        self.blend.RemoveAllInputs()
-        self.blend.AddInputConnection(color_fixed.GetOutputPort())
-        self.blend.AddInputConnection(color_moving.GetOutputPort())
-        self.blend.SetOpacity(0, 0.5)  # Set opacity for the fixed image
-        self.blend.SetOpacity(1, 0.5)  # Set opacity for the moving image
-        self.blend.Update()
+            # Color mapping
+            red_color_map = self.create_color_map((1, 0, 0))  # Red for fixed image
+            green_color_map = self.create_color_map((0, 1, 0))  # Green for moving image
 
-        self.image_viewer.Render()
+            color_fixed = vtk.vtkImageMapToColors()
+            color_fixed.SetInputConnection(reader_fixed.GetOutputPort())
+            color_fixed.SetLookupTable(red_color_map)
+
+            color_moving = vtk.vtkImageMapToColors()
+            color_moving.SetInputConnection(transform_filter.GetOutputPort())
+            color_moving.SetLookupTable(green_color_map)
+
+            # Blend the images
+            blend = vtk.vtkImageBlend()
+            blend.AddInputConnection(color_fixed.GetOutputPort())
+            blend.AddInputConnection(color_moving.GetOutputPort())
+            blend.SetOpacity(0, 0.5)  # Opacity for the fixed image
+            blend.SetOpacity(1, 0.5)  # Opacity for the moving image
+            blend.Update()
+
+            # Set the blended image as input for the viewer and render
+            viewer[1].SetInputConnection(blend.GetOutputPort())
+            viewer[1].Render()
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -329,9 +432,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.central_widget = VTKOverlayViewer(fixed_file, moving_file, is_dicom, self)
         self.setCentralWidget(self.central_widget)
 
+
+
 if __name__ == "__main__":
-    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\danke\\MRI_warped_fixed.nii.gz"
-    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\danke\\CT_fixed.nii.gz"
+    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\10\\image_fixed.nii"
+    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\10\\image_moving.nii"
 
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow(fixed_file, moving_file, False)

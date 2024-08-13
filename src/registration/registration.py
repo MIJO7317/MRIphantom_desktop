@@ -28,6 +28,21 @@ def rigid_reg(fixed: str, moving: str, save_path: str):
     return ants_warped
 
 
+def match_voxel_sizes(fixed: str, moving: str, save_path: str):
+    # Load fixed and moving images using ANTs
+    ants_fixed = ants.image_read(fixed)
+    ants_moving = ants.image_read(moving)
+
+    # Resample the moving image to match the fixed image's voxel size
+    resampled_moving = ants.resample_image_to_target(ants_moving, ants_fixed)
+
+    # Save the resampled moving image and the fixed image
+    nib.save(resampled_moving, os.path.join(save_path, 'image_moving.nii'))
+    nib.save(ants_fixed, os.path.join(save_path, 'image_fixed.nii'))
+
+    return resampled_moving
+
+
 def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: float, z: float, xy: float, xz: float,
                        yz: float):
     """
@@ -81,7 +96,7 @@ def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: flo
     # Create the affine transformation matrix
     matrix = np.eye(4)
     matrix[:3, :3] = R_combined
-    matrix[:3, 3] = [x, y, z]
+    matrix[:3, 3] = [-x, -y, -z]
 
     affine_transform = ants.create_ants_transform(
         transform_type="AffineTransform",
@@ -136,17 +151,17 @@ class ManualRegistrationWindow(QMainWindow):
         self.ui.image_widget.setLayout(self.viewer_layout)
 
     def setup_sliders(self):
-        self.ui.x_slider.setRange(-10, 10)
-        self.ui.y_slider.setRange(-10, 10)
-        self.ui.z_slider.setRange(-20, 20)
+        self.ui.x_slider.setRange(-90, 90)
+        self.ui.y_slider.setRange(-90, 90)
+        self.ui.z_slider.setRange(-90, 90)
         self.ui.xy_slider.setRange(-90, 90)
         self.ui.xz_slider.setRange(-90, 90)
         self.ui.yz_slider.setRange(-90, 90)
 
     def update_parameters(self):
-        x = self.ui.x_slider.value()
-        y = self.ui.y_slider.value()
-        z = self.ui.z_slider.value()
+        x = -self.ui.x_slider.value()
+        y = -self.ui.y_slider.value()
+        z = -self.ui.z_slider.value()
         xy = self.ui.xy_slider.value()
         xz = self.ui.xz_slider.value()
         yz = self.ui.yz_slider.value()
@@ -154,8 +169,8 @@ class ManualRegistrationWindow(QMainWindow):
 
     def save_images(self):
         params = [
-            self.ui.x_slider.value(),
-            self.ui.y_slider.value(),
+            -self.ui.x_slider.value(),
+            -self.ui.y_slider.value(),
             -self.ui.z_slider.value(),
             self.ui.xy_slider.value(),
             self.ui.xz_slider.value(),
@@ -170,8 +185,8 @@ class ManualRegistrationWindow(QMainWindow):
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
-    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\test\\CT_fixed.nii"
-    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\test\\MRI_warped.nii"
-    window = ManualRegistrationWindow(fixed_file, moving_file, 'C:\\dev\\git\\MRIphantom_desktop\\studies\\test')
+    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\10\\image_fixed.nii"
+    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\10\\image_moving.nii"
+    window = ManualRegistrationWindow(fixed_file, moving_file, 'C:\\dev\\git\\MRIphantom_desktop\\studies\\10')
     window.show()
     sys.exit(app.exec())

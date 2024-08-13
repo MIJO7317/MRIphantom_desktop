@@ -31,7 +31,7 @@ from src.segmentation.process import (
     get_coords
 )
 from src.segmentation.process_v2 import segmentation, count_difference_2
-from src.registration.registration import ManualRegistrationWindow, rigid_reg
+from src.registration.registration import ManualRegistrationWindow, rigid_reg, match_voxel_sizes
 
 from src.image_importer.importer import ImporterWindow
 
@@ -296,6 +296,13 @@ class EntranceWindow(QMainWindow):
         QApplication.processEvents()  # Force update the UI
 
     def manual_registration_button_pressed(self):
+        print('start reslicing')
+        match_voxel_sizes(
+            os.path.join(self.write_path, 'image_fixed.nii'),
+            os.path.join(self.write_path, 'image_moving.nii'),
+            self.write_path
+        )
+        print('finish reslicing')
         self.ui.statusLabel.setText("Открыт интерфейс ручного совмещения...")
         QApplication.processEvents()  # Force update the UI
 
@@ -304,6 +311,7 @@ class EntranceWindow(QMainWindow):
         worker_manualregistration.signaller.finished.connect(self.finish_registration())
 
     def manual_registration(self):
+        print('open window')
         manual_window = ManualRegistrationWindow(
             os.path.join(self.write_path, 'image_fixed.nii'),
             os.path.join(self.write_path, 'image_moving.nii'),
@@ -315,6 +323,7 @@ class EntranceWindow(QMainWindow):
         loop = QEventLoop()
         manual_window.destroyed.connect(loop.quit)
         loop.exec()
+
 
     def finish_registration(self):
         self.ui.statusLabel.setText("Совмещение МРТ и КТ завершено")
