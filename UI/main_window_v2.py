@@ -363,11 +363,15 @@ class Ui_MainWindow(object):
         self.body_stackedWidgetPage2d.setObjectName(u"body_stackedWidgetPage2d")
         self.horizontalLayout_8 = QHBoxLayout(self.body_stackedWidgetPage2d)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.label_3 = QLabel(self.body_stackedWidgetPage2d)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setMaximumSize(QSize(450, 30))
+        
+        self.scatter2d_dev_frame = QFrame(self.body_stackedWidgetPage2d)
+        self.scatter2d_dev_frame.setObjectName(u"scatter2d_dev_frame")
+        self.scatter2d_dev_frame.setMinimumSize(QSize(700, 700))
+        self.scatter2d_dev_frame.setMaximumSize(QSize(700, 700))
+        self.scatter2d_dev_frame.setFrameShape(QFrame.Box)
+        self.scatter2d_dev_frame.setFrameShadow(QFrame.Raised)
 
-        self.horizontalLayout_8.addWidget(self.label_3)
+        self.horizontalLayout_8.addWidget(self.scatter2d_dev_frame)
 
         self.scatter2d_frame = QFrame(self.body_stackedWidgetPage2d)
         self.scatter2d_frame.setObjectName(u"scatter2d_frame")
@@ -416,6 +420,5 @@ class Ui_MainWindow(object):
         self.statusLabel.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0442\u0430\u0442\u0443\u0441", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430 (\u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439)", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"3D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440 (\u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439)", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"2D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440 (\u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439)", None))
     # retranslateUi
 

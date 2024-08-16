@@ -20,6 +20,7 @@ from PySide6 import QtCore
 
 from src.visualization.scatter3d import Scatter3D
 from src.visualization.scatter2d import Scatter2D
+from src.visualization.scatter2d_dev import Scatter2DDev
 from src.visualization.plots import Plots
 from src.visualization.table import Table
 from src.visualization.sequence_viewer import VTKSliceViewer
@@ -108,6 +109,7 @@ class EntranceWindow(QMainWindow):
         self.plots = None
         self.histogram = None
         self.scatter2d = None
+        self.scatter2d_dev = None
         self.scatter3d = None
         self.params_table = None
         self.thread_pool = None
@@ -129,6 +131,9 @@ class EntranceWindow(QMainWindow):
         self.output_dirname = None
         self.output_path = None
         self.format = None
+        
+        self.all_mri_points = None
+        self.all_ct_points = None
 
         self.initUi()
 
@@ -380,7 +385,7 @@ class EntranceWindow(QMainWindow):
 
             ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
             mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
-            all_mri_points, all_ct_points = segmentation(
+            self.all_mri_points, self.all_ct_points = segmentation(
                 img_mri[:, :, 45:105],
                 img_ct[:, :, 45:105],
                 mri_pickle_path,
@@ -450,11 +455,22 @@ class EntranceWindow(QMainWindow):
             self.scatter3d_layout.deleteLater()
 
         # Create and add the new layout and widget
-        self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)
+        self.scatter3d = Scatter3D(self.all_ct_points, self.all_mri_points)
         self.scatter3d_layout = QVBoxLayout(self.ui.scatter3d_frame)
         self.scatter3d_layout.addWidget(self.scatter3d)
+        
+        # Remove existing layout and widget from scatter2d_dev_frame if they exist
+        if hasattr(self, 'scatter2d_dev_layout'):
+            while self.scatter2d_dev_layout.count():
+                child = self.scatter2d_dev_layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.scatter2d_dev_layout.deleteLater()
 
-        self.ui.label_3.setText('2D просмотр')
+        # Create and add the new layout and widget
+        self.scatter2d_dev = Scatter2DDev(self.coords_ct, self.coords_mri)
+        self.scatter2d_dev_layout = QVBoxLayout(self.ui.scatter2d_dev_frame)
+        self.scatter2d_dev_layout.addWidget(self.scatter2d_dev)
 
         # Remove existing layout and widget from scatter2d_frame if they exist
         if hasattr(self, 'scatter2d_layout'):
@@ -678,7 +694,7 @@ class EntranceWindow(QMainWindow):
             self.analyze_thread_pool.clear()
 
         # Close and release resources for visualization objects
-        for attr in ['scatter3d', 'scatter2d', 'plots', 'params_table']:
+        for attr in ['scatter3d', 'scatter2d', 'scatter2d_dev','plots', 'params_table']:
             if hasattr(self, attr):
                 obj = getattr(self, attr)
                 if obj is not None:

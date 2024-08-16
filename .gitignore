@@ -17,3 +17,7 @@ activate.sh
 .DS_Store
 .idea
 app.spec
+CT_fixed.nii.gz
+MRI_warped.nii.gz
+MR_Phantom_CT/
+MR_Phantom_MR/
