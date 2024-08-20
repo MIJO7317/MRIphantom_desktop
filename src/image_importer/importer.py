@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget,
@@ -151,15 +152,33 @@ class ImporterSummaryScreen(QWidget):
             self.ui.summaryTableWidget.setItem(row_position, 0, QTableWidgetItem(label))
             self.ui.summaryTableWidget.setItem(row_position, 1, QTableWidgetItem(value))
 
-        # Add relevant information
-        add_row("Размерность", f"{ds.Rows} x {ds.Columns}")
-        add_row("Размер вокселя", str(ds.PixelSpacing) if 'PixelSpacing' in ds else "N/A")
-        add_row("Начало координат", str(ds.ImagePositionPatient) if 'ImagePositionPatient' in ds else "N/A")
-        add_row("Ориентация", str(ds.ImageOrientationPatient) if 'ImageOrientationPatient' in ds else "N/A")
-        add_row("Размер файла", f"{(os.path.getsize(self.window_widget.series_files[0])) / (1024 * 1024):.2f} MB")
-        add_row("Модальность", ds.Modality)
-        add_row("SOP Class UID", ds.SOPClassUID)
-        add_row("Дата исследования", ds.StudyDate)
+        # Add relevant information to the table
+        metadata = {}
+        metadata["Размерность"] = f"{ds.Rows} x {ds.Columns}"
+        metadata["Размер вокселя"] = str(ds.PixelSpacing) if 'PixelSpacing' in ds else "N/A"
+        metadata["Толщина среза"] = str(ds.SliceThickness) if 'SliceThickness' in ds else "N/A"
+        metadata["Начало координат"] = str(ds.ImagePositionPatient) if 'ImagePositionPatient' in ds else "N/A"
+        metadata["Ориентация"] = str(ds.ImageOrientationPatient) if 'ImageOrientationPatient' in ds else "N/A"
+        metadata["Размер файла"] = f"{(os.path.getsize(self.window_widget.series_files[0])) / (1024 * 1024):.2f} MB"
+        metadata["Модальность"] = ds.Modality
+        metadata["SOP Class UID"] = ds.SOPClassUID
+        metadata["Дата исследования"] = ds.StudyDate
+
+        # Add the metadata to the table widget
+        for key, value in metadata.items():
+            add_row(key, value)
+
+        # Determine the filename for the JSON file based on the modality
+        if ds.Modality == "MR":
+            json_filename = "mri_data.json"
+        elif ds.Modality == "CT":
+            json_filename = "ct_data.json"
+        else:
+            json_filename = f"{ds.Modality.lower()}_data.json"
+
+        # Save metadata to the JSON file
+        with open(os.path.join(self.target_dir, json_filename), 'w', encoding='utf-8') as json_file:
+            json.dump({'voxel_size': float(ds.PixelSpacing[0]), 'slice_thickness': float(ds.SliceThickness)}, json_file, ensure_ascii=False, indent=4)
 
     def import_series(self):
         if not self.window_widget.series_files:
@@ -179,6 +198,8 @@ class ImporterSummaryScreen(QWidget):
             QMessageBox.critical(self, "Import Failed", str(e))
 
         self.window_widget.finish_importing()
+
+
 
 
 class ImporterWindow(QStackedWidget):

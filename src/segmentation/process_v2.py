@@ -178,7 +178,7 @@ def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
     return points
 
 
-def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, size_for_resizing=1024, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
+def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1, size_for_resizing=2048, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
     """
     Segments MRI and CT images to extract points of interest and saves the coordinates as pickle files.
     """
@@ -186,6 +186,7 @@ def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, size_for_re
     # Check if the number of slices in MRI and CT images are the same
     if mri_images.shape[2] != ct_images.shape[2]:
         return 'Error: MRI and CT data have different number of images.'
+    print(voxel_size)
 
     # Initialize lists to store points from MRI and CT images
     all_mri_points = []
@@ -226,8 +227,8 @@ def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, size_for_re
             ct_points.pop()
 
         # Append the processed points to the respective lists
-        all_mri_points.append(np.array(mri_points) / scale_mri_factor)
-        all_ct_points.append(np.array(ct_points) / scale_ct_factor)
+        all_mri_points.append(np.array(mri_points) / scale_mri_factor * voxel_size)
+        all_ct_points.append(np.array(ct_points) / scale_ct_factor * voxel_size)
 
     # Save the lists of points extracted from MRI and CT images as pickle files
     with open(mri_save_path, "wb") as f:

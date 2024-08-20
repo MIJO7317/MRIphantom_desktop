@@ -4,6 +4,7 @@ import inspect
 import json
 import numpy as np
 import nibabel as nib
+import pickle
 from datetime import datetime
 from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QFileDialog, QLabel
 from PySide6.QtCore import (
@@ -23,6 +24,7 @@ from src.visualization.scatter2d import Scatter2D
 from src.visualization.plots import Plots
 from src.visualization.table import Table
 from src.visualization.sequence_viewer import VTKSliceViewer
+from src.visualization.marker_viewer import MarkerViewer
 
 from UI.main_window_v2 import Ui_MainWindow
 
@@ -100,6 +102,9 @@ class EntranceWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.voxel_size = None
+        self.all_ct_points = None
+        self.all_mri_points = None
         self.coords_mri = None
         self.coords_ct = None
         self.slice_differences = None
@@ -154,6 +159,9 @@ class EntranceWindow(QMainWindow):
         self.ui.scatter2dButton.setCheckable(True)
         self.ui.scatter2dButton.setChecked(False)
         self.ui.scatter2dButton.clicked.connect(self.scatter2d_page_button_pressed)
+        self.ui.marker2dButton.setCheckable(True)
+        self.ui.marker2dButton.setChecked(False)
+        self.ui.marker2dButton.clicked.connect(self.marker2d_page_button_pressed)
 
         self.ui.ctPageButton.setCheckable(True)
         self.ui.ctPageButton.setChecked(True)
@@ -180,7 +188,7 @@ class EntranceWindow(QMainWindow):
         self.mri_img = None
 
         # geometric model selector
-        self.ui.phantomTypeCombo.addItem("Elekta (Axial Grid)")
+        self.ui.phantomTypeCombo.addItem("Модель в разработке")
 
         # registration buttons (automatic and manual)
         self.ui.autoregistrationButton.setCheckable(True)
@@ -283,12 +291,15 @@ class EntranceWindow(QMainWindow):
         self.moving_viewer_layout.addWidget(self.moving_image_viewer)
 
     def autoregister_button_pressed(self):
-        self.ui.statusLabel.setText("Выполняется автоматическое совмещение МРТ и КТ...")
-        QApplication.processEvents()  # Force update the UI
+        if self.ui.geometryPageButton.isChecked() is False:
+            self.ui.statusLabel.setText("Выполняется автоматическое совмещение МРТ и КТ...")
+            QApplication.processEvents()  # Force update the UI
 
-        worker_autoregistration = Worker(self.autoregistration())
-        self.registration_thread_pool.start(worker_autoregistration)
-        worker_autoregistration.signaller.finished.connect(self.finish_registration())
+            worker_autoregistration = Worker(self.autoregistration())
+            self.registration_thread_pool.start(worker_autoregistration)
+            worker_autoregistration.signaller.finished.connect(self.finish_registration())
+        else:
+            self.ui.statusLabel.setText("Совмещение с моделью недоступно")
 
     def autoregistration(self):
         rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
@@ -296,19 +307,20 @@ class EntranceWindow(QMainWindow):
         QApplication.processEvents()  # Force update the UI
 
     def manual_registration_button_pressed(self):
-        print('start reslicing')
-        match_voxel_sizes(
-            os.path.join(self.write_path, 'image_fixed.nii'),
-            os.path.join(self.write_path, 'image_moving.nii'),
-            self.write_path
-        )
-        print('finish reslicing')
-        self.ui.statusLabel.setText("Открыт интерфейс ручного совмещения...")
-        QApplication.processEvents()  # Force update the UI
+        if self.ui.geometryPageButton.isChecked() is False:
+            match_voxel_sizes(
+                os.path.join(self.write_path, 'image_fixed.nii'),
+                os.path.join(self.write_path, 'image_moving.nii'),
+                self.write_path
+            )
+            self.ui.statusLabel.setText("Открыт интерфейс ручного совмещения...")
+            QApplication.processEvents()  # Force update the UI
 
-        worker_manualregistration = Worker(self.manual_registration())
-        self.registration_thread_pool.start(worker_manualregistration)
-        worker_manualregistration.signaller.finished.connect(self.finish_registration())
+            worker_manualregistration = Worker(self.manual_registration())
+            self.registration_thread_pool.start(worker_manualregistration)
+            worker_manualregistration.signaller.finished.connect(self.finish_registration())
+        else:
+            self.ui.statusLabel.setText("Совмещение с моделью недоступно")
 
     def manual_registration(self):
         print('open window')
@@ -380,11 +392,21 @@ class EntranceWindow(QMainWindow):
 
             ct_pickle_path = os.path.join(self.write_path, "markers_CT.pickle")
             mri_pickle_path = os.path.join(self.write_path, "markers_MRI.pickle")
-            all_mri_points, all_ct_points = segmentation(
+            ct_data_path = os.path.join(self.write_path, "ct_data.json")
+            with open(ct_data_path, "rb") as f:
+                ct_data = json.load(f)
+            self.voxel_size = ct_data['voxel_size']
+            self.slice_thickness = ct_data['slice_thickness']
+
+            print(self.voxel_size)
+            print(self.slice_thickness)
+
+            self.all_mri_points, self.all_ct_points = segmentation(
                 img_mri[:, :, 45:105],
                 img_ct[:, :, 45:105],
                 mri_pickle_path,
-                ct_pickle_path
+                ct_pickle_path,
+                self.voxel_size,
             )
 
             _, self.differences, self.slice_differences = count_difference_2(
@@ -439,7 +461,7 @@ class EntranceWindow(QMainWindow):
         self.stats_table_layout = QVBoxLayout(self.ui.stats_frame)
         self.stats_table_layout.addWidget(self.params_table)
 
-        self.ui.label_2.setText('3D просмотр')
+        self.ui.label_2.setText('3D просмотр (для отображения нужного слоя нажмите на надпись в легенде)')
 
         # Remove existing layout and widget from scatter3d_frame if they exist
         if hasattr(self, 'scatter3d_layout'):
@@ -450,11 +472,11 @@ class EntranceWindow(QMainWindow):
             self.scatter3d_layout.deleteLater()
 
         # Create and add the new layout and widget
-        self.scatter3d = Scatter3D(self.coords_ct, self.coords_mri)
+        self.scatter3d = Scatter3D(self.all_ct_points, self.all_mri_points, self.voxel_size, self.slice_thickness)
         self.scatter3d_layout = QVBoxLayout(self.ui.scatter3d_frame)
         self.scatter3d_layout.addWidget(self.scatter3d)
 
-        self.ui.label_3.setText('2D просмотр')
+        self.ui.label_3.setText('2D просмотр (для управления покрутить ползунок под изображением)')
 
         # Remove existing layout and widget from scatter2d_frame if they exist
         if hasattr(self, 'scatter2d_layout'):
@@ -482,38 +504,51 @@ class EntranceWindow(QMainWindow):
         self.plots_layout = QVBoxLayout(self.ui.plots_frame)
         self.plots_layout.addWidget(self.plots)
 
+        # Remove existing layout and widget from plots_frame if they exist
+        if hasattr(self, 'marker_layout'):
+            while self.marker_layout.count():
+                child = self.marker_layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+            self.marker_layout.deleteLater()
+
+        # Create and add the new layout and widget
+        self.markers2d = MarkerViewer(self.coords_ct, self.coords_mri)
+        self.marker_layout = QVBoxLayout(self.ui.marker2d_frame)
+        self.marker_layout.addWidget(self.markers2d)
+
     @Slot()
     def analyzeImages(self):
-        self.study_name = self.ui.titleEdit.text()
-        (self.output_dirname, self.filename_ct, self.filename_mri) = (
-            self.createFilename(self.study_name)
-        )
-        output_dirname = os.path.join(workdir, "studies", self.output_dirname)
-        self.output_path = os.path.realpath(output_dirname).replace("\\", "/")
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
-        write_path = os.path.realpath(
-            os.path.join(workdir, f"studies/{self.output_dirname}")
-        )
-        write_path = write_path.replace("\\", "/")
-        self.write_path = write_path
+        if self.ui.geometryPageButton.isChecked() is False:
+            self.study_name = self.ui.titleEdit.text()
+            (self.output_dirname, self.filename_ct, self.filename_mri) = (
+                self.createFilename(self.study_name)
+            )
+            output_dirname = os.path.join(workdir, "studies", self.output_dirname)
+            self.output_path = os.path.realpath(output_dirname).replace("\\", "/")
+            if not os.path.exists(self.output_path):
+                os.makedirs(self.output_path)
+            write_path = os.path.realpath(
+                os.path.join(workdir, f"studies/{self.output_dirname}")
+            )
+            write_path = write_path.replace("\\", "/")
+            self.write_path = write_path
 
-        self.context = {
-            "workdir": workdir,
-            "title": self.ui.titleEdit.text(),
-            "fixedimgpath": self.ui.fixedimgEdit.text(),
-            "movingimgpath": self.ui.movingimgEdit.text(),
-        }
+            self.context = {
+                "workdir": workdir,
+                "title": self.ui.titleEdit.text(),
+                "fixedimgpath": self.ui.fixedimgEdit.text(),
+                "movingimgpath": self.ui.movingimgEdit.text(),
+            }
 
-        self.spinner.show()
+            self.spinner.show()
 
-        worker_to_nifti = Worker(self.analyze)
-        self.analyze_thread_pool.start(worker_to_nifti)
-        worker_to_nifti.signaller.finished.connect(self.finishAnalysis)
+            worker_to_nifti = Worker(self.analyze)
+            self.analyze_thread_pool.start(worker_to_nifti)
+            worker_to_nifti.signaller.finished.connect(self.finishAnalysis)
 
-        # self.ui.titleEdit.setText("")
-        # self.ui.fixedimgEdit.setText("")
-        # self.ui.movingimgEdit.setText("")
+        else:
+            self.ui.statusLabel.setText("Модель недоступна")
 
     def createFilename(self, title):
         """
@@ -650,19 +685,29 @@ class EntranceWindow(QMainWindow):
         self.ui.mainPageButton.setChecked(False)
         self.ui.scatter3dButton.setChecked(False)
         self.ui.scatter2dButton.setChecked(False)
+        self.ui.marker2dButton.setChecked(False)
         self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPageStats)
 
     def scatter3d_page_button_pressed(self):
         self.ui.mainPageButton.setChecked(False)
         self.ui.statsPageButton.setChecked(False)
         self.ui.scatter2dButton.setChecked(False)
+        self.ui.marker2dButton.setChecked(False)
         self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPage3d)
 
     def scatter2d_page_button_pressed(self):
         self.ui.mainPageButton.setChecked(False)
         self.ui.statsPageButton.setChecked(False)
         self.ui.scatter3dButton.setChecked(False)
+        self.ui.marker2dButton.setChecked(False)
         self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPage2d)
+
+    def marker2d_page_button_pressed(self):
+        self.ui.mainPageButton.setChecked(False)
+        self.ui.statsPageButton.setChecked(False)
+        self.ui.scatter3dButton.setChecked(False)
+        self.ui.scatter2dButton.setChecked(False)
+        self.ui.body_stackedWidget.setCurrentWidget(self.ui.body_stackedWidgetPageHeatmap2d)
 
     def ct_page_button_pressed(self):
         self.ui.geometryPageButton.setChecked(False)

@@ -17,15 +17,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
     QLabel, QLayout, QLineEdit, QMainWindow,
-    QPushButton, QSizePolicy, QStackedWidget, QVBoxLayout,
-    QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QStackedWidget,
+    QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1512, 830)
+        MainWindow.resize(1343, 831)
         MainWindow.setStyleSheet(u"")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -92,6 +92,11 @@ class Ui_MainWindow(object):
         self.scatter2dButton.setObjectName(u"scatter2dButton")
 
         self.horizontalLayout_5.addWidget(self.scatter2dButton)
+
+        self.marker2dButton = QPushButton(self.frame)
+        self.marker2dButton.setObjectName(u"marker2dButton")
+
+        self.horizontalLayout_5.addWidget(self.marker2dButton)
 
 
         self.horizontalLayout_4.addWidget(self.frame)
@@ -314,31 +319,47 @@ class Ui_MainWindow(object):
         self.body_stackedWidgetPageStats.setMaximumSize(QSize(1470, 16777215))
         self.verticalLayout_3 = QVBoxLayout(self.body_stackedWidgetPageStats)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.label = QLabel(self.body_stackedWidgetPageStats)
+        self.scrollArea = QScrollArea(self.body_stackedWidgetPageStats)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setWidgetResizable(True)
+        self.stats_scrollAreaWidgetContents = QWidget()
+        self.stats_scrollAreaWidgetContents.setObjectName(u"stats_scrollAreaWidgetContents")
+        self.stats_scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1317, 1214))
+        self.verticalLayout_5 = QVBoxLayout(self.stats_scrollAreaWidgetContents)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.label = QLabel(self.stats_scrollAreaWidgetContents)
         self.label.setObjectName(u"label")
         self.label.setMaximumSize(QSize(16777215, 30))
 
-        self.verticalLayout_3.addWidget(self.label)
+        self.verticalLayout_5.addWidget(self.label)
 
-        self.stats_frame = QFrame(self.body_stackedWidgetPageStats)
+        self.stats_frame = QFrame(self.stats_scrollAreaWidgetContents)
         self.stats_frame.setObjectName(u"stats_frame")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.stats_frame.sizePolicy().hasHeightForWidth())
         self.stats_frame.setSizePolicy(sizePolicy1)
-        self.stats_frame.setMaximumSize(QSize(16777215, 220))
+        self.stats_frame.setMinimumSize(QSize(0, 350))
+        self.stats_frame.setMaximumSize(QSize(16777215, 1000))
         self.stats_frame.setFrameShape(QFrame.Box)
         self.stats_frame.setFrameShadow(QFrame.Raised)
 
-        self.verticalLayout_3.addWidget(self.stats_frame)
+        self.verticalLayout_5.addWidget(self.stats_frame)
 
-        self.plots_frame = QFrame(self.body_stackedWidgetPageStats)
+        self.plots_frame = QFrame(self.stats_scrollAreaWidgetContents)
         self.plots_frame.setObjectName(u"plots_frame")
+        self.plots_frame.setMinimumSize(QSize(0, 800))
         self.plots_frame.setFrameShape(QFrame.Box)
         self.plots_frame.setFrameShadow(QFrame.Raised)
 
-        self.verticalLayout_3.addWidget(self.plots_frame)
+        self.verticalLayout_5.addWidget(self.plots_frame)
+
+        self.scrollArea.setWidget(self.stats_scrollAreaWidgetContents)
+
+        self.verticalLayout_3.addWidget(self.scrollArea)
 
         self.body_stackedWidget.addWidget(self.body_stackedWidgetPageStats)
         self.body_stackedWidgetPage3d = QWidget()
@@ -353,6 +374,7 @@ class Ui_MainWindow(object):
 
         self.scatter3d_frame = QFrame(self.body_stackedWidgetPage3d)
         self.scatter3d_frame.setObjectName(u"scatter3d_frame")
+        self.scatter3d_frame.setMaximumSize(QSize(16777215, 16777215))
         self.scatter3d_frame.setFrameShape(QFrame.Box)
         self.scatter3d_frame.setFrameShadow(QFrame.Raised)
 
@@ -361,13 +383,13 @@ class Ui_MainWindow(object):
         self.body_stackedWidget.addWidget(self.body_stackedWidgetPage3d)
         self.body_stackedWidgetPage2d = QWidget()
         self.body_stackedWidgetPage2d.setObjectName(u"body_stackedWidgetPage2d")
-        self.horizontalLayout_8 = QHBoxLayout(self.body_stackedWidgetPage2d)
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.verticalLayout_6 = QVBoxLayout(self.body_stackedWidgetPage2d)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.label_3 = QLabel(self.body_stackedWidgetPage2d)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setMaximumSize(QSize(450, 30))
 
-        self.horizontalLayout_8.addWidget(self.label_3)
+        self.verticalLayout_6.addWidget(self.label_3)
 
         self.scatter2d_frame = QFrame(self.body_stackedWidgetPage2d)
         self.scatter2d_frame.setObjectName(u"scatter2d_frame")
@@ -376,9 +398,29 @@ class Ui_MainWindow(object):
         self.scatter2d_frame.setFrameShape(QFrame.Box)
         self.scatter2d_frame.setFrameShadow(QFrame.Raised)
 
-        self.horizontalLayout_8.addWidget(self.scatter2d_frame)
+        self.verticalLayout_6.addWidget(self.scatter2d_frame)
 
         self.body_stackedWidget.addWidget(self.body_stackedWidgetPage2d)
+        self.body_stackedWidgetPageHeatmap2d = QWidget()
+        self.body_stackedWidgetPageHeatmap2d.setObjectName(u"body_stackedWidgetPageHeatmap2d")
+        self.verticalLayout_7 = QVBoxLayout(self.body_stackedWidgetPageHeatmap2d)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.label_heatmap2d = QLabel(self.body_stackedWidgetPageHeatmap2d)
+        self.label_heatmap2d.setObjectName(u"label_heatmap2d")
+        self.label_heatmap2d.setMaximumSize(QSize(16777215, 30))
+
+        self.verticalLayout_7.addWidget(self.label_heatmap2d)
+
+        self.marker2d_frame = QFrame(self.body_stackedWidgetPageHeatmap2d)
+        self.marker2d_frame.setObjectName(u"marker2d_frame")
+        self.marker2d_frame.setMinimumSize(QSize(700, 700))
+        self.marker2d_frame.setMaximumSize(QSize(700, 700))
+        self.marker2d_frame.setFrameShape(QFrame.StyledPanel)
+        self.marker2d_frame.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_7.addWidget(self.marker2d_frame)
+
+        self.body_stackedWidget.addWidget(self.body_stackedWidgetPageHeatmap2d)
 
         self.verticalLayout_8.addWidget(self.body_stackedWidget)
 
@@ -386,7 +428,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.body_stackedWidget.setCurrentIndex(3)
+        self.body_stackedWidget.setCurrentIndex(4)
         self.ctPageButton.setDefault(False)
         self.fixed_stackedWidget.setCurrentIndex(0)
 
@@ -401,6 +443,7 @@ class Ui_MainWindow(object):
         self.statsPageButton.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439", None))
         self.scatter3dButton.setText(QCoreApplication.translate("MainWindow", u"3D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440", None))
         self.scatter2dButton.setText(QCoreApplication.translate("MainWindow", u"2D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440", None))
+        self.marker2dButton.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0430\u0440\u043a\u0435\u0440\u044b", None))
         self.infolabel1.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0435\u0436\u0438\u043c \u0430\u043d\u0430\u043b\u0438\u0437\u0430:", None))
         self.ctPageButton.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0420\u0422 vs KT", None))
         self.geometryPageButton.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0420\u0422 vs \u043c\u043e\u0434\u0435\u043b\u044c", None))
@@ -417,5 +460,6 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430 (\u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439)", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"3D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440 (\u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439)", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"2D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440 (\u0441\u043d\u0430\u0447\u0430\u043b\u0430 \u043d\u0435\u043e\u0431\u0445\u043e\u0434\u0438\u043c\u043e \u0432\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0440\u0430\u0441\u0447\u0435\u0442 \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u0439)", None))
+        self.label_heatmap2d.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0430\u0440\u043a\u0435\u0440\u044b", None))
     # retranslateUi
 
