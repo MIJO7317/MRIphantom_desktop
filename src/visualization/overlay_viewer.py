@@ -12,6 +12,7 @@ from vtkmodules.vtkRenderingCore import (
     vtkTextProperty
 )
 
+vtk.vtkObject.GlobalWarningDisplayOff()
 
 class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
     def __init__(self, slice_type, parent=None):
@@ -117,6 +118,21 @@ class MyVtkInteractorStyleImage(vtkInteractorStyleImage):
         msg = StatusMessage.format(self.slice, self.max_slice, z_position)
         self.status_mapper.SetInput(msg)
         self.image_viewer.Render()
+
+    def cleanup(self):
+        if self.image_viewer:
+            self.image_viewer.GetRenderWindow().Finalize()
+            self.image_viewer.GetRenderer().RemoveAllViewProps()
+            self.image_viewer.GetInput().ReleaseData()
+
+        if self.GetInteractor():
+            self.GetInteractor().RemoveAllObservers()
+            self.GetInteractor().TerminateApp()
+
+        self.image_viewer = None
+        self.status_mapper = None
+        self.coord_mapper = None
+
 
 
 class StatusMessage:
@@ -422,6 +438,36 @@ class VTKOverlayViewer(QtWidgets.QWidget):
             viewer[1].SetInputConnection(blend.GetOutputPort())
             viewer[1].Render()
 
+    def cleanup(self):
+        # Properly shut down the interactor
+        self.axial_viewer[0].GetRenderWindow().GetInteractor().TerminateApp()
+        self.sagittal_viewer[0].GetRenderWindow().GetInteractor().TerminateApp()
+        self.coronal_viewer[0].GetRenderWindow().GetInteractor().TerminateApp()
+
+        # Ensure the interactor is removed and widgets are cleaned up
+        self.axial_viewer[0].GetRenderWindow().Finalize()
+        self.sagittal_viewer[0].GetRenderWindow().Finalize()
+        self.coronal_viewer[0].GetRenderWindow().Finalize()
+
+        self.axial_viewer[0].SetRenderWindow(None)
+        self.sagittal_viewer[0].SetRenderWindow(None)
+        self.coronal_viewer[0].SetRenderWindow(None)
+
+        self.axial_viewer[0].GetRenderWindow().GetInteractor().SetRenderWindow(None)
+        self.sagittal_viewer[0].GetRenderWindow().GetInteractor().SetRenderWindow(None)
+        self.coronal_viewer[0].GetRenderWindow().GetInteractor().SetRenderWindow(None)
+
+        self.axial_viewer = None
+        self.sagittal_viewer = None
+        self.coronal_viewer = None
+
+        self.layout = None
+
+    def closeEvent(self, event):
+        # Cleanup the central widget before closing the main window
+        if self.central_widget:
+            self.central_widget.cleanup()
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, fixed_file, moving_file, is_dicom=False, parent=None):
@@ -432,6 +478,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.central_widget = VTKOverlayViewer(fixed_file, moving_file, is_dicom, self)
         self.setCentralWidget(self.central_widget)
 
+    def closeEvent(self, event):
+        # Cleanup before closing the application
+        self.central_widget.cleanup()
+        super().closeEvent(event)
 
 
 if __name__ == "__main__":
