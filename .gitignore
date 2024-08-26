@@ -17,3 +17,4 @@ activate.sh
 .DS_Store
 .idea
 app.spec
+main.ipynb
