@@ -34,7 +34,7 @@ class Scatter3D(QWidget):
         self.init_scatter3d()
         self.browser.reload()
 
-    def init_scatter3d(self, max_deviation=3):
+    def init_scatter3d(self, max_deviation=2):
         """
         Initialize 3D scatter viewer
         """

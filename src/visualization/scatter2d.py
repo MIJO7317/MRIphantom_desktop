@@ -54,7 +54,7 @@ class Scatter2D(QWidget):
         self.init_scatter2d_dev()
         self.browser.reload()
 
-    def init_scatter2d_dev(self, z_value=0, max_deviation=3, grid_step=30):
+    def init_scatter2d_dev(self, z_value=0, max_deviation=2, grid_step=16):
         """
         Initialize 2D scatter deviations viewer
         """
