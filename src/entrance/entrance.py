@@ -123,6 +123,8 @@ class EntranceWindow(QMainWindow):
         self.ct_img = None
         self.moving_image_path = None
         self.fixed_image_path = None
+        self.moving_image_path_auto = None
+        self.fixed_image_path_auto = None
         self.vbox = None
         self.context = None
         self.ui = Ui_MainWindow()
@@ -184,6 +186,8 @@ class EntranceWindow(QMainWindow):
 
         self.fixed_image_path = None
         self.moving_image_path = None
+        self.fixed_image_path_auto = None
+        self.moving_image_path_auto = None
         self.ct_img = None
         self.mri_img = None
 
@@ -242,6 +246,11 @@ class EntranceWindow(QMainWindow):
         saved_nifti_filepath = os.path.join(write_path, "image_fixed.nii")
 
         if saved_nifti_filepath:
+            auto_nifti_filepath = os.path.join(write_path, "image_fixed_auto.nii")
+            os.system(f'copy "{saved_nifti_filepath}" "{auto_nifti_filepath}"')
+            self.fixed_image_path_auto = auto_nifti_filepath
+
+        if saved_nifti_filepath:
             self.ui.fixedimgEdit.setText(saved_nifti_filepath)
             self.fixed_image_path = saved_nifti_filepath
 
@@ -282,9 +291,16 @@ class EntranceWindow(QMainWindow):
 
         dicom_dir = moving_image_importer.directory_path
         saved_nifti_filepath = os.path.join(write_path, "image_moving.nii")
+        
+        if saved_nifti_filepath:
+            auto_nifti_filepath = os.path.join(write_path, "image_moving_auto.nii")
+            os.system(f'copy "{saved_nifti_filepath}" "{auto_nifti_filepath}"')
+            self.moving_image_path_auto = auto_nifti_filepath
+        
         if saved_nifti_filepath:
             self.ui.movingimgEdit.setText(saved_nifti_filepath)
             self.moving_image_path = saved_nifti_filepath
+            
         self.moving_image_viewer = VTKSliceViewer(dicom_dir)
         self.moving_viewer_layout = QVBoxLayout(self.ui.moving_frame)
         self.moving_viewer_layout.addWidget(QLabel('МРТ'))
@@ -302,7 +318,7 @@ class EntranceWindow(QMainWindow):
             self.ui.statusLabel.setText("Совмещение с моделью недоступно")
 
     def autoregistration(self):
-        rigid_reg(self.fixed_image_path, self.moving_image_path, self.write_path)
+        rigid_reg(self.fixed_image_path_auto, self.moving_image_path_auto, self.write_path)
         self.ui.statusLabel.setText("Открыто окно ручной корректировки совмещения...")
         QApplication.processEvents()  # Force update the UI
 
