@@ -17,15 +17,15 @@ def rigid_reg(fixed: str, moving: str, save_path: str):
     ants_fixed = ants.image_read(fixed)
     ants_moving = ants.image_read(moving)
     
-    # Тождественное преобразование
-    euler_transform = ants.create_ants_transform(
-        transform_type="Euler3DTransform",
-        translation = (0, 0, 0)
-    )
-    
     # Сохранение начальной трансформации во временный файл
     initial_transform_file = os.path.join(save_path, 'initial_transform.mat')
-    ants.write_transform(euler_transform, initial_transform_file)
+    if not os.path.exists(initial_transform_file):
+        # Тождественное преобразование
+        euler_transform = ants.create_ants_transform(
+            transform_type="Euler3DTransform",
+            translation = (0, 0, 0)
+        )
+        ants.write_transform(euler_transform, initial_transform_file)
     
     res = ants.registration(
         fixed=ants_fixed, moving=ants_moving, type_of_transform="Rigid", initial_transform=[initial_transform_file], random_seed = 0
@@ -114,6 +114,9 @@ def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: flo
         matrix=matrix[:3, :3],
         offset=matrix[:3, 3]
     )
+
+    initial_transform_file = os.path.join(save_path, 'initial_transform.mat')
+    ants.write_transform(affine_transform, initial_transform_file)
 
     shifted_image = ants.apply_ants_transform(
         transform=affine_transform,
