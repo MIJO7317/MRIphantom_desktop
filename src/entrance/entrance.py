@@ -400,10 +400,15 @@ class EntranceWindow(QMainWindow):
 
             print(self.voxel_size)
             print(self.slice_thickness)
+            
+            number_of_slices = 60
+            moving_com = np.mean(np.where(img_mri != 0), axis=1)
+            min_slice = int(moving_com[2])-number_of_slices//2
+            max_slice = int(moving_com[2])+number_of_slices//2
 
             self.all_mri_points, self.all_ct_points = segmentation(
-                img_mri[:, :, 45:105],
-                img_ct[:, :, 45:105],
+                img_mri[:, :, min_slice:max_slice],
+                img_ct[:, :, min_slice:max_slice],
                 mri_pickle_path,
                 ct_pickle_path,
                 self.voxel_size,

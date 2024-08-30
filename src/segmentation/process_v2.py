@@ -143,9 +143,17 @@ def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
     max_val = np.max(masked_image[loc])
     masked_image[loc] = np.clip((masked_image[loc].astype(int) - min_val) * 255 / (max_val - min_val), 0, 255).astype(
         np.uint8)
+    
+    # Create mask for find Otsu's threshold
+    otsu_mask = np.zeros_like(masked_image)
+    cv2.circle(otsu_mask, (round(circle[0]), round(circle[1])), round(circle[2]), 255, -1)
+    otsu_loc = np.where(otsu_mask == 255)
+    
+    # Find Otsu's threshold
+    otsu, _ = cv2.threshold(masked_image[otsu_loc], 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     # Threshold the image using Otsu's method to create a binary image
-    otsu, binary_image = cv2.threshold(masked_image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    _, binary_image = cv2.threshold(masked_image, otsu, 255, cv2.THRESH_BINARY_INV)
 
     # Set everything outside the mask to black
     binary_image[mask == 0] = 0
@@ -178,7 +186,7 @@ def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
     return points
 
 
-def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1, size_for_resizing=2048, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
+def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1, size_for_resizing=1024, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
     """
     Segments MRI and CT images to extract points of interest and saves the coordinates as pickle files.
     """
