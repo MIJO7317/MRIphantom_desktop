@@ -186,15 +186,28 @@ def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
     return points
 
 
-def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1, size_for_resizing=1024, wall_thickness=4, circles_ratio=0.1, low_search_part=0.25, high_search_part=0.75):
+def segmentation(phantom_type, mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1):
     """
-    Segments MRI and CT images to extract points of interest and saves the coordinates as pickle files.
+    Segments MRI and CT images to extract points of interest
+    and saves the coordinates as pickle files.
     """
     # default size_for_resizing=2048
+    if phantom_type == "elekta_axial":
+        with open('assets/phantom_configs/elekta_axial.json', 'r') as f:
+            config = json.load(f)
+    if phantom_type == "phantom_1_axial":
+        with open('assets/phantom_configs/phantom_1_axial.json', 'r') as f:
+            config = json.load(f)
+    size_for_resizing = config['segmentation']['size_for_resizing']
+    wall_thickness = config['segmentation']['wall_thickness']
+    circles_ratio = config['segmentation']['circles_ratio']
+    low_search_part = config['segmentation']['low_search_part']
+    high_search_part = config['segmentation']['high_search_part']
+    num_points = config['segmentation']['num_points']
+
     # Check if the number of slices in MRI and CT images are the same
     if mri_images.shape[2] != ct_images.shape[2]:
         return 'Error: MRI and CT data have different number of images.'
-    print(voxel_size)
 
     # Initialize lists to store points from MRI and CT images
     all_mri_points = []
@@ -223,15 +236,15 @@ def segmentation(mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=
         mri_points = get_points(mri_image, mri_circle, wall_thickness=int(wall_thickness * scale_mri_factor), circles_ratio=circles_ratio)
         ct_points = get_points(255 - ct_image, ct_circle, wall_thickness=int(wall_thickness * scale_ct_factor), circles_ratio=circles_ratio)
 
-        # Ensure each slice has exactly 88 points
-        while len(mri_points) < 88:
+        # Ensure each slice has exactly num_points points
+        while len(mri_points) < num_points:
             mri_points.append((100, 100))  # Append (100, 100) if there are fewer than 88 points
-        while len(mri_points) > 88:
+        while len(mri_points) > num_points:
             mri_points.pop()
 
-        while len(ct_points) < 88:
+        while len(ct_points) < num_points:
             ct_points.append((100, 100))
-        while len(ct_points) > 88:
+        while len(ct_points) > num_points:
             ct_points.pop()
 
         # Append the processed points to the respective lists
@@ -269,7 +282,6 @@ def count_difference_2(ct_path, mri_path, save_path, interpolation_coef=1.0, dis
 
     # Process each slice and calculate distances using KD-tree for nearest neighbor search
     for slice_num, (ct_slice, mri_slice) in enumerate(zip(coords_ct, coords_mri)):
-        print(slice_num)
         slice_distances[slice_num] = {"distances": []}
 
         ct_points = np.array(ct_slice)

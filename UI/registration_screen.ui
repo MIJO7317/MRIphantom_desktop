@@ -227,7 +227,7 @@ font-size: 20px;</string>
             <property name="maximumSize">
              <size>
               <width>300</width>
-              <height>500</height>
+              <height>800</height>
              </size>
             </property>
             <property name="frameShape">
@@ -237,6 +237,136 @@ font-size: 20px;</string>
              <enum>QFrame::Raised</enum>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QFrame" name="flip_frame">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>190</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <widget class="QLabel" name="label_flip_controls">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Управление отражением МРТ&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="x_flip_frame">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_11">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QPushButton" name="flip_x_button">
+                     <property name="text">
+                      <string>Отразить по оси X</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="y_flip_frame">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_12">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QPushButton" name="flip_y_button">
+                     <property name="text">
+                      <string>Отразить по оси Y</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="z_flip_frame">
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                  <layout class="QHBoxLayout" name="horizontalLayout_13">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QPushButton" name="flip_z_button">
+                     <property name="text">
+                      <string>Отразить по оси Z</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
              <item>
               <widget class="QFrame" name="shift_frame">
                <property name="minimumSize">
@@ -313,8 +443,14 @@ font-size: 20px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="maximum">
+                      <double>100.000000000000000</double>
+                     </property>
                      <property name="singleStep">
-                      <double>0.010000000000000</double>
+                      <double>0.100000000000000</double>
+                     </property>
+                     <property name="stepType">
+                      <enum>QAbstractSpinBox::DefaultStepType</enum>
                      </property>
                     </widget>
                    </item>
@@ -363,8 +499,11 @@ font-size: 20px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="maximum">
+                      <double>100.000000000000000</double>
+                     </property>
                      <property name="singleStep">
-                      <double>0.010000000000000</double>
+                      <double>0.100000000000000</double>
                      </property>
                     </widget>
                    </item>
@@ -413,6 +552,9 @@ font-size: 20px;</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="maximum">
+                      <double>100.000000000000000</double>
+                     </property>
                      <property name="singleStep">
                       <double>0.100000000000000</double>
                      </property>
@@ -459,7 +601,7 @@ font-size: 20px;</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="xy_rotation_frame">
+                 <widget class="QFrame" name="z_rotation_frame">
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
@@ -480,7 +622,7 @@ font-size: 20px;</string>
                     <number>0</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="xy_label">
+                    <widget class="QLabel" name="z_rotation_label">
                      <property name="maximumSize">
                       <size>
                        <width>120</width>
@@ -488,12 +630,12 @@ font-size: 20px;</string>
                       </size>
                      </property>
                      <property name="text">
-                      <string>вокруг оси XY, °</string>
+                      <string>вокруг оси Z, °</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="xy_slider">
+                    <widget class="QDoubleSpinBox" name="z_rotation_slider">
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
@@ -501,10 +643,10 @@ font-size: 20px;</string>
                       </size>
                      </property>
                      <property name="minimum">
-                      <double>-99.000000000000000</double>
+                      <double>-180.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>99.000000000000000</double>
+                      <double>180.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>
@@ -515,7 +657,7 @@ font-size: 20px;</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="xz_rotation_frame">
+                 <widget class="QFrame" name="y_rotation_frame">
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
@@ -536,14 +678,14 @@ font-size: 20px;</string>
                     <number>0</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="xz_label">
+                    <widget class="QLabel" name="y_rotation_label">
                      <property name="text">
-                      <string>вокруг оси XZ, °</string>
+                      <string>вокруг оси Y, °</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="xz_slider">
+                    <widget class="QDoubleSpinBox" name="y_rotation_slider">
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
@@ -551,10 +693,10 @@ font-size: 20px;</string>
                       </size>
                      </property>
                      <property name="minimum">
-                      <double>-99.000000000000000</double>
+                      <double>-180.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>99.000000000000000</double>
+                      <double>180.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>
@@ -568,7 +710,7 @@ font-size: 20px;</string>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="yz_rotation_frame">
+                 <widget class="QFrame" name="x_rotation_frame">
                   <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
@@ -589,14 +731,14 @@ font-size: 20px;</string>
                     <number>0</number>
                    </property>
                    <item>
-                    <widget class="QLabel" name="yz_label">
+                    <widget class="QLabel" name="x_rotation_label">
                      <property name="text">
-                      <string>вокруг оси YZ, °</string>
+                      <string>вокруг оси X, °</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QDoubleSpinBox" name="yz_slider">
+                    <widget class="QDoubleSpinBox" name="x_rotation_slider">
                      <property name="minimumSize">
                       <size>
                        <width>0</width>
@@ -604,10 +746,10 @@ font-size: 20px;</string>
                       </size>
                      </property>
                      <property name="minimum">
-                      <double>-99.000000000000000</double>
+                      <double>-180.000000000000000</double>
                      </property>
                      <property name="maximum">
-                      <double>99.000000000000000</double>
+                      <double>180.000000000000000</double>
                      </property>
                      <property name="singleStep">
                       <double>0.010000000000000</double>

@@ -1,0 +1,20 @@
+{
+  "find_main_circle": {
+    "standard_image_size": 512,
+    "standard_kernel_size": 15,
+    "low_search_part": 0.25,
+    "high_search_part": 0.75
+  },
+  "get_points": {
+    "wall_thickness": 16,
+    "circles_ratio": 0.1
+  },
+  "segmentation": {
+    "size_for_resizing": 1024,
+    "wall_thickness": 4,
+    "circles_ratio": 0.1,
+    "low_search_part": 0.25,
+    "high_search_part": 0.75,
+    "num_points": 64
+  }
+}

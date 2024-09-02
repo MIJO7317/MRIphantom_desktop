@@ -7,6 +7,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QApplication,
     QMainWindow,
+    QHBoxLayout,
+    QPushButton
 )
 from PySide6 import QtWidgets
 from UI.registration_screen import Ui_ManualRegistrationWindow
@@ -54,61 +56,88 @@ def match_voxel_sizes(fixed: str, moving: str, save_path: str):
     return resampled_moving
 
 
-def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: float, z: float, xy: float, xz: float,
-                       yz: float):
+def calculate_image_center(image):
     """
-    Apply a manual shift to an image with translation and rotation.
+    Calculate the center of an image taking into account its spacing and origin.
 
-    Args:
-        fixed: str, path to the fixed image file.
-        moving: str, path to the moving image file.
-        save_path: str, directory path where the shifted image will be saved.
-        x: float, translation along the X-axis.
-        y: float, translation along the Y-axis.
-        z: float, translation along the Z-axis.
-        xy: float, rotation around the XY plane in degrees.
-        xz: float, rotation around the XZ plane in degrees.
-        yz: float, rotation around the YZ plane in degrees.
+    Parameters:
+    - image: ANTsImage object.
 
     Returns:
-        ants.ANTsImage: the shifted image.
+    - center_x, center_y, center_z: Coordinates of the image center in world space.
     """
+    spacing = image.spacing
+    origin = image.origin
+    extent = image.shape
 
+    # Center coordinates in world space
+    center_x = origin[0] + (extent[0] - 1) / 2.0 * spacing[0]
+    center_y = origin[1] + (extent[1] - 1) / 2.0 * spacing[1]
+    center_z = origin[2] + (extent[2] - 1) / 2.0 * spacing[2]
+
+    return center_x, center_y, center_z
+
+def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: float, z: float, z_rot: float, y_rot: float, x_rot: float):
     ants_moving = ants.image_read(moving)
     ants_fixed = ants.image_read(fixed)
 
+    # Calculate the center of the moving image
+    center_x, center_y, center_z = calculate_image_center(ants_moving)
+
     # Convert rotation angles from degrees to radians
-    xy_rad = np.deg2rad(xy)
-    xz_rad = np.deg2rad(xz)
-    yz_rad = np.deg2rad(yz)
+    z_rad = np.deg2rad(z_rot)
+    y_rad = np.deg2rad(y_rot)
+    x_rad = np.deg2rad(x_rot)
 
     # Create rotation matrices
-    R_xz = np.array([
-        [1, 0, 0],
-        [0, np.cos(xz_rad), -np.sin(xz_rad)],
-        [0, np.sin(xz_rad), np.cos(xz_rad)]
-    ])
-
-    R_yz = np.array([
-        [np.cos(yz_rad), 0, np.sin(yz_rad)],
-        [0, 1, 0],
-        [-np.sin(yz_rad), 0, np.cos(yz_rad)]
-    ])
-
-    R_xy = np.array([
-        [np.cos(xy_rad), -np.sin(xy_rad), 0],
-        [np.sin(xy_rad), np.cos(xy_rad), 0],
+    mat_z = np.array([
+        [np.cos(z_rad), -np.sin(z_rad), 0],
+        [np.sin(z_rad), np.cos(z_rad), 0],
         [0, 0, 1]
     ])
 
-    # Combined rotation matrix (R = R_xy * R_yz * R_xz)
-    R_combined = R_xy @ R_yz @ R_xz
+    mat_x = np.array([
+        [1, 0, 0],
+        [0, np.cos(x_rad), -np.sin(x_rad)],
+        [0, np.sin(x_rad), np.cos(x_rad)]
+    ])
+
+    mat_y = np.array([
+        [np.cos(y_rad), 0, np.sin(y_rad)],
+        [0, 1, 0],
+        [-np.sin(y_rad), 0, np.cos(y_rad)]
+    ])
+
+    # Combined rotation matrix (R = mat_z * mat_x * mat_y)
+    R_combined = mat_z @ mat_x @ mat_y
 
     # Create the affine transformation matrix
     matrix = np.eye(4)
-    matrix[:3, :3] = R_combined
-    matrix[:3, 3] = [-x, -y, -z]
 
+    # Translation part (translation to center, rotation, then translation back)
+    translate_to_center = np.array([
+        [1, 0, 0, center_x],
+        [0, 1, 0, center_y],
+        [0, 0, 1, center_z],
+        [0, 0, 0, 1]
+    ])
+
+    translate_back = np.array([
+        [1, 0, 0, -center_x],
+        [0, 1, 0, -center_y],
+        [0, 0, 1, -center_z],
+        [0, 0, 0, 1]
+    ])
+
+    # Combine the transformations
+    matrix = translate_to_center @ matrix
+    matrix[:3, :3] = R_combined
+    matrix = translate_back @ matrix
+
+    # Final translation
+    matrix[:3, 3] += [x, y, z]
+
+    # Create the affine transformation
     affine_transform = ants.create_ants_transform(
         transform_type="AffineTransform",
         matrix=matrix[:3, :3],
@@ -130,6 +159,32 @@ def apply_manual_shift(fixed: str, moving: str, save_path: str, x: float, y: flo
     return shifted_image
 
 
+def flip_image(ants_image, axis):
+    """
+    Flip the image along the specified axis.
+
+    Args:
+        ants_image: ANTsImage object to be flipped.
+        axis: str, the axis to flip ('x', 'y', 'z').
+
+    Returns:
+        ants.ANTsImage: the flipped image.
+    """
+    data = ants_image.numpy()
+
+    if axis == 'x':
+        flipped_data = np.flip(data, axis=0)
+    elif axis == 'y':
+        flipped_data = np.flip(data, axis=1)
+    elif axis == 'z':
+        flipped_data = np.flip(data, axis=2)
+    else:
+        raise ValueError(f"Invalid axis: {axis}. Must be 'x', 'y', or 'z'.")
+
+    flipped_image = ants.from_numpy(flipped_data, origin=ants_image.origin, spacing=ants_image.spacing, direction=ants_image.direction)
+    return flipped_image
+
+
 class ManualRegistrationWindow(QMainWindow):
     """
     Manual Registration widget
@@ -148,12 +203,18 @@ class ManualRegistrationWindow(QMainWindow):
         self.fixed_autoreg_file = fixed_file
         self.save_path = save_path
 
-        self.ui.x_slider.valueChanged.connect(self.update_parameters)
-        self.ui.y_slider.valueChanged.connect(self.update_parameters)
-        self.ui.z_slider.valueChanged.connect(self.update_parameters)
-        self.ui.xy_slider.valueChanged.connect(self.update_parameters)
-        self.ui.xz_slider.valueChanged.connect(self.update_parameters)
-        self.ui.yz_slider.valueChanged.connect(self.update_parameters)
+        self.timer_id = -1
+
+        self.ui.x_slider.valueChanged.connect(self.value_changed)
+        self.ui.y_slider.valueChanged.connect(self.value_changed)
+        self.ui.z_slider.valueChanged.connect(self.value_changed)
+        self.ui.z_rotation_slider.valueChanged.connect(self.value_changed)
+        self.ui.y_rotation_slider.valueChanged.connect(self.value_changed)
+        self.ui.x_rotation_slider.valueChanged.connect(self.value_changed)
+
+        self.ui.flip_x_button.clicked.connect(lambda: self.flip_image('x'))
+        self.ui.flip_y_button.clicked.connect(lambda: self.flip_image('y'))
+        self.ui.flip_z_button.clicked.connect(lambda: self.flip_image('z'))
 
         self.setup_sliders()
 
@@ -165,42 +226,69 @@ class ManualRegistrationWindow(QMainWindow):
         self.ui.image_widget.setLayout(self.viewer_layout)
 
     def setup_sliders(self):
-        self.ui.x_slider.setRange(-90, 90)
-        self.ui.y_slider.setRange(-90, 90)
-        self.ui.z_slider.setRange(-90, 90)
-        self.ui.xy_slider.setRange(-90, 90)
-        self.ui.xz_slider.setRange(-90, 90)
-        self.ui.yz_slider.setRange(-90, 90)
+        self.ui.x_slider.setRange(-100, 100)
+        self.ui.y_slider.setRange(-100, 100)
+        self.ui.z_slider.setRange(-100, 100)
+        self.ui.z_rotation_slider.setRange(-180, 180)
+        self.ui.y_rotation_slider.setRange(-180, 180)
+        self.ui.x_rotation_slider.setRange(-180, 180)
+
+    def flip_image(self, axis):
+        ants_moving = ants.image_read(self.moving_autoreg_file)
+        flipped_image = flip_image(ants_moving, axis)
+        flipped_image_path = os.path.join(self.save_path, 'image_moving_flipped.nii')
+        ants.image_write(flipped_image, flipped_image_path)
+        self.moving_autoreg_file = flipped_image_path
+
+        self.viewer_layout.removeWidget(self.overlay_viewer)
+        self.overlay_viewer.deleteLater()
+        self.overlay_viewer = VTKOverlayViewer(self.fixed_autoreg_file, self.moving_autoreg_file, False, self)
+        self.viewer_layout.addWidget(self.overlay_viewer)
+
+    def timerEvent(self, event):
+        self.killTimer(self.timer_id)
+        self.timer_id = -1
+        self.update_parameters()
+
+    def value_changed(self):
+        if self.timer_id != -1:
+            self.killTimer(self.timer_id)
+
+        self.timer_id = self.startTimer(1500)
 
     def update_parameters(self):
-        x = -self.ui.x_slider.value()
-        y = -self.ui.y_slider.value()
-        z = -self.ui.z_slider.value()
-        xy = self.ui.xy_slider.value()
-        xz = self.ui.xz_slider.value()
-        yz = self.ui.yz_slider.value()
-        self.overlay_viewer.update_parameters(x, y, z, xy, xz, yz)
+        x = self.ui.x_slider.value()
+        y = self.ui.y_slider.value()
+        z = self.ui.z_slider.value()
+        z_rot = self.ui.z_rotation_slider.value()
+        y_rot = self.ui.y_rotation_slider.value()
+        x_rot = self.ui.x_rotation_slider.value()
+        self.overlay_viewer.update_parameters(x, y, z, x_rot, y_rot, z_rot)
+
+        # apply_manual_shift(self.fixed_autoreg_file, self.moving_autoreg_file, self.save_path, x, y, z, xy, xz, yz)
+        # self.viewer_layout.removeWidget(self.overlay_viewer)
+        # self.overlay_viewer.deleteLater()
+        # self.overlay_viewer = VTKOverlayViewer(self.fixed_autoreg_file, self.moving_autoreg_file,
+        #                                        False, self)
+        # self.viewer_layout.addWidget(self.overlay_viewer)
 
     def save_images(self):
         params = [
             -self.ui.x_slider.value(),
-            -self.ui.y_slider.value(),
-            -self.ui.z_slider.value(),
-            self.ui.xy_slider.value(),
-            self.ui.xz_slider.value(),
-            self.ui.yz_slider.value()
+            self.ui.y_slider.value(),
+            self.ui.z_slider.value(),
+            self.ui.z_rotation_slider.value(),
+            self.ui.y_rotation_slider.value(),
+            self.ui.x_rotation_slider.value()
         ]
         apply_manual_shift(self.fixed_autoreg_file, self.moving_autoreg_file, self.save_path, *params)
         self.close()
 
-
-
-
 if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
-    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\10\\image_fixed.nii"
-    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\10\\image_moving.nii"
-    window = ManualRegistrationWindow(fixed_file, moving_file, 'C:\\dev\\git\\MRIphantom_desktop\\studies\\10')
+    fixed_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\12341\\image_fixed.nii"
+    moving_file = "C:\\dev\\git\\MRIphantom_desktop\\studies\\12341\\image_moving.nii"
+    window = ManualRegistrationWindow(fixed_file, moving_file, 'C:\\dev\\git\\MRIphantom_desktop\\studies\\12341')
     window.show()
     sys.exit(app.exec())

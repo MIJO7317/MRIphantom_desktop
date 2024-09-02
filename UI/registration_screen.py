@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDoubleSpinBox, QFrame, QHBoxLayout,
-    QLabel, QLayout, QMainWindow, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractSpinBox, QApplication, QDoubleSpinBox, QFrame,
+    QHBoxLayout, QLabel, QLayout, QMainWindow,
+    QPushButton, QSizePolicy, QVBoxLayout, QWidget)
 import resources_rc
 
 class Ui_ManualRegistrationWindow(object):
@@ -116,11 +116,74 @@ class Ui_ManualRegistrationWindow(object):
         self.study_frame.setObjectName(u"study_frame")
         self.study_frame.setEnabled(True)
         self.study_frame.setMinimumSize(QSize(300, 500))
-        self.study_frame.setMaximumSize(QSize(300, 500))
+        self.study_frame.setMaximumSize(QSize(300, 800))
         self.study_frame.setFrameShape(QFrame.NoFrame)
         self.study_frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.study_frame)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.flip_frame = QFrame(self.study_frame)
+        self.flip_frame.setObjectName(u"flip_frame")
+        self.flip_frame.setMinimumSize(QSize(0, 190))
+        self.flip_frame.setFrameShape(QFrame.StyledPanel)
+        self.flip_frame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_6 = QVBoxLayout(self.flip_frame)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.label_flip_controls = QLabel(self.flip_frame)
+        self.label_flip_controls.setObjectName(u"label_flip_controls")
+        self.label_flip_controls.setMaximumSize(QSize(16777215, 30))
+        self.label_flip_controls.setStyleSheet(u"")
+        self.label_flip_controls.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_6.addWidget(self.label_flip_controls)
+
+        self.x_flip_frame = QFrame(self.flip_frame)
+        self.x_flip_frame.setObjectName(u"x_flip_frame")
+        self.x_flip_frame.setFrameShape(QFrame.StyledPanel)
+        self.x_flip_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_11 = QHBoxLayout(self.x_flip_frame)
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.horizontalLayout_11.setContentsMargins(0, 0, 0, 0)
+        self.flip_x_button = QPushButton(self.x_flip_frame)
+        self.flip_x_button.setObjectName(u"flip_x_button")
+
+        self.horizontalLayout_11.addWidget(self.flip_x_button)
+
+
+        self.verticalLayout_6.addWidget(self.x_flip_frame)
+
+        self.y_flip_frame = QFrame(self.flip_frame)
+        self.y_flip_frame.setObjectName(u"y_flip_frame")
+        self.y_flip_frame.setFrameShape(QFrame.StyledPanel)
+        self.y_flip_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_12 = QHBoxLayout(self.y_flip_frame)
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.horizontalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.flip_y_button = QPushButton(self.y_flip_frame)
+        self.flip_y_button.setObjectName(u"flip_y_button")
+
+        self.horizontalLayout_12.addWidget(self.flip_y_button)
+
+
+        self.verticalLayout_6.addWidget(self.y_flip_frame)
+
+        self.z_flip_frame = QFrame(self.flip_frame)
+        self.z_flip_frame.setObjectName(u"z_flip_frame")
+        self.z_flip_frame.setFrameShape(QFrame.StyledPanel)
+        self.z_flip_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_13 = QHBoxLayout(self.z_flip_frame)
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.horizontalLayout_13.setContentsMargins(0, 0, 0, 0)
+        self.flip_z_button = QPushButton(self.z_flip_frame)
+        self.flip_z_button.setObjectName(u"flip_z_button")
+
+        self.horizontalLayout_13.addWidget(self.flip_z_button)
+
+
+        self.verticalLayout_6.addWidget(self.z_flip_frame)
+
+
+        self.verticalLayout_2.addWidget(self.flip_frame)
+
         self.shift_frame = QFrame(self.study_frame)
         self.shift_frame.setObjectName(u"shift_frame")
         self.shift_frame.setMinimumSize(QSize(0, 190))
@@ -152,7 +215,9 @@ class Ui_ManualRegistrationWindow(object):
         self.x_slider = QDoubleSpinBox(self.x_shift_frame)
         self.x_slider.setObjectName(u"x_slider")
         self.x_slider.setMinimumSize(QSize(0, 25))
-        self.x_slider.setSingleStep(0.010000000000000)
+        self.x_slider.setMaximum(100.000000000000000)
+        self.x_slider.setSingleStep(0.100000000000000)
+        self.x_slider.setStepType(QAbstractSpinBox.DefaultStepType)
 
         self.horizontalLayout_2.addWidget(self.x_slider)
 
@@ -175,7 +240,8 @@ class Ui_ManualRegistrationWindow(object):
         self.y_slider = QDoubleSpinBox(self.y_shift_frame)
         self.y_slider.setObjectName(u"y_slider")
         self.y_slider.setMinimumSize(QSize(0, 25))
-        self.y_slider.setSingleStep(0.010000000000000)
+        self.y_slider.setMaximum(100.000000000000000)
+        self.y_slider.setSingleStep(0.100000000000000)
 
         self.horizontalLayout_6.addWidget(self.y_slider)
 
@@ -198,6 +264,7 @@ class Ui_ManualRegistrationWindow(object):
         self.z_slider = QDoubleSpinBox(self.z_shift_frame)
         self.z_slider.setObjectName(u"z_slider")
         self.z_slider.setMinimumSize(QSize(0, 25))
+        self.z_slider.setMaximum(100.000000000000000)
         self.z_slider.setSingleStep(0.100000000000000)
 
         self.horizontalLayout_7.addWidget(self.z_slider)
@@ -223,79 +290,79 @@ class Ui_ManualRegistrationWindow(object):
 
         self.verticalLayout_4.addWidget(self.label_rotation_controls)
 
-        self.xy_rotation_frame = QFrame(self.rotation_frame)
-        self.xy_rotation_frame.setObjectName(u"xy_rotation_frame")
-        self.xy_rotation_frame.setFrameShape(QFrame.StyledPanel)
-        self.xy_rotation_frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_8 = QHBoxLayout(self.xy_rotation_frame)
+        self.z_rotation_frame = QFrame(self.rotation_frame)
+        self.z_rotation_frame.setObjectName(u"z_rotation_frame")
+        self.z_rotation_frame.setFrameShape(QFrame.StyledPanel)
+        self.z_rotation_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_8 = QHBoxLayout(self.z_rotation_frame)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
-        self.xy_label = QLabel(self.xy_rotation_frame)
-        self.xy_label.setObjectName(u"xy_label")
-        self.xy_label.setMaximumSize(QSize(120, 16777215))
+        self.z_rotation_label = QLabel(self.z_rotation_frame)
+        self.z_rotation_label.setObjectName(u"z_rotation_label")
+        self.z_rotation_label.setMaximumSize(QSize(120, 16777215))
 
-        self.horizontalLayout_8.addWidget(self.xy_label)
+        self.horizontalLayout_8.addWidget(self.z_rotation_label)
 
-        self.xy_slider = QDoubleSpinBox(self.xy_rotation_frame)
-        self.xy_slider.setObjectName(u"xy_slider")
-        self.xy_slider.setMinimumSize(QSize(0, 25))
-        self.xy_slider.setMinimum(-99.000000000000000)
-        self.xy_slider.setMaximum(99.000000000000000)
-        self.xy_slider.setSingleStep(0.010000000000000)
+        self.z_rotation_slider = QDoubleSpinBox(self.z_rotation_frame)
+        self.z_rotation_slider.setObjectName(u"z_rotation_slider")
+        self.z_rotation_slider.setMinimumSize(QSize(0, 25))
+        self.z_rotation_slider.setMinimum(-180.000000000000000)
+        self.z_rotation_slider.setMaximum(180.000000000000000)
+        self.z_rotation_slider.setSingleStep(0.010000000000000)
 
-        self.horizontalLayout_8.addWidget(self.xy_slider)
+        self.horizontalLayout_8.addWidget(self.z_rotation_slider)
 
 
-        self.verticalLayout_4.addWidget(self.xy_rotation_frame)
+        self.verticalLayout_4.addWidget(self.z_rotation_frame)
 
-        self.xz_rotation_frame = QFrame(self.rotation_frame)
-        self.xz_rotation_frame.setObjectName(u"xz_rotation_frame")
-        self.xz_rotation_frame.setFrameShape(QFrame.StyledPanel)
-        self.xz_rotation_frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_9 = QHBoxLayout(self.xz_rotation_frame)
+        self.y_rotation_frame = QFrame(self.rotation_frame)
+        self.y_rotation_frame.setObjectName(u"y_rotation_frame")
+        self.y_rotation_frame.setFrameShape(QFrame.StyledPanel)
+        self.y_rotation_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_9 = QHBoxLayout(self.y_rotation_frame)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.horizontalLayout_9.setContentsMargins(0, 0, 0, 0)
-        self.xz_label = QLabel(self.xz_rotation_frame)
-        self.xz_label.setObjectName(u"xz_label")
+        self.y_rotation_label = QLabel(self.y_rotation_frame)
+        self.y_rotation_label.setObjectName(u"y_rotation_label")
 
-        self.horizontalLayout_9.addWidget(self.xz_label)
+        self.horizontalLayout_9.addWidget(self.y_rotation_label)
 
-        self.xz_slider = QDoubleSpinBox(self.xz_rotation_frame)
-        self.xz_slider.setObjectName(u"xz_slider")
-        self.xz_slider.setMinimumSize(QSize(0, 25))
-        self.xz_slider.setMinimum(-99.000000000000000)
-        self.xz_slider.setMaximum(99.000000000000000)
-        self.xz_slider.setSingleStep(0.010000000000000)
-        self.xz_slider.setValue(0.000000000000000)
+        self.y_rotation_slider = QDoubleSpinBox(self.y_rotation_frame)
+        self.y_rotation_slider.setObjectName(u"y_rotation_slider")
+        self.y_rotation_slider.setMinimumSize(QSize(0, 25))
+        self.y_rotation_slider.setMinimum(-180.000000000000000)
+        self.y_rotation_slider.setMaximum(180.000000000000000)
+        self.y_rotation_slider.setSingleStep(0.010000000000000)
+        self.y_rotation_slider.setValue(0.000000000000000)
 
-        self.horizontalLayout_9.addWidget(self.xz_slider)
+        self.horizontalLayout_9.addWidget(self.y_rotation_slider)
 
 
-        self.verticalLayout_4.addWidget(self.xz_rotation_frame)
+        self.verticalLayout_4.addWidget(self.y_rotation_frame)
 
-        self.yz_rotation_frame = QFrame(self.rotation_frame)
-        self.yz_rotation_frame.setObjectName(u"yz_rotation_frame")
-        self.yz_rotation_frame.setFrameShape(QFrame.StyledPanel)
-        self.yz_rotation_frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_10 = QHBoxLayout(self.yz_rotation_frame)
+        self.x_rotation_frame = QFrame(self.rotation_frame)
+        self.x_rotation_frame.setObjectName(u"x_rotation_frame")
+        self.x_rotation_frame.setFrameShape(QFrame.StyledPanel)
+        self.x_rotation_frame.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_10 = QHBoxLayout(self.x_rotation_frame)
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.horizontalLayout_10.setContentsMargins(0, 0, 0, 0)
-        self.yz_label = QLabel(self.yz_rotation_frame)
-        self.yz_label.setObjectName(u"yz_label")
+        self.x_rotation_label = QLabel(self.x_rotation_frame)
+        self.x_rotation_label.setObjectName(u"x_rotation_label")
 
-        self.horizontalLayout_10.addWidget(self.yz_label)
+        self.horizontalLayout_10.addWidget(self.x_rotation_label)
 
-        self.yz_slider = QDoubleSpinBox(self.yz_rotation_frame)
-        self.yz_slider.setObjectName(u"yz_slider")
-        self.yz_slider.setMinimumSize(QSize(0, 25))
-        self.yz_slider.setMinimum(-99.000000000000000)
-        self.yz_slider.setMaximum(99.000000000000000)
-        self.yz_slider.setSingleStep(0.010000000000000)
+        self.x_rotation_slider = QDoubleSpinBox(self.x_rotation_frame)
+        self.x_rotation_slider.setObjectName(u"x_rotation_slider")
+        self.x_rotation_slider.setMinimumSize(QSize(0, 25))
+        self.x_rotation_slider.setMinimum(-180.000000000000000)
+        self.x_rotation_slider.setMaximum(180.000000000000000)
+        self.x_rotation_slider.setSingleStep(0.010000000000000)
 
-        self.horizontalLayout_10.addWidget(self.yz_slider)
+        self.horizontalLayout_10.addWidget(self.x_rotation_slider)
 
 
-        self.verticalLayout_4.addWidget(self.yz_rotation_frame)
+        self.verticalLayout_4.addWidget(self.x_rotation_frame)
 
 
         self.verticalLayout_2.addWidget(self.rotation_frame)
@@ -332,14 +399,18 @@ class Ui_ManualRegistrationWindow(object):
     def retranslateUi(self, ManualRegistrationWindow):
         ManualRegistrationWindow.setWindowTitle(QCoreApplication.translate("ManualRegistrationWindow", u"MRIphantom", None))
         self.mainLabel.setText(QCoreApplication.translate("ManualRegistrationWindow", u"<html><head/><body><p><span style=\" font-size:26pt;\">\u0420\u0443\u0447\u043d\u043e\u0435 \u0441\u043e\u0432\u043c\u0435\u0449\u0435\u043d\u0438\u0435</span></p></body></html>", None))
+        self.label_flip_controls.setText(QCoreApplication.translate("ManualRegistrationWindow", u"<html><head/><body><p>\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u043e\u0442\u0440\u0430\u0436\u0435\u043d\u0438\u0435\u043c \u041c\u0420\u0422</p></body></html>", None))
+        self.flip_x_button.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u041e\u0442\u0440\u0430\u0437\u0438\u0442\u044c \u043f\u043e \u043e\u0441\u0438 X", None))
+        self.flip_y_button.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u041e\u0442\u0440\u0430\u0437\u0438\u0442\u044c \u043f\u043e \u043e\u0441\u0438 Y", None))
+        self.flip_z_button.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u041e\u0442\u0440\u0430\u0437\u0438\u0442\u044c \u043f\u043e \u043e\u0441\u0438 Z", None))
         self.label_shift_controls.setText(QCoreApplication.translate("ManualRegistrationWindow", u"<html><head/><body><p>\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u0434\u0432\u0438\u0433\u043e\u043c \u041c\u0420\u0422</p></body></html>", None))
         self.x_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u043f\u043e \u043e\u0441\u0438 X, \u043c\u043c", None))
         self.y_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u043f\u043e \u043e\u0441\u0438 Y, \u043c\u043c", None))
         self.z_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u043f\u043e \u043e\u0441\u0438 Z, \u043c\u043c", None))
         self.label_rotation_controls.setText(QCoreApplication.translate("ManualRegistrationWindow", u"<html><head/><body><p>\u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0432\u0440\u0430\u0449\u0435\u043d\u0438\u0435\u043c \u041c\u0420\u0422</p><p><br/></p></body></html>", None))
-        self.xy_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 XY, \u00b0", None))
-        self.xz_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 XZ, \u00b0", None))
-        self.yz_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 YZ, \u00b0", None))
+        self.z_rotation_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 Z, \u00b0", None))
+        self.y_rotation_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 Y, \u00b0", None))
+        self.x_rotation_label.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0432\u043e\u043a\u0440\u0443\u0433 \u043e\u0441\u0438 X, \u00b0", None))
         self.saveButton.setText(QCoreApplication.translate("ManualRegistrationWindow", u"\u0412\u044b\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0441\u043e\u0432\u043c\u0435\u0449\u0435\u043d\u0438\u0435", None))
     # retranslateUi
 

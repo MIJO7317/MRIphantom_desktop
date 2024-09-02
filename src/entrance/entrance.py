@@ -192,7 +192,8 @@ class EntranceWindow(QMainWindow):
         self.mri_img = None
 
         # geometric model selector
-        self.ui.phantomTypeCombo.addItem("Модель в разработке")
+        self.ui.phantomTypeCombo.addItem("Elekta (стержневая вставка)")
+        self.ui.phantomTypeCombo.addItem("Фантом 1")
 
         # registration buttons (automatic and manual)
         self.ui.autoregistrationButton.setCheckable(True)
@@ -386,6 +387,10 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
+        if self.ui.phantomTypeCombo.currentText() == "Elekta (стержневая вставка)":
+            phantom_type = "elekta_axial"
+        if self.ui.phantomTypeCombo.currentText() == "Фантом 1":
+            phantom_type = "phantom_1_axial"
 
         if self.ui.geometryPageButton.isChecked() is False:
             self.moving_image_path = os.path.join(self.write_path, "image_moving.nii")
@@ -423,6 +428,7 @@ class EntranceWindow(QMainWindow):
             max_slice = int(moving_com[2])+number_of_slices//2
 
             self.all_mri_points, self.all_ct_points = segmentation(
+                phantom_type,
                 img_mri[:, :, min_slice:max_slice],
                 img_ct[:, :, min_slice:max_slice],
                 mri_pickle_path,

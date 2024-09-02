@@ -144,9 +144,28 @@ class Ui_MainWindow(object):
         self.info_layout.setFrameShape(QFrame.NoFrame)
         self.info_layout.setFrameShadow(QFrame.Plain)
         self.verticalLayout = QVBoxLayout(self.info_layout)
-        self.verticalLayout.setSpacing(1)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.titleEdit = QLineEdit(self.info_layout)
+        self.titleEdit.setObjectName(u"titleEdit")
+        self.titleEdit.setMinimumSize(QSize(0, 30))
+        self.titleEdit.setMaximumSize(QSize(16777215, 30))
+        self.titleEdit.setStyleSheet(u"")
+
+        self.verticalLayout.addWidget(self.titleEdit)
+
+        self.label_4 = QLabel(self.info_layout)
+        self.label_4.setObjectName(u"label_4")
+
+        self.verticalLayout.addWidget(self.label_4)
+
+        self.phantomTypeCombo = QComboBox(self.info_layout)
+        self.phantomTypeCombo.setObjectName(u"phantomTypeCombo")
+        self.phantomTypeCombo.setMinimumSize(QSize(0, 30))
+        self.phantomTypeCombo.setMaximumSize(QSize(16777215, 30))
+        self.phantomTypeCombo.setStyleSheet(u"")
+
+        self.verticalLayout.addWidget(self.phantomTypeCombo)
+
         self.infolabel1 = QLabel(self.info_layout)
         self.infolabel1.setObjectName(u"infolabel1")
         self.infolabel1.setMaximumSize(QSize(16777215, 30))
@@ -178,14 +197,6 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout.addWidget(self.modelselector_frame)
-
-        self.titleEdit = QLineEdit(self.info_layout)
-        self.titleEdit.setObjectName(u"titleEdit")
-        self.titleEdit.setMinimumSize(QSize(0, 30))
-        self.titleEdit.setMaximumSize(QSize(16777215, 30))
-        self.titleEdit.setStyleSheet(u"")
-
-        self.verticalLayout.addWidget(self.titleEdit)
 
         self.movinginfo_frame = QFrame(self.info_layout)
         self.movinginfo_frame.setObjectName(u"movinginfo_frame")
@@ -259,12 +270,17 @@ class Ui_MainWindow(object):
         self.fixed_stackedWidget.addWidget(self.ct_page)
         self.geometry_page = QWidget()
         self.geometry_page.setObjectName(u"geometry_page")
-        self.phantomTypeCombo = QComboBox(self.geometry_page)
-        self.phantomTypeCombo.setObjectName(u"phantomTypeCombo")
-        self.phantomTypeCombo.setGeometry(QRect(0, 0, 293, 30))
-        self.phantomTypeCombo.setMinimumSize(QSize(0, 30))
-        self.phantomTypeCombo.setMaximumSize(QSize(16777215, 30))
-        self.phantomTypeCombo.setStyleSheet(u"")
+        self.widget = QWidget(self.geometry_page)
+        self.widget.setObjectName(u"widget")
+        self.widget.setGeometry(QRect(0, 0, 281, 81))
+        self.verticalLayout_9 = QVBoxLayout(self.widget)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.label_5 = QLabel(self.widget)
+        self.label_5.setObjectName(u"label_5")
+
+        self.verticalLayout_9.addWidget(self.label_5)
+
         self.fixed_stackedWidget.addWidget(self.geometry_page)
 
         self.verticalLayout.addWidget(self.fixed_stackedWidget)
@@ -326,7 +342,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.stats_scrollAreaWidgetContents = QWidget()
         self.stats_scrollAreaWidgetContents.setObjectName(u"stats_scrollAreaWidgetContents")
-        self.stats_scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1317, 1214))
+        self.stats_scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1306, 1196))
         self.verticalLayout_5 = QVBoxLayout(self.stats_scrollAreaWidgetContents)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.label = QLabel(self.stats_scrollAreaWidgetContents)
@@ -428,9 +444,9 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.body_stackedWidget.setCurrentIndex(4)
+        self.body_stackedWidget.setCurrentIndex(0)
         self.ctPageButton.setDefault(False)
-        self.fixed_stackedWidget.setCurrentIndex(0)
+        self.fixed_stackedWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -444,15 +460,17 @@ class Ui_MainWindow(object):
         self.scatter3dButton.setText(QCoreApplication.translate("MainWindow", u"3D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440", None))
         self.scatter2dButton.setText(QCoreApplication.translate("MainWindow", u"2D \u043f\u0440\u043e\u0441\u043c\u043e\u0442\u0440", None))
         self.marker2dButton.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0430\u0440\u043a\u0435\u0440\u044b", None))
+        self.titleEdit.setText("")
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u043c\u043e\u0434\u0435\u043b\u044c \u0444\u0430\u043d\u0442\u043e\u043c\u0430:", None))
+        self.phantomTypeCombo.setCurrentText("")
         self.infolabel1.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0440\u0435\u0436\u0438\u043c \u0430\u043d\u0430\u043b\u0438\u0437\u0430:", None))
         self.ctPageButton.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0420\u0422 vs KT", None))
         self.geometryPageButton.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0420\u0422 vs \u043c\u043e\u0434\u0435\u043b\u044c", None))
-        self.titleEdit.setText("")
         self.movinginfo_label.setText(QCoreApplication.translate("MainWindow", u"\u041c\u0420\u0422", None))
         self.movingimgEdit.setText("")
         self.fixedinfo_label.setText(QCoreApplication.translate("MainWindow", u"\u041a\u0422", None))
         self.fixedimgEdit.setText("")
-        self.phantomTypeCombo.setCurrentText("")
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u0413\u0435\u043e\u043c\u0435\u0442\u0440\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u043c\u043e\u0434\u0435\u043b\u044c \u0432 \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0435", None))
         self.autoregistrationButton.setText(QCoreApplication.translate("MainWindow", u"\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0430\u044f \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044f", None))
         self.manualregistrationButton.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0443\u0447\u043d\u0430\u044f \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044f", None))
         self.analyzeButton.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0441\u0441\u0447\u0438\u0442\u0430\u0442\u044c \u043e\u0442\u043a\u043b\u043e\u043d\u0435\u043d\u0438\u044f", None))

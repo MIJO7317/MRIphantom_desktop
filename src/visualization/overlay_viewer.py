@@ -1,5 +1,6 @@
 import sys
 import vtk
+import numpy as np
 from PySide6 import QtWidgets
 import vtkmodules.qt
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
@@ -10,6 +11,7 @@ from vtkmodules.vtkRenderingCore import (
     vtkActor2D,
     vtkTextMapper,
     vtkTextProperty
+
 )
 
 vtk.vtkObject.GlobalWarningDisplayOff()
@@ -144,6 +146,10 @@ class StatusMessage:
 class VTKOverlayViewer(QtWidgets.QWidget):
     def __init__(self, filepath_fixed, filepath_moving, is_dicom=False, parent=None):
         super().__init__(parent)
+
+        self.rotation_x = 0
+        self.rotation_y = 0
+        self.rotation_z = 0
 
         self.x = 0
         self.y = 0
@@ -298,6 +304,30 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         coord_text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
         coord_text_actor.GetPositionCoordinate().SetValue(0.05, 0.3)
 
+        ax1 = vtkTextMapper()
+        ax2 = vtkTextMapper()
+        if slice_type == 'axial':
+            ax1.SetInput('Y')
+            ax2.SetInput('X (axial)')
+        if slice_type == 'sagittal':
+            ax1.SetInput('Z')
+            ax2.SetInput('Y (sagittal)')
+        if slice_type == 'coronal':
+            ax1.SetInput('Z')
+            ax2.SetInput('X (coronal)')
+        ax1.SetTextProperty(coord_text_prop)
+        ax2.SetTextProperty(coord_text_prop)
+
+        ax1_actor = vtkActor2D()
+        ax1_actor.SetMapper(ax1)
+        ax1_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
+        ax1_actor.GetPositionCoordinate().SetValue(0.05, 0.5)
+
+        ax2_actor = vtkActor2D()
+        ax2_actor.SetMapper(ax2)
+        ax2_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
+        ax2_actor.GetPositionCoordinate().SetValue(0.5, 0.05)
+
         render_window_interactor = vtk_widget.GetRenderWindow().GetInteractor()
         my_interactor_style = MyVtkInteractorStyleImage(slice_type)
 
@@ -319,6 +349,8 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         image_viewer.GetRenderer().AddActor2D(slice_text_actor)
         image_viewer.GetRenderer().AddActor2D(usage_text_actor)
         image_viewer.GetRenderer().AddActor2D(coord_text_actor)
+        image_viewer.GetRenderer().AddActor2D(ax1_actor)
+        image_viewer.GetRenderer().AddActor2D(ax2_actor)
         image_viewer.Render()
 
         image_data = reader_fixed.GetOutput()
@@ -358,7 +390,6 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         return color_transfer
 
     def update_parameters(self, x=None, y=None, z=None, rot_x=None, rot_y=None, rot_z=None):
-        # Update position parameters
         if x is not None:
             self.x = x
         if y is not None:
@@ -366,7 +397,6 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         if z is not None:
             self.z = z
 
-        # Update rotation parameters
         if rot_x is not None:
             self.rotation_x = rot_x
         if rot_y is not None:
@@ -374,40 +404,46 @@ class VTKOverlayViewer(QtWidgets.QWidget):
         if rot_z is not None:
             self.rotation_z = rot_z
 
-        # Update the view
         self.update_view()
+
+    def calculate_image_center(self, reader):
+        image = reader.GetOutput()
+        extent = image.GetExtent()
+        spacing = image.GetSpacing()
+        origin = image.GetOrigin()
+
+        # Center coordinates in world space
+        center_x = origin[0] + (extent[1] - extent[0]) / 2.0 * spacing[0]
+        center_y = origin[1] + (extent[3] - extent[2]) / 2.0 * spacing[1]
+        center_z = origin[2] + (extent[5] - extent[4]) / 2.0 * spacing[2]
+
+        return center_x, center_y, center_z
 
     def update_view(self):
         transform = vtk.vtkTransform()
-        transform.Translate(self.x, self.y, self.z)
-        transform.RotateX(self.rotation_x)
-        transform.RotateY(self.rotation_y)
-        transform.RotateZ(self.rotation_z)
+        center_x, center_y, center_z = self.calculate_image_center(self.axial_viewer[2])
+        transform.Translate(center_x, center_y, center_z)
+        transform.RotateZ(-self.rotation_z)
+        transform.RotateX(-self.rotation_x)
+        transform.RotateY(-self.rotation_y)
+        transform.Translate(-center_x, -center_y, -center_z)
+        transform.Translate(-self.x, -self.y, -self.z)
 
-        # Iterate over each view: axial, sagittal, and coronal
-        for viewer, orientation in [(self.axial_viewer, 'XY'),
-                                    (self.sagittal_viewer, 'YZ'),
-                                    (self.coronal_viewer, 'XZ')]:
+        for viewer, orientation in [(self.axial_viewer, 'Z'),
+                                    (self.sagittal_viewer, 'X'),
+                                    (self.coronal_viewer, 'Y')]:
             # Retrieve the appropriate readers for each view
-            if orientation == 'XY':
+            if orientation == 'Z':
                 reader_fixed, reader_moving = self.axial_viewer[2], self.axial_viewer[3]
-            elif orientation == 'YZ':
+            elif orientation == 'X':
                 reader_fixed, reader_moving = self.sagittal_viewer[2], self.sagittal_viewer[3]
-            elif orientation == 'XZ':
+            elif orientation == 'Y':
                 reader_fixed, reader_moving = self.coronal_viewer[2], self.coronal_viewer[3]
 
             # Reslice transform filter
             transform_filter = vtk.vtkImageReslice()
             transform_filter.SetInputConnection(reader_moving.GetOutputPort())
             transform_filter.SetResliceTransform(transform)
-
-            # Set the reslice axes based on the orientation
-            if orientation == 'XY':
-                transform_filter.SetResliceAxesDirectionCosines(1, 0, 0, 0, 1, 0, 0, 0, 1)
-            elif orientation == 'YZ':
-                transform_filter.SetResliceAxesDirectionCosines(1, 0, 0, 0, 1, 0, 0, 0, 1)
-            elif orientation == 'XZ':
-                transform_filter.SetResliceAxesDirectionCosines(1, 0, 0, 0, 1, 0, 0, 0, 1)
 
             transform_filter.SetOutputSpacing(reader_moving.GetOutput().GetSpacing())
             transform_filter.SetOutputOrigin(reader_moving.GetOutput().GetOrigin())
@@ -437,6 +473,7 @@ class VTKOverlayViewer(QtWidgets.QWidget):
             # Set the blended image as input for the viewer and render
             viewer[1].SetInputConnection(blend.GetOutputPort())
             viewer[1].Render()
+
 
     def cleanup(self):
         # Properly shut down the interactor
