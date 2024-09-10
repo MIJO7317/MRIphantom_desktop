@@ -75,7 +75,7 @@ def find_main_circle(image, standard_image_size=512, standard_kernel_size=41, lo
     # Return the detected circle parameters
     return circles[0][0] if circles is not None else None, blurred_image
 
-def estimate_h_gradient(image, scale_factor=1.5):
+def estimate_h_gradient(image, scale_factor=1.3):
         """Estimation of h based on the analysis of image gradients."""
     
         # Calculating gradients in x and y
