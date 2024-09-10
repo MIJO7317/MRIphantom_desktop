@@ -54,6 +54,17 @@ class Scatter3D(QWidget):
             mr_points = np.array(slice_mr)
             ct_points = np.array(slice_ct)
 
+            # Фильтрация NaN значений
+            valid_mr = ~np.isnan(mr_points).any(axis=1)
+            valid_ct = ~np.isnan(ct_points).any(axis=1)
+            valid_points = valid_mr & valid_ct
+
+            mr_points = mr_points[valid_points]
+            ct_points = ct_points[valid_points]
+
+            if len(mr_points) == 0 or len(ct_points) == 0:
+                continue  # Пропускаем срез, если все точки были NaN
+
             # Создаем KD-дерево для поиска ближайших соседей
             tree = cKDTree(ct_points)
             distances, indices = tree.query(mr_points)
@@ -97,6 +108,7 @@ class Scatter3D(QWidget):
                     ),
                 ),
                 name="Отклонения",
+                hovertemplate="X: %{x:.2f}<br>Y: %{y:.2f}<br>Срез: %{z:.2f}<br>Отклонение: %{marker.color:.2f}<extra></extra>"
             )
         )
 

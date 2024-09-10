@@ -5,6 +5,7 @@ import json
 import numpy as np
 import nibabel as nib
 import pickle
+import ants
 from datetime import datetime
 from PySide6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QFileDialog, QLabel
 from PySide6.QtCore import (
@@ -276,6 +277,7 @@ class EntranceWindow(QMainWindow):
         Returns:
         None
         """
+
         self.study_name = self.ui.titleEdit.text()
         write_path = os.path.realpath(
             os.path.join(workdir, f"studies/{self.study_name}")
@@ -301,6 +303,15 @@ class EntranceWindow(QMainWindow):
         if saved_nifti_filepath:
             self.ui.movingimgEdit.setText(saved_nifti_filepath)
             self.moving_image_path = saved_nifti_filepath
+
+        # Сохранение начальной трансформации во временный файл
+        initial_transform_file = os.path.join(self.write_path, 'initial_transform.mat')
+        # Тождественное преобразование
+        euler_transform = ants.create_ants_transform(
+            transform_type="Euler3DTransform",
+            translation = (0, 0, 0)
+        )
+        ants.write_transform(euler_transform, initial_transform_file)
             
         self.moving_image_viewer = VTKSliceViewer(dicom_dir)
         self.moving_viewer_layout = QVBoxLayout(self.ui.moving_frame)
@@ -512,9 +523,14 @@ class EntranceWindow(QMainWindow):
                 if child.widget():
                     child.widget().deleteLater()
             self.scatter2d_layout.deleteLater()
+            
+        if self.ui.phantomTypeCombo.currentText() == "Elekta (стержневая вставка)":
+            phantom_type = "elekta_axial"
+        if self.ui.phantomTypeCombo.currentText() == "Фантом 1":
+            phantom_type = "phantom_1_axial"
 
         # Create and add the new layout and widget
-        self.scatter2d = Scatter2D(self.coords_ct, self.coords_mri)
+        self.scatter2d = Scatter2D(phantom_type, self.coords_ct, self.coords_mri)
         self.scatter2d_layout = QVBoxLayout(self.ui.scatter2d_frame)
         self.scatter2d_layout.addWidget(self.scatter2d)
 

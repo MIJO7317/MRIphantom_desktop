@@ -5,7 +5,7 @@ from scipy.spatial import cKDTree
 import pickle
 import json
 import os
-
+from joblib import Parallel, delayed
 
 def round_to_nearest_odd(number):
     """
@@ -18,16 +18,10 @@ def round_to_nearest_odd(number):
     int: The nearest odd integer to the given number. If the number is equidistant
          between two odd integers, it rounds up if the number is positive and down if negative.
     """
-    rounded_number = round(number)
-    if rounded_number % 2 == 0:
-        if number >= rounded_number:
-            return rounded_number + 1
-        else:
-            return rounded_number - 1
-    return rounded_number
+    return int(number) | 1
 
 
-def find_main_circle(image, standard_image_size=512, standard_kernel_size=15, low_search_part=0.25,
+def find_main_circle(image, standard_image_size=512, standard_kernel_size=41, low_search_part=0.25,
                      high_search_part=0.75):
     """
     Detect the main circle in the given image using the Hough Circle Transform.
@@ -46,18 +40,12 @@ def find_main_circle(image, standard_image_size=512, standard_kernel_size=15, lo
     # Determine the minimum dimension of the image
     image_size = min(image.shape[:2])
 
-    # Image will be resized if it is smaller than the standard size
-    is_resized = image_size < standard_image_size
-
     # Define scale factor
-    scale_factor = 1.0
+    scale_factor = standard_image_size / image_size if image_size < standard_image_size else 1.0
 
     # Resize the image if necessary
-    if is_resized:
-        scale_factor = standard_image_size / image_size
-        new_size = (int(image.shape[1] * scale_factor), int(image.shape[0] * scale_factor))
-        image = cv2.resize(image, new_size, interpolation=cv2.INTER_CUBIC)
-        image_size = min(image.shape[:2])
+    if scale_factor != 1.0:
+        image = cv2.resize(image, (0, 0), fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_CUBIC)
 
     # Calculate the kernel size for median blurring
     kernel_size = round_to_nearest_odd(standard_kernel_size * image_size / standard_image_size)
@@ -65,42 +53,43 @@ def find_main_circle(image, standard_image_size=512, standard_kernel_size=15, lo
     # Apply median blur to the image
     blurred_image = cv2.medianBlur(image, kernel_size)
 
-    otsu, threshold = cv2.threshold(blurred_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    if otsu == 0:
-        otsu = 1
+    otsu, _ = cv2.threshold(blurred_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    otsu = max(1, otsu)
 
     # Perform Hough Circle Transform to detect circles
     circles = cv2.HoughCircles(
         blurred_image,
         cv2.HOUGH_GRADIENT,
-        dp=1,
-        # The inverse ratio of the accumulator resolution to the image resolution. A value of 1 means the accumulator has the same resolution as the input image.
-        minDist=max(image_size, standard_image_size),
-        # Minimum distance between the centers of the detected circles. This is set to the size of the image to avoid detecting multiple nearby circles.
-        param1=otsu,
-        # high_thresh,  # Higher threshold for the Canny edge detector. A lower value is chosen to detect more edges.
-        param2=1,
-        # Accumulator threshold for the circle centers at the detection stage. A lower value means more circles will be detected.
-        minRadius=int(low_search_part * max(image_size, standard_image_size) / 2),  # <-┐
-        maxRadius=int(high_search_part * max(image_size, standard_image_size) / 2)
-        # <-┴ These values were chosen because the desired circle is presumably within this size range.
+        dp=1, # The inverse ratio of the accumulator resolution to the image resolution. A value of 1 means the accumulator has the same resolution as the input image.
+        minDist=max(image_size, standard_image_size), # Minimum distance between the centers of the detected circles. This is set to the size of the image to avoid detecting multiple nearby circles.
+        param1=otsu, # Higher threshold for the Canny edge detector. A lower value is chosen to detect more edges.
+        param2=1, # Accumulator threshold for the circle centers at the detection stage. A lower value means more circles will be detected.
+        minRadius=int(low_search_part * image_size / 2),  # <-┐
+        maxRadius=int(high_search_part * image_size / 2)  # <-┴ These values were chosen because the desired circle is presumably within this size range.
     )
 
     # Check if any circles were found
-    if circles is None:
-        return None
-
-    # Rescale the circle parameters to the original image size
-    if is_resized:
-        circles[0][0][0] /= scale_factor
-        circles[0][0][1] /= scale_factor
-        circles[0][0][2] /= scale_factor
+    if circles is not None and scale_factor != 1.0:
+        circles[0][0][:3] /= scale_factor
 
     # Return the detected circle parameters
-    return circles[0][0]
+    return circles[0][0] if circles is not None else None, blurred_image
+
+def estimate_h_gradient(image, scale_factor=1.5):
+        """Estimation of h based on the analysis of image gradients."""
+    
+        # Calculating gradients in x and y
+        grad_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+        grad_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+        
+        # Calculating the magnitude of the gradient
+        grad_mag = np.sqrt(grad_x**2 + grad_y**2)
+        
+        # Estimation of h based on the average magnitude of the gradient
+        return np.clip(np.mean(grad_mag)*scale_factor, 3, 100)
 
 
-def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
+def get_points(image, circle, blured, relative_wall_thickness=0.05, circles_ratio=0.1):
     """
     Extracts points from the given image within a specified circular region.
 
@@ -119,145 +108,120 @@ def get_points(image, circle, wall_thickness=16, circles_ratio=0.1):
     Parameters:
     image (numpy.ndarray): The input image from which points are to be extracted.
     circle (tuple): A tuple containing the (x, y) coordinates and radius of the circle.
-    wall_thickness (int, optional): The thickness of the wall around the circle to be considered. Default is 15.
+    relative_wall_thickness (float, optional): The diameter of the thinnest rod as a fraction of the phantom's radius. Default is 0.05.
     circles_ratio (float, optional): The ratio of the inner circle radius to the outer circle radius. Default is 0.1.
 
     Returns:
     list: A list of (x, y) coordinates representing the center points of the detected contours.
     """
 
-    # Denoise the image using Fast Non-Local Means Denoising
-    denoise_image = cv2.fastNlMeansDenoising(image)
-
     # Create a mask with a circular region of interest
-    mask = np.zeros_like(denoise_image)
-    cv2.circle(mask, (round(circle[0]), round(circle[1])), round(circle[2]), 255, -1)
+    mask = np.zeros_like(image)
+    cv2.circle(mask, (round(circle[0]), round(circle[1])), round(circle[2]*(1 - relative_wall_thickness)), 255, -1)
     cv2.circle(mask, (round(circle[0]), round(circle[1])), round(circles_ratio * circle[2]), 0, -1)
 
-    # Apply the mask to the denoised image
-    masked_image = cv2.bitwise_and(denoise_image, denoise_image, mask=mask)
+    blured_mean = int(np.mean(blured[mask == 255]))
+
+    # Make illumination correction
+    result = image.astype(np.int16) - blured.astype(np.int16) + blured_mean
+
+    # Rounding negative values to 0 and limiting the maximum to 255
+    correction_image = np.clip(result, 0, 255).astype(np.uint8)
 
     # Normalize the pixel values within the masked region
-    loc = np.where(mask == 255)
-    min_val = np.min(masked_image[loc])
-    max_val = np.max(masked_image[loc])
-    masked_image[loc] = np.clip((masked_image[loc].astype(int) - min_val) * 255 / (max_val - min_val), 0, 255).astype(
-        np.uint8)
+    normalized_image = cv2.normalize(correction_image, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U, mask)
+    
+    # Denoise the image using Fast Non-Local Means Denoising
+    denoise_image = cv2.fastNlMeansDenoising(normalized_image, h=estimate_h_gradient(normalized_image))
     
     # Create mask for find Otsu's threshold
-    otsu_mask = np.zeros_like(masked_image)
+    otsu_mask = np.zeros_like(denoise_image)
     cv2.circle(otsu_mask, (round(circle[0]), round(circle[1])), round(circle[2]), 255, -1)
     otsu_loc = np.where(otsu_mask == 255)
     
     # Find Otsu's threshold
-    otsu, _ = cv2.threshold(masked_image[otsu_loc], 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    otsu, _ = cv2.threshold(denoise_image[otsu_loc], 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    binary_image = np.full(image.shape, 255, dtype=np.uint8)
 
     # Threshold the image using Otsu's method to create a binary image
-    _, binary_image = cv2.threshold(masked_image, otsu, 255, cv2.THRESH_BINARY_INV)
+    binary_image[otsu_loc] = cv2.threshold(denoise_image[otsu_loc], otsu, 255, cv2.THRESH_BINARY_INV)[1][:,0]
+
+    mask2 = np.zeros_like(image)
+    cv2.circle(mask2, (round(circle[0]), round(circle[1])), round(circle[2]*(1 - 1.25 * relative_wall_thickness)), 255, -1)
+    cv2.circle(mask2, (round(circle[0]), round(circle[1])), round(circle[2]*(circles_ratio  + relative_wall_thickness)), 0, -1)
 
     # Set everything outside the mask to black
-    binary_image[mask == 0] = 0
-
-    # Create a secondary mask to define a wall thickness around the circle
-    circle_mask = np.zeros_like(binary_image)
-    cv2.circle(circle_mask, (round(circle[0]), round(circle[1])), round(circle[2]), 255, wall_thickness)
-
-    # Get the pixels within the wall thickness
-    circle_pixels = np.where(circle_mask == 255)
-
-    # Create a fill mask for flood fill operation
-    fill_mask = np.zeros((binary_image.shape[0] + 2, binary_image.shape[1] + 2), dtype=np.uint8)
-
-    # Use flood fill to remove unwanted regions within the binary image
-    for y, x in zip(circle_pixels[0], circle_pixels[1]):
-        if binary_image[y, x] == 255:
-            cv2.floodFill(binary_image, None, (x, y), 0)
+    binary_image[mask2 == 0] = 0
 
     # Find contours in the binary image
     contours, _ = cv2.findContours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Extract the center points of the contours
-    points = []
-    for contour in contours:
-        ((cX, cY), _, _) = cv2.minAreaRect(contour)
-        points.append((cX, cY))
+    # Extract the center points of the contours and return points
+    return [(cX, cY, width * height) for contour in contours for (cX, cY), (width, height), _ in [cv2.minAreaRect(contour)]]
 
-    # Return points
-    return points
-
-
-def segmentation(phantom_type, mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1):
-    """
-    Segments MRI and CT images to extract points of interest
-    and saves the coordinates as pickle files.
-    """
-    # default size_for_resizing=2048
-    if phantom_type == "elekta_axial":
-        with open('assets/phantom_configs/elekta_axial.json', 'r') as f:
-            config = json.load(f)
-    if phantom_type == "phantom_1_axial":
-        with open('assets/phantom_configs/phantom_1_axial.json', 'r') as f:
-            config = json.load(f)
+def process_slice(mri_image, ct_image, config, voxel_size):
     size_for_resizing = config['segmentation']['size_for_resizing']
-    wall_thickness = config['segmentation']['wall_thickness']
+    relative_wall_thickness = config['segmentation']['relative_wall_thickness']
     circles_ratio = config['segmentation']['circles_ratio']
     low_search_part = config['segmentation']['low_search_part']
     high_search_part = config['segmentation']['high_search_part']
     num_points = config['segmentation']['num_points']
 
-    # Check if the number of slices in MRI and CT images are the same
+    # Calculate scaling factors for resizing images
+    scale_mri_factor = size_for_resizing / min(mri_image.shape[:2])
+    scale_ct_factor = size_for_resizing / min(ct_image.shape[:2])
+
+    # Resize MRI and CT images to the specified size
+    mri_image = cv2.resize(mri_image, (size_for_resizing, size_for_resizing), interpolation=cv2.INTER_CUBIC)
+    ct_image = cv2.resize(ct_image, (size_for_resizing, size_for_resizing), interpolation=cv2.INTER_CUBIC)
+
+    # Detect the main circle in the resized MRI and CT images
+    mri_circle, blured_mri = find_main_circle(mri_image, low_search_part=low_search_part, high_search_part=high_search_part)
+    ct_circle, blured_ct = find_main_circle(ct_image, low_search_part=low_search_part, high_search_part=high_search_part)
+
+    # Extract points of interest from the MRI and CT images within the detected circles
+    mri_points = get_points(mri_image, mri_circle, blured_mri, relative_wall_thickness=relative_wall_thickness, circles_ratio=circles_ratio)
+    ct_points = get_points(255 - ct_image, ct_circle, 255 - blured_ct, relative_wall_thickness=relative_wall_thickness, circles_ratio=circles_ratio)
+
+    def process_points(points, num_points):
+        # Sort the points by area (S) in descending order
+        sorted_points = sorted(points, key=lambda p: p[2], reverse=True)
+        
+        # Select the first num_points of pairs (x,y) or all if there are fewer num_points
+        result = [(x, y) for x, y, _ in sorted_points[:num_points]]
+
+        # If there are fewer points than num_points, fill in the array (NaN, NaN) and return them
+        return result + [(math.nan, math.nan)]*(num_points - len(result))
+
+    # Processing mri_points
+    mri_points = process_points(mri_points, num_points)
+
+    # Processing ct_points
+    ct_points = process_points(ct_points, num_points)
+
+    return np.array(mri_points) / scale_mri_factor * voxel_size, np.array(ct_points) / scale_ct_factor * voxel_size
+
+def segmentation(phantom_type, mri_images, ct_images, mri_save_path, ct_save_path, voxel_size=1):
+    config_paths = {
+        "elekta_axial": 'assets/phantom_configs/elekta_axial.json',
+        "phantom_1_axial": 'assets/phantom_configs/phantom_1_axial.json'
+    }
+    
+    with open(config_paths[phantom_type], 'r') as f:
+        config = json.load(f)
+
     if mri_images.shape[2] != ct_images.shape[2]:
         return 'Error: MRI and CT data have different number of images.'
 
-    # Initialize lists to store points from MRI and CT images
-    all_mri_points = []
-    all_ct_points = []
+    results = Parallel(n_jobs=-1)(delayed(process_slice)(mri_images[:, :, i], ct_images[:, :, i], config, voxel_size) for i in range(mri_images.shape[2]))
 
-    # Process each slice of MRI and CT images
-    for i in range(mri_images.shape[2]):
-        print(f"{i} from {mri_images.shape[2]}")
-
-        mri_image = mri_images[:, :, i]  # Extract the i-th slice from MRI images
-        ct_image = ct_images[:, :, i]  # Extract the i-th slice from CT images
-
-        # Calculate scaling factors for resizing images
-        scale_mri_factor = size_for_resizing / min(mri_image.shape[:2])
-        scale_ct_factor = size_for_resizing / min(ct_image.shape[:2])
-
-        # Resize MRI and CT images to the specified size
-        mri_image = cv2.resize(mri_image, (size_for_resizing, size_for_resizing), interpolation=cv2.INTER_CUBIC)
-        ct_image = cv2.resize(ct_image, (size_for_resizing, size_for_resizing), interpolation=cv2.INTER_CUBIC)
-
-        # Detect the main circle in the resized MRI and CT images
-        mri_circle = find_main_circle(mri_image, low_search_part=low_search_part, high_search_part=high_search_part)
-        ct_circle = find_main_circle(ct_image, low_search_part=low_search_part, high_search_part=high_search_part)
-
-        # Extract points of interest from the MRI and CT images within the detected circles
-        mri_points = get_points(mri_image, mri_circle, wall_thickness=int(wall_thickness * scale_mri_factor), circles_ratio=circles_ratio)
-        ct_points = get_points(255 - ct_image, ct_circle, wall_thickness=int(wall_thickness * scale_ct_factor), circles_ratio=circles_ratio)
-
-        # Ensure each slice has exactly num_points points
-        while len(mri_points) < num_points:
-            mri_points.append((100, 100))  # Append (100, 100) if there are fewer than 88 points
-        while len(mri_points) > num_points:
-            mri_points.pop()
-
-        while len(ct_points) < num_points:
-            ct_points.append((100, 100))
-        while len(ct_points) > num_points:
-            ct_points.pop()
-
-        # Append the processed points to the respective lists
-        all_mri_points.append(np.array(mri_points) / scale_mri_factor * voxel_size)
-        all_ct_points.append(np.array(ct_points) / scale_ct_factor * voxel_size)
-
-    # Save the lists of points extracted from MRI and CT images as pickle files
+    all_mri_points, all_ct_points = zip(*results)
     with open(mri_save_path, "wb") as f:
         pickle.dump(all_mri_points, f, pickle.HIGHEST_PROTOCOL)
     with open(ct_save_path, "wb") as f:
         pickle.dump(all_ct_points, f, pickle.HIGHEST_PROTOCOL)
 
-    # Return the lists of points extracted from MRI and CT images
     return all_mri_points, all_ct_points
 
 
@@ -284,8 +248,12 @@ def count_difference_2(ct_path, mri_path, save_path, interpolation_coef=1.0, dis
     for slice_num, (ct_slice, mri_slice) in enumerate(zip(coords_ct, coords_mri)):
         slice_distances[slice_num] = {"distances": []}
 
-        ct_points = np.array(ct_slice)
-        mri_points = np.array(mri_slice)
+        ct_points = [point for point in ct_slice if not (math.isnan(point[0]) or math.isnan(point[1]))]
+        mri_points = [point for point in mri_slice if not (math.isnan(point[0]) or math.isnan(point[1]))]
+
+        # Convert to numpy arrays for KDTree
+        ct_points = np.array(ct_points)
+        mri_points = np.array(mri_points)
 
         tree = cKDTree(ct_points)
         slice_distances[slice_num]["distances"], indices = tree.query(mri_points)

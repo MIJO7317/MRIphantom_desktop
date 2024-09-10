@@ -1,20 +1,23 @@
 {
   "find_main_circle": {
     "standard_image_size": 512,
-    "standard_kernel_size": 15,
+    "standard_kernel_size": 41,
     "low_search_part": 0.25,
-    "high_search_part": 0.75
+    "high_search_part": 0.9
   },
   "get_points": {
-    "wall_thickness": 16,
+    "relative_wall_thickness": 0.08,
     "circles_ratio": 0.1
   },
   "segmentation": {
     "size_for_resizing": 1024,
-    "wall_thickness": 4,
-    "circles_ratio": 0.1,
+    "relative_wall_thickness": 0.08,
+    "circles_ratio": 0.08,
     "low_search_part": 0.25,
-    "high_search_part": 0.75,
+    "high_search_part": 0.9,
     "num_points": 64
+  },
+  "visualization": {
+    "marker_size": 30
   }
 }

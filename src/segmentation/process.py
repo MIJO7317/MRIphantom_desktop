@@ -447,7 +447,7 @@ def get_coords(markers_path):
             for num_of_point in range(shape_coords[1]):
                 x = coords_array[z_slice, num_of_point, 0]
                 y = coords_array[z_slice, num_of_point, 1]
-                if x == 100 and y == 100:  # Skip points where x=100 and y=100
+                if np.isnan(x) or np.isnan(y):  # Skip points where x=100 and y=100
                     continue
                 list_of_points.append([x, y, z_slice])
 

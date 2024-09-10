@@ -18,3 +18,4 @@ activate.sh
 .idea
 app.spec
 main.ipynb
+main_segmentation.ipynb

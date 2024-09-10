@@ -11,18 +11,26 @@ import plotly.graph_objects as go
 from scipy.spatial import cKDTree
 import numpy as np
 import pandas as pd
-
+import json
 
 class Scatter2D(QWidget):
     """
     2D scatter deviations view widget
     """
-    def __init__(self, data_ct, data_mri, title="2D просмотр отклонений"):
+    def __init__(self, phantom_type, data_ct, data_mri, title="2D просмотр отклонений"):
         super().__init__()
 
         self.fig = None
         self.data_ct = data_ct
         self.data_mri = data_mri
+        
+        if phantom_type == "elekta_axial":
+            with open('assets/phantom_configs/elekta_axial.json', 'r') as f:
+                config = json.load(f)
+        if phantom_type == "phantom_1_axial":
+            with open('assets/phantom_configs/phantom_1_axial.json', 'r') as f:
+                config = json.load(f)
+        self.marker_size = config['visualization']['marker_size']
 
         self.setWindowTitle(title)
         self.browser = QWebEngineView(self)
@@ -68,6 +76,17 @@ class Scatter2D(QWidget):
         ct_points = df_ct[df_ct["z"] == z_value][["x", "y"]].values
         mr_points = df_mri[df_mri["z"] == z_value][["x", "y"]].values
 
+        mr_points = np.array(mr_points)
+        ct_points = np.array(ct_points)
+
+        # Фильтрация NaN значений
+        valid_mr = ~np.isnan(mr_points).any(axis=1)
+        valid_ct = ~np.isnan(ct_points).any(axis=1)
+        valid_points = valid_mr & valid_ct
+
+        mr_points = mr_points[valid_points]
+        ct_points = ct_points[valid_points]
+
         # Build KD-tree for nearest neighbor search
         tree = cKDTree(mr_points)
         distances, indices = tree.query(ct_points)
@@ -90,7 +109,7 @@ class Scatter2D(QWidget):
             y=ct_points[within_max, 1],
             mode='markers+text',
             marker=dict(
-                size=40,
+                size=self.marker_size,
                 color=colors[within_max],
                 colorscale='YlOrRd',
                 colorbar=dict(
@@ -116,7 +135,7 @@ class Scatter2D(QWidget):
             y=ct_points[beyond_max, 1],
             mode='markers+text',
             marker=dict(
-                size=40,
+                size=self.marker_size,
                 color='gray',
             ),
             text=[t for t, b in zip(text, beyond_max) if b],
