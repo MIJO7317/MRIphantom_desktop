@@ -41,8 +41,8 @@ class Scatter3D(QWidget):
 
         self.fig = go.Figure().update_layout(template="plotly_white")
 
-        coords_mr = np.array(self.data_ct)
-        coords_ct = np.array(self.data_mri)
+        coords_mr = np.array(self.data_mri)
+        coords_ct = np.array(self.data_ct)
 
         # Инициализация списков для 3D точек и их отклонений для Plotly
         mr_x, mr_y, mr_z = [], [], []
