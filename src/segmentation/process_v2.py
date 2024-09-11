@@ -138,14 +138,11 @@ def get_points(image, circle, blured, relative_wall_thickness=0.05, circles_rati
     otsu_mask = np.zeros_like(denoise_image)
     cv2.circle(otsu_mask, (round(circle[0]), round(circle[1])), round(circle[2]), 255, -1)
     otsu_loc = np.where(otsu_mask == 255)
-    
-    # Find Otsu's threshold
-    otsu, _ = cv2.threshold(denoise_image[otsu_loc], 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
     binary_image = np.full(image.shape, 255, dtype=np.uint8)
 
     # Threshold the image using Otsu's method to create a binary image
-    binary_image[otsu_loc] = cv2.threshold(denoise_image[otsu_loc], otsu, 255, cv2.THRESH_BINARY_INV)[1][:,0]
+    binary_image[otsu_loc] = cv2.threshold(denoise_image[otsu_loc], 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1][:,0]
 
     mask2 = np.zeros_like(image)
     cv2.circle(mask2, (round(circle[0]), round(circle[1])), round(circle[2]*(1 - 1.25 * relative_wall_thickness)), 255, -1)
